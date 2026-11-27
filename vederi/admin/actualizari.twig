@@ -1,0 +1,12 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('actualizari.titlu') }}</h1>
+<p data-versiune="{{ instalata }}">{{ t('actualizari.versiune_instalata', {versiune: instalata}) }}</p>
+{% if noua %}
+{% include 'admin/_versiune_noua.twig' with {v: noua} %}
+{% elseif la_zi %}
+<ul class="pa-stari"><li class="pa-ok"><span>{{ t('actualizari.la_zi') }}</span></li></ul>
+{% endif %}
+{% if verificat_la %}<p class="pa-ajutor">{{ t('actualizari.verificat_la', {cand: verificat_la}) }}</p>{% endif %}
+<p><a href="{{ versiuni }}" rel="noopener" target="_blank" data-pagina-versiuni>{{ t('actualizari.pagina_versiunilor') }}</a></p>
+{% endblock %}

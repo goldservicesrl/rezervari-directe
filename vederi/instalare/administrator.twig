@@ -1,0 +1,17 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.administrator') }}</h1>
+<p>{{ t('instalare.admin.text') }}</p>
+<form class="pa-formular" method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+<p><label for="pi-email">{{ t('instalare.admin.email') }}</label><span class="pa-ajutor" id="pi-email-ajutor">{{ t('instalare.admin.email_ajutor') }}</span><input id="pi-email" name="email" type="email" autocomplete="username" value="{{ formular.email }}" required aria-describedby="pi-email-ajutor"></p>
+<p><label for="pi-numea">{{ t('instalare.admin.nume') }}</label><input id="pi-numea" name="nume" autocomplete="name" value="{{ formular.nume }}" maxlength="100"></p>
+<p><label for="pi-parolaa">{{ t('instalare.admin.parola') }}</label><span class="pa-ajutor" id="pi-parola-ajutor">{{ t('instalare.admin.parola_ajutor', {minim: minim}) }}</span><input id="pi-parolaa" name="parola" type="password" autocomplete="new-password" minlength="{{ minim }}" required aria-describedby="pi-parola-ajutor"></p>
+<p><label for="pi-parola2">{{ t('instalare.admin.parola2') }}</label><input id="pi-parola2" name="parola2" type="password" autocomplete="new-password" minlength="{{ minim }}" required></p>
+<fieldset><legend>{{ t('instalare.admin.limba') }}</legend>
+{% for l in ['ro', 'en'] %}<p><input type="radio" id="pi-limba-{{ l }}" name="limba_panou" value="{{ l }}"{% if formular.limba_panou == l %} checked{% endif %}><label for="pi-limba-{{ l }}" lang="{{ l }}">{{ l == 'ro' ? 'Română' : 'English' }}</label></p>{% endfor %}
+</fieldset>
+<p class="{{ live ? 'pa-eroare' : 'pa-mesaj' }}">{{ live ? t('instalare.admin.2fa_live') : t('instalare.admin.2fa') }}</p>
+<p><button type="submit" class="pa-buton">{{ t('instalare.admin.buton') }}</button></p>
+</form>
+{% endblock %}

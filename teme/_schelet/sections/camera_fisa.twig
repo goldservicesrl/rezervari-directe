@@ -1,0 +1,16 @@
+<section class="sc-sectiune sc-fisa" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime">
+<h2 id="{{ sectiune.id }}-t" class="sc-titlu-sectiune">{{ t('fisa.titlu') }}</h2>
+{#- la o singură unitate fără descriere proprie, descrierea proprietății (cea de pe Acasă). -#}
+{% if camera.descriere %}<p>{{ camera.descriere|nl2br }}</p>{% elseif camere|length == 1 and proprietate.descriere %}{% if proprietate.descriere_limba != site.limba %}<p lang="{{ proprietate.descriere_limba }}">{% else %}<p>{% endif %}{{ proprietate.descriere|nl2br }}</p>{% endif %}
+<dl class="sc-fisa-date">
+{% if camera.oaspeti_max %}<div><dt>{{ t('fisa.oaspeti') }}</dt><dd>{{ t('camera.oaspeti', {n: camera.oaspeti_max}) }}</dd></div>{% endif %}
+{% if camera.unitati > 1 %}<div><dt>{{ t('fisa.unitati') }}</dt><dd>{{ camera.unitati }}</dd></div>{% endif %}
+{% if camera.fisa.pat %}<div><dt>{{ t('fisa.pat') }}</dt><dd>{{ camera.fisa.pat }}</dd></div>{% endif %}
+{% if camera.fisa.baie %}<div><dt>{{ t('fisa.baie') }}</dt><dd>{{ camera.fisa.baie }}</dd></div>{% endif %}
+{% if camera.fisa.suprafata_mp %}<div><dt>{{ t('fisa.suprafata') }}</dt><dd>{{ t('fisa.mp', {n: camera.fisa.suprafata_mp}) }}</dd></div>{% endif %}
+{% if camera.fisa.vedere %}<div><dt>{{ t('fisa.vedere') }}</dt><dd>{{ camera.fisa.vedere }}</dd></div>{% endif %}
+</dl>
+{% if camera.dotari %}<h3>{{ t('fisa.dotari') }}</h3><ul class="sc-dotari">{% for d in camera.dotari %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+</div>
+</section>

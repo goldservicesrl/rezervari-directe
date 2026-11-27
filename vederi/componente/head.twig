@@ -1,0 +1,28 @@
+{#- Antetul paginii (cazo.head()): meta, canonical, hreflang, Open Graph, fonturile preîncărcate, foile de stil. -#}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ meta.titlu }}</title>
+{% if meta.descriere %}<meta name="description" content="{{ meta.descriere }}">
+{% endif %}
+{% if meta.noindex %}<meta name="robots" content="noindex">
+{% endif %}
+{% if meta.refresh %}<noscript><meta http-equiv="refresh" content="{{ meta.refresh.secunde }}{% if meta.refresh.url %};url={{ meta.refresh.url }}{% endif %}"></noscript>
+{% endif %}
+{% if favicon ?? '' %}<link rel="icon" href="{{ favicon }}" type="{{ favicon_tip ?? 'image/svg+xml' }}">
+{% endif %}
+<link rel="canonical" href="{{ meta.canonic }}">
+{% for limba, adresa in meta.alternative %}<link rel="alternate" hreflang="{{ limba }}" href="{{ adresa }}">
+{% endfor %}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ meta.site }}">
+<meta property="og:title" content="{{ meta.titlu }}">
+{% if meta.descriere %}<meta property="og:description" content="{{ meta.descriere }}">
+{% endif %}
+<meta property="og:url" content="{{ meta.canonic }}">
+<meta property="og:locale" content="{{ meta.og_locale }}">
+{% if meta.og_imagine %}<meta property="og:image" content="{{ meta.og_imagine }}">
+{% endif %}
+{% for f in fonturi %}<link rel="preload" href="{{ f }}" as="font" type="font/woff2" crossorigin>
+{% endfor %}
+{% for c in css %}<link rel="stylesheet" href="{{ c }}">
+{% endfor %}

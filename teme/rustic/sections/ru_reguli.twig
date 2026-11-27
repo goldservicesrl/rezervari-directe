@@ -1,0 +1,27 @@
+{#- Regulile casei, pe scurt, în carduri: check-in (de la, cu „până la” când EasyCheck îl dă), check-out, apoi
+    regulile din EasyCheck, câte o propoziție (copiii și bebelușii, animalele, evenimentele, fumatul), cu textele _schelet, formulate
+    afirmativ. Fără ore și fără reguli, secțiunea lipsește. -#}
+{% set ore = proprietate.ore %}
+{% set pana_la = ore.checkin_pana_la ?? '' %}
+{% set rc = proprietate.reguli_casa %}
+{% set copii = rc.copii ?? null %}
+{% set bebelusi = rc.bebelusi ?? null %}
+{% set n_reguli = (copii is not null ? 1 : 0) + ((rc.animale ?? null) is not null ? 1 : 0) + ((rc.evenimente ?? null) is not null ? 1 : 0) + ((rc.fumat ?? null) is not null ? 1 : 0) %}
+{% if ore.checkin_de_la or ore.plecare_pana_la or n_reguli > 0 %}
+<section class="ru-banda ru-banda-suprafata ru-reguli-sectiune" aria-labelledby="{{ sectiune.id }}-t">
+<div class="ru-latime">
+<div class="ru-cap">
+<p class="ru-semn">{{ t('reguli.semn') }}</p>
+<h2 id="{{ sectiune.id }}-t">{{ t('reguli.titlu') }}</h2>
+</div>
+<ul class="ru-reguli">
+{% if ore.checkin_de_la %}<li><b>{{ t('ore.checkin') }}</b>{{ pana_la ? t('ore.interval', {de: ore.checkin_de_la, pana: pana_la}) : t('ore.de_la', {ora: ore.checkin_de_la}) }}</li>{% endif %}
+{% if ore.plecare_pana_la %}<li><b>{{ t('ore.checkout') }}</b>{{ t('ore.pana_la', {ora: ore.plecare_pana_la}) }}</li>{% endif %}
+{% if copii is not null %}<li>{{ copii and bebelusi ? t('reguli.copii_bebelusi.da') : t('reguli.copii.' ~ (copii ? 'da' : 'nu')) }}{% if copii and bebelusi is not null and not bebelusi %} {{ t('reguli.bebelusi.nu') }}{% endif %}</li>{% endif %}
+{% if (rc.animale ?? null) is not null %}<li>{{ t('reguli.animale.' ~ (rc.animale ? 'da' : 'nu')) }}</li>{% endif %}
+{% if (rc.evenimente ?? null) is not null %}<li>{{ t('reguli.evenimente.' ~ (rc.evenimente ? 'da' : 'nu')) }}</li>{% endif %}
+{% if (rc.fumat ?? null) is not null %}<li>{{ t('reguli.fumat.' ~ (rc.fumat ? 'da' : 'nu')) }}</li>{% endif %}
+</ul>
+</div>
+</section>
+{% endif %}

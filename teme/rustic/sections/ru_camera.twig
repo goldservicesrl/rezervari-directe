@@ -1,0 +1,25 @@
+{#- Fișa camerei (pagina camerei): spațiile generate de nucleu (camere[].spatii[]: eticheta, paturi[], poze[]) sau,
+    până atunci, fișa de azi (patul, baia, suprafața, vederea), oaspeții, unitățile la fel, propoziția opțională a
+    gazdei (G 3.descriere) și dotările bifate. -#}
+{% set c = camera %}
+{% set spatii = c.spatii ?? [] %}
+{% set mp = c.suprafata_mp ?? c.fisa.suprafata_mp ?? null %}
+{% set v = c.vedere ?? c.fisa.vedere ?? '' %}
+{% set baie = (c.baie_tip ?? '') in ['proprie', 'comuna'] ? t('baie.' ~ c.baie_tip) : (c.fisa.baie ?? '') %}
+<section class="ru-latime ru-fisa" aria-labelledby="{{ sectiune.id }}-t">
+<h2 id="{{ sectiune.id }}-t" class="ru-titlu">{{ t(spatii|length > 0 ? 'spatii.titlu' : 'fisa.titlu') }}</h2>
+{#- la o singură unitate fără descriere proprie, descrierea proprietății (cea de pe Acasă). -#}
+{% if c.descriere %}<p class="ru-fisa-text">{{ c.descriere }}</p>{% elseif camere|length == 1 and proprietate.descriere %}{% if proprietate.descriere_limba != site.limba %}<p class="ru-fisa-text" lang="{{ proprietate.descriere_limba }}">{% else %}<p class="ru-fisa-text">{% endif %}{{ proprietate.descriere|nl2br }}</p>{% endif %}
+{% if spatii|length > 0 %}<ul class="ru-spatii">
+{% for s in spatii %}<li><b>{{ s.eticheta }}</b>{% set paturi = s.paturi ?? [] %}{% if paturi|length > 0 %}<span>{% for p in paturi %}{% include "partials/eticheta.twig" with {d: p} only %}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% elseif s.tip == 'baie' and (c.baie_tip ?? '') in ['proprie', 'comuna'] %}<span>{{ t('baie.' ~ c.baie_tip) }}</span>{% endif %}</li>{% endfor %}
+</ul>{% endif %}
+{% if c.oaspeti_max or c.unitati > 1 or (spatii|length == 0 and ((c.fisa.pat ?? '') or baie)) or mp or v %}<dl class="ru-fisa-date">
+{% if c.oaspeti_max %}<div><dt>{{ t('fisa.oaspeti') }}</dt><dd>{% include "partials/oaspeti.twig" with {n: c.oaspeti_max} only %}</dd></div>{% endif %}
+{% if c.unitati > 1 %}<div><dt>{{ t('fisa.unitati') }}</dt><dd>{{ c.unitati }}</dd></div>{% endif %}
+{% if spatii|length == 0 and (c.fisa.pat ?? '') %}<div><dt>{{ t('fisa.pat') }}</dt><dd>{{ c.fisa.pat }}</dd></div>{% endif %}
+{% if spatii|length == 0 and baie %}<div><dt>{{ t('fisa.baie') }}</dt><dd>{{ baie }}</dd></div>{% endif %}
+{% if mp %}<div><dt>{{ t('fisa.suprafata') }}</dt><dd>{{ t('camera.mp', {n: mp}) }}</dd></div>{% endif %}
+{% if v %}<div><dt>{{ t('fisa.vedere') }}</dt><dd>{{ v in ['oras', 'mare', 'munte', 'lac', 'curte', 'gradina'] ? t('vedere.' ~ v) : v }}</dd></div>{% endif %}
+</dl>{% endif %}
+{% if c.dotari|length > 0 %}<h3>{{ t('fisa.dotari') }}</h3><ul class="ru-dotari">{% for d in c.dotari|slice(0, 12) %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+</section>

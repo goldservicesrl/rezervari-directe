@@ -1,0 +1,28 @@
+{#- Rezumatul rezervării (comanda, starea, „Rezervarea mea”): camerele, datele cu orele, tariful și anularea, totalul cu
+    componentele. Pe pagina de rezervare (`r.metode`), sub total stă, pe fiecare metodă de plată oferită, ce se plătește
+    acum și ce la sosire; după rezervare, ce s-a plătit și ce rămâne la sosire. -#}
+<dl class="pg-rezumat-comanda">
+{% set erori = erori|default({}) %}
+<div class="pg-total-rand"><dt>{{ t('comanda.camere') }}</dt><dd>{{ r.camere|join('; ') }}
+{%- for i, x in r.camere %}{% if erori['camera_' ~ i] is defined %}<span class="pg-eroare" id="pg-f-camera_{{ i }}">{{ x }}: {{ erori['camera_' ~ i] }}</span>{% endif %}{% endfor %}</dd></div>
+<div class="pg-total-rand"><dt>{{ t('comanda.sosire') }}</dt><dd>{{ r.sosire }}{% if erori.sejur is defined %}<span class="pg-eroare" id="pg-f-sejur">{{ erori.sejur }}</span>{% endif %}</dd></div>
+<div class="pg-total-rand"><dt>{{ t('comanda.plecare') }}</dt><dd>{{ r.plecare }}</dd></div>
+<div class="pg-total-rand"><dt>{{ t('comanda.durata') }}</dt><dd>{{ r.durata }}</dd></div>
+{% if r.tarif %}<div class="pg-total-rand"><dt>{{ t('comanda.tarif') }}</dt><dd>{{ r.tarif }}</dd></div>{% endif %}
+<div class="pg-total-rand"><dt>{{ t('comanda.anulare') }}</dt><dd>{{ r.politica }}</dd></div>
+<div class="pg-total-rand pg-total-rand--total"><dt>{{ t('comanda.total') }}</dt><dd>{{ r.total }}</dd></div>
+</dl>
+<details class="pg-total-componente"><summary>{{ t('rezumat.componente') }}</summary><dl>{% for c in r.componente %}<div class="pg-total-rand"><dt>{{ c.eticheta }}</dt><dd>{{ c.text }}</dd></div>{% endfor %}</dl></details>
+{% for x in r.separat|default([]) %}<p class="pg-rezumat-plata pg-total-separat">{{ x }}</p>{% endfor %}
+{% if r.metode|default([]) %}
+<div class="pg-metode">
+<h3 class="pg-metode-titlu">{{ t('comanda.metode.titlu') }}</h3>
+<ul class="pg-metode-lista">
+{% for m in r.metode %}<li class="pg-metoda pg-metoda--{{ m.metoda }}"><div class="pg-metoda-nume">{{ m.titlu }}</div><div class="pg-metoda-acum">{{ m.acum }}</div><div class="pg-metoda-sosire">{{ m.sosire }}</div></li>
+{% endfor %}</ul>
+</div>
+{% else %}
+{% if r.platit is defined %}<p class="pg-rezumat-plata">{{ r.platit }}</p>{% endif %}
+<p class="pg-rezumat-plata">{{ r.la_sosire }}</p>
+{% endif %}
+{% if r.reguli %}<h3 class="pg-reguli-titlu">{{ t('comanda.reguli') }}</h3><ul class="pg-reguli">{% for x in r.reguli %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}

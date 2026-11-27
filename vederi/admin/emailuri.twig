@@ -1,0 +1,66 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.emailuri.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if problema %}
+<div class="pa-eroare" role="alert" data-emailuri-problema>
+<p><strong>{{ problema.titlu }}</strong></p>
+{% if problema.de_la %}<p>{{ t('admin.emailuri.problema.de_la', {cand: problema.de_la}) }}</p>{% endif %}
+{% if problema.eroare %}<p>{{ t('admin.emailuri.problema.eroare') }} <code>{{ problema.eroare }}</code></p>{% endif %}
+<p>{{ t('admin.emailuri.problema.ce_faceti') }}</p>
+</div>
+{% elseif in_reincercare %}
+<ul class="pa-stari"><li class="pa-de-facut" data-emailuri-reincercare><span>{{ t('admin.emailuri.problema.prima', {n: in_reincercare}) }}</span></li></ul>
+{% else %}
+<ul class="pa-stari"><li class="pa-ok"><span>{{ t('admin.emailuri.coada', {coada: coada.in_coada, trimise: coada.trimise}) }}</span></li></ul>
+{% endif %}
+<p>{{ t('admin.emailuri.mesaje_legatura') }} <a href="{{ url.sabloane }}">{{ t('admin.nav.mesaje') }}</a></p>
+
+<h2>{{ t('admin.emailuri.expeditor_titlu') }}</h2>
+<p>{{ t('admin.emailuri.expeditor_explicatie', {implicit: implicit}) }}</p>
+<p class="pa-info" data-emailuri-redirectionare>{{ t('admin.emailuri.redirectionare', {adresa: (expeditor.adresa ?? '') ?: implicit}) }}</p>
+<form method="post" action="{{ url.baza }}expeditor"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-e-adresa">{{ t('admin.emailuri.adresa') }}</label><span class="pa-ajutor" id="pa-e-adresa-ajutor">{{ t('admin.emailuri.expeditor_avertizare') }}</span><input id="pa-e-adresa" name="adresa" type="email" value="{{ expeditor.adresa ?? '' }}" autocomplete="off" aria-describedby="pa-e-adresa-ajutor{% if erori_camp.adresa is defined %} pa-e-adresa-eroare{% endif %}"{% if erori_camp.adresa is defined %} aria-invalid="true"{% endif %}>
+{% if erori_camp.adresa is defined %}<span class="pa-eroare-camp" id="pa-e-adresa-eroare">{{ erori_camp.adresa }}</span>{% endif %}</p>
+<p><label for="pa-e-nume">{{ t('admin.emailuri.nume') }}</label><input id="pa-e-nume" name="nume" type="text" maxlength="120" value="{{ expeditor.nume ?? '' }}" autocomplete="off"></p>
+{#- selectorul DKIM apare doar când semnătura lipsește (sau e deja scris unul): cu DKIM găsit la „default”, nu e nimic de ales. -#}
+{% if not (dns and dns.dkim) or dkim_selector or erori_camp.dkim_selector is defined %}
+<details class="pa-avansat"{% if dkim_selector or erori_camp.dkim_selector is defined or (dns and dns.dkim is not null and not dns.dkim) %} open{% endif %}><summary>{{ t('admin.emailuri.avansat') }}</summary>
+<p><label for="pa-e-dkim">{{ t('admin.emailuri.dkim_selector') }}</label><span class="pa-ajutor" id="pa-e-dkim-ajutor">{{ t('admin.emailuri.dkim_selector_ajutor') }}</span><input id="pa-e-dkim" class="pa-scurt" name="dkim_selector" type="text" maxlength="63" value="{{ dkim_selector }}" autocomplete="off" aria-describedby="pa-e-dkim-ajutor{% if erori_camp.dkim_selector is defined %} pa-e-dkim-eroare{% endif %}"{% if erori_camp.dkim_selector is defined %} aria-invalid="true"{% endif %}>
+{% if erori_camp.dkim_selector is defined %}<span class="pa-eroare-camp" id="pa-e-dkim-eroare">{{ erori_camp.dkim_selector }}</span>{% endif %}</p>
+</details>
+{% endif %}
+<button type="submit" class="pa-buton">{{ t('admin.emailuri.expeditor_salveaza') }}</button></form>
+{% if dns %}<p>{{ t('admin.emailuri.dns', {domeniu: dns.domeniu}) }} SPF: {{ dns.spf is null ? t('admin.emailuri.dns_necunoscut') : (dns.spf ? t('admin.sistem.da') : t('admin.sistem.lipsa')) }}, DMARC: {{ dns.dmarc is null ? t('admin.emailuri.dns_necunoscut') : (dns.dmarc ? t('admin.sistem.da') : t('admin.sistem.lipsa')) }}, DKIM ({{ dns.selectori|join(', ') }}): {{ dns.dkim is null ? t('admin.emailuri.dns_necunoscut') : (dns.dkim ? t('admin.sistem.da') : t('admin.sistem.lipsa')) }}.</p>{% if dns.dkim is not null and not dns.dkim %}<p class="pa-avertizare">{{ t('admin.emailuri.dkim_lipsa', {domeniu: dns.domeniu}) }}</p>{% endif %}<p class="pa-ajutor">{{ t('admin.emailuri.dns_ajutor') }}</p>{% endif %}
+
+<details class="pa-avansat" id="pa-smtp"{% if problema or in_reincercare or smtp.gazda ?? false or erori_camp.gazda is defined or erori_camp.port is defined or erori_camp.securitate is defined %} open{% endif %}><summary>{{ t('admin.emailuri.smtp_avansat') }}</summary>
+{% if problema or in_reincercare %}<p class="pa-avertizare">{{ t('admin.emailuri.smtp_recomandat') }}</p>{% endif %}
+<p>{{ t('admin.emailuri.smtp_explicatie') }}</p>
+<p>{{ t('admin.emailuri.smtp_cpanel') }}</p>
+<form method="post" action="{{ url.baza }}smtp"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-s-gazda">{{ t('admin.emailuri.gazda') }}</label><span class="pa-ajutor" id="pa-s-gazda-ajutor">{{ t('admin.emailuri.gazda_ajutor') }}</span><input id="pa-s-gazda" name="gazda" type="text" value="{{ smtp.gazda ?? '' }}" autocomplete="off" aria-describedby="pa-s-gazda-ajutor{% if erori_camp.gazda is defined %} pa-s-gazda-eroare{% endif %}"{% if erori_camp.gazda is defined %} aria-invalid="true"{% endif %}>
+{% if erori_camp.gazda is defined %}<span class="pa-eroare-camp" id="pa-s-gazda-eroare">{{ erori_camp.gazda }}</span>{% endif %}</p>
+<p><label for="pa-s-port">{{ t('admin.emailuri.port') }}</label><input id="pa-s-port" class="pa-scurt" name="port" type="text" inputmode="numeric" value="{{ smtp.port ?? 587 }}"{% if erori_camp.port is defined %} aria-invalid="true" aria-describedby="pa-s-port-eroare"{% endif %}>
+{% if erori_camp.port is defined %}<span class="pa-eroare-camp" id="pa-s-port-eroare">{{ erori_camp.port }}</span>{% endif %}</p>
+<p><label for="pa-s-sec">{{ t('admin.emailuri.securitate') }}</label><select id="pa-s-sec" name="securitate"{% if erori_camp.securitate is defined %} aria-invalid="true" aria-describedby="pa-s-sec-eroare"{% endif %}>{% for x in ['tls', 'ssl', 'niciuna'] %}<option value="{{ x }}"{% if (smtp.securitate ?? 'tls') == x %} selected{% endif %}>{{ t('admin.emailuri.securitate.' ~ x) }}</option>{% endfor %}</select>
+{% if erori_camp.securitate is defined %}<span class="pa-eroare-camp" id="pa-s-sec-eroare">{{ erori_camp.securitate }}</span>{% endif %}</p>
+<p><label for="pa-s-ut">{{ t('admin.emailuri.utilizator') }}</label><span class="pa-ajutor" id="pa-s-ut-ajutor">{{ t('admin.emailuri.utilizator_ajutor') }}</span><input id="pa-s-ut" name="utilizator" type="text" value="{{ smtp.utilizator ?? '' }}" autocomplete="off" aria-describedby="pa-s-ut-ajutor"></p>
+<p><label for="pa-s-parola">{{ t('admin.emailuri.parola') }}</label><span class="pa-ajutor" id="pa-s-parola-ajutor">{{ smtp_parola ? t('admin.emailuri.parola_salvata', {u: smtp_parola}) : t('admin.emailuri.parola_ajutor') }}</span><input id="pa-s-parola" name="parola_smtp" type="password" autocomplete="off" aria-describedby="pa-s-parola-ajutor"></p>
+{% include 'admin/_reauth.twig' with {id: 'smtp'} %}
+<button type="submit" class="pa-buton">{{ t('admin.emailuri.smtp_salveaza') }}</button></form>
+</details>
+
+<h2>{{ t('admin.emailuri.proba_titlu') }}</h2>
+<p>{{ t('admin.emailuri.proba_explicatie') }}</p>
+<form method="post" action="{{ url.baza }}proba"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.emailuri.proba', {email: utilizator.email}) }}</button></form>
+
+<h2>{{ t('admin.emailuri.probleme_titlu') }}</h2>
+{% if probleme %}
+<p>{{ t('admin.emailuri.probleme_explicatie') }}</p>
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rez.col.la') }}</th><th scope="col">{{ t('admin.emailuri.sablon') }}</th><th scope="col">{{ t('admin.emailuri.catre') }}</th><th scope="col">{{ t('admin.plati.col.ref') }}</th><th scope="col">{{ t('admin.emailuri.stare') }}</th><th scope="col">{{ t('admin.conexiuni.eroare') }}</th></tr></thead>
+<tbody>{% for x in probleme %}<tr><td data-eticheta="{{ t('admin.rez.col.la') }}">{{ x.la }}</td><th scope="row" data-eticheta="{{ t('admin.emailuri.sablon') }}">{{ x.mesaj }}</th><td data-eticheta="{{ t('admin.emailuri.catre') }}">{{ x.catre }}</td><td data-eticheta="{{ t('admin.plati.col.ref') }}">{% if x.ref %}<a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a>{% endif %}</td><td data-eticheta="{{ t('admin.emailuri.stare') }}"><span class="pa-stare {{ x.abandonat ? 'pa-stare-problema' : 'pa-stare-asteapta' }}">{{ x.stare }}</span></td><td data-eticheta="{{ t('admin.conexiuni.eroare') }}">{% if x.eroare %}<details><summary>{{ t('admin.emailuri.eroare_detalii') }}</summary><code>{{ x.eroare }}</code></details>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>
+<form method="post" action="{{ url.baza }}reia"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.emailuri.reia') }}</button></form>
+{% else %}<p class="pa-gol">{{ t('admin.emailuri.probleme_gol') }}</p>{% endif %}
+{% endblock %}

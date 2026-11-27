@@ -1,0 +1,40 @@
+{% extends 'admin/baza.twig' %}
+{% block antet %}{% include 'admin/_antet.twig' %}{% endblock %}
+{% block continut %}
+{#- Sigla site-ului: încărcarea (PNG, JPEG, WebP, cel mult 2 MB), înălțimea pe calculator și pe telefon, ce arată antetul, ștergerea. -#}
+<h1>{{ t('admin.sigla.titlu') }}</h1>
+{% if mesaj %}<p class="pa-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if eroare %}<p class="pa-eroare" role="alert"><a href="#{{ eroare_inaltime ? 'pa-sigla-inaltime' : 'pa-sigla-fisier' }}">{{ eroare }}</a></p>{% endif %}
+<p>{{ t('admin.sigla.explicatie') }}</p>
+{% if sigla %}
+<div>
+<p>{{ t('admin.sigla.acum') }}</p>
+<p class="pa-sigla-mostre"><span class="pa-sigla-mostra"><img src="{{ sigla.fisier }}" alt="{{ t('admin.sigla.alt', {nume: nume_site}) }}" height="{{ reglaje.inaltime }}" width="{{ (sigla.latime * reglaje.inaltime / sigla.inaltime)|round }}"><span>{{ t('admin.sigla.pe_calculator', {px: reglaje.inaltime}) }}</span></span>
+<span class="pa-sigla-mostra"><img src="{{ sigla.fisier }}" alt="" height="{{ reglaje.inaltime_telefon }}" width="{{ (sigla.latime * reglaje.inaltime_telefon / sigla.inaltime)|round }}"><span>{{ t('admin.sigla.pe_telefon', {px: reglaje.inaltime_telefon}) }}</span></span></p>
+{% if sigla.favicon %}<p class="pa-sigla-mostra"><img src="{{ sigla.favicon }}" alt="" width="32" height="32"><span>{{ t('admin.sigla.favicon') }}</span></p>{% endif %}
+</div>
+{% else %}
+<p class="pa-info">{{ t('admin.sigla.fara', {nume: nume_site}) }}</p>
+{% endif %}
+<form method="post" action="{{ url.sigla }}" enctype="multipart/form-data" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="salveaza">
+<div class="pa-camp">
+<p><label for="pa-sigla-fisier">{{ sigla ? t('admin.sigla.fisier_alta') : t('admin.sigla.fisier') }}</label><input id="pa-sigla-fisier" name="sigla" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="pa-sigla-fisier-a{% if eroare_fisier %} pa-sigla-fisier-e{% endif %}"{% if eroare_fisier %} aria-invalid="true"{% endif %}></p>
+<p class="pa-ajutor" id="pa-sigla-fisier-a">{{ t('admin.sigla.fisier_ajutor', {mb: limite.mb}) }}</p>
+{% if eroare_fisier %}<p class="pa-eroare" id="pa-sigla-fisier-e">{{ eroare }}</p>{% endif %}
+</div>
+<fieldset class="pa-camp" id="pa-sigla-inaltime"><legend>{{ t('admin.sigla.inaltimea') }}</legend>
+<p><label for="pa-sigla-h">{{ t('admin.sigla.inaltime') }} (px)</label><input id="pa-sigla-h" name="inaltime" type="number" inputmode="numeric" min="{{ limite.min }}" max="{{ limite.max }}" step="1" value="{{ reglaje.inaltime }}" aria-describedby="pa-sigla-h-a"{% if eroare_inaltime %} aria-invalid="true"{% endif %}></p>
+<p><label for="pa-sigla-ht">{{ t('admin.sigla.inaltime_telefon') }} (px)</label><input id="pa-sigla-ht" name="inaltime_telefon" type="number" inputmode="numeric" min="{{ limite.min }}" max="{{ limite.max }}" step="1" value="{{ reglaje.inaltime_telefon }}" aria-describedby="pa-sigla-h-a"{% if eroare_inaltime %} aria-invalid="true"{% endif %}></p>
+<p class="pa-ajutor" id="pa-sigla-h-a">{{ t('admin.sigla.inaltime_ajutor', {min: limite.min, max: limite.max}) }}</p>
+</fieldset>
+<fieldset class="pa-camp"><legend>{{ t('admin.sigla.mod') }}</legend>
+<p><input type="radio" id="pa-sigla-mod-nume" name="mod" value="sigla_nume"{% if reglaje.mod == 'sigla_nume' %} checked{% endif %}><label for="pa-sigla-mod-nume">{{ t('admin.sigla.mod.sigla_nume', {nume: nume_site}) }}</label></p>
+<p><input type="radio" id="pa-sigla-mod-sigla" name="mod" value="sigla"{% if reglaje.mod == 'sigla' %} checked{% endif %}><label for="pa-sigla-mod-sigla">{{ t('admin.sigla.mod.sigla') }}</label></p>
+</fieldset>
+<button type="submit" class="pa-buton">{{ t('admin.sigla.salvati') }}</button>
+</form>
+{% if sigla %}
+<form method="post" action="{{ url.sigla }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="sterge">
+<button type="submit" class="pa-buton-secundar">{{ t('admin.sigla.sterge') }}</button></form>
+{% endif %}
+{% endblock %}

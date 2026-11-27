@@ -1,0 +1,21 @@
+{#- Camerele: câte un card pe grup: poza principală decupată la 3:2, titlul, fișa pe un rând
+    cu romburi între valori (oaspeți, paturi, baie, suprafață, vedere), propoziția gazdei, cel mult 3 dotări și, jos,
+    „de la X / noapte” cu „Detalii”. Câmpurile lipsă nu lasă etichete goale. Setarea `cu_titlu`: fără titlul
+    secțiunii (pagina Camere), cardurile urcă un nivel. -#}
+{% set cu_titlu = sectiune.setari.cu_titlu ?? true %}
+{% set nivel = cu_titlu ? 3 : 2 %}
+{% if camere|length > 0 %}
+{% set unitati = 0 %}
+{% for c in camere %}{% set unitati = unitati + c.unitati %}{% endfor %}
+<section class="ru-banda ru-camere-sectiune"{% if cu_titlu %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t('camere.titlu') }}"{% endif %}>
+<div class="ru-latime">
+{% if cu_titlu %}<div class="ru-cap">
+<p class="ru-semn">{% include "partials/numar.twig" with {n: unitati, cheie: 'camere.numar'} only %}</p>
+<h2 id="{{ sectiune.id }}-t">{{ t('camere.titlu') }}</h2>
+</div>{% endif %}
+<ul class="ru-camere">
+{% for c in camere %}{% include "partials/card_camera.twig" %}{% endfor %}
+</ul>
+</div>
+</section>
+{% endif %}

@@ -1,0 +1,38 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.rezervari.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% include 'admin/_rezervari_vederi.twig' with {activa: 'rezervari'} %}
+<form class="pa-filtre" method="post" action="{{ url.baza }}" role="search" aria-label="{{ t('admin.rezervari.cauta_oaspete_titlu') }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-f-oaspete">{{ t('admin.rezervari.cauta_oaspete') }}</label><input id="pa-f-oaspete" name="oaspete" type="search" maxlength="100" value="{{ cautare ? cautare.text : '' }}" autocomplete="off" aria-describedby="pa-f-oaspete-ajutor"></p>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.rezervari.cauta_oaspete_buton') }}</button></p>
+</form>
+<p class="pa-ajutor" id="pa-f-oaspete-ajutor">{{ t('admin.rezervari.cauta_oaspete_ajutor') }}</p>
+{% if cautare %}
+<h2>{{ t('admin.rezervari.cautare_titlu', {text: cautare.text}) }}</h2>
+{% if cautare.scurt %}<p class="pa-avertizare" role="status">{{ t('admin.rezervari.cautare_scurta') }}</p>
+{% elseif not lista %}<p class="pa-gol" role="status">{{ t('admin.rezervari.cautare_gol') }}</p>
+{% else %}<p role="status">{{ t('admin.rezervari.gasite', {n: total}) }}{% if cautare.plin %} {{ t('admin.rezervari.cautare_plin') }}{% endif %}</p>{% endif %}
+<p><a href="{{ url.baza }}">{{ t('admin.rezervari.toate') }}</a></p>
+{% else %}
+<form class="pa-filtre" method="get" action="{{ url.baza }}" aria-label="{{ t('admin.rezervari.filtre_titlu') }}">
+<p><label for="pa-f-cod">{{ t('admin.rezervari.cod') }}</label><input id="pa-f-cod" name="cod" type="text" maxlength="9" value="{{ filtre.cod }}" autocomplete="off"></p>
+<p><label for="pa-f-stare">{{ t('admin.rezervari.col.stare') }}</label><select id="pa-f-stare" name="stare"><option value="">{{ t('admin.rezervari.oricare') }}</option>{% if stare_in_plus %}<option value="{{ stare_in_plus.valoare }}" selected>{{ stare_in_plus.text }}</option>{% endif %}{% for g in grupuri %}<optgroup label="{{ g.nume }}">{% for x in g.optiuni %}<option value="{{ x.valoare }}"{% if x.valoare == filtre.stare %} selected{% endif %}>{{ x.text }}</option>{% endfor %}</optgroup>{% endfor %}</select></p>
+<p><label for="pa-f-plata">{{ t('admin.rezervari.col.plata') }}</label><select id="pa-f-plata" name="plata"><option value="">{{ t('admin.rezervari.oricare') }}</option><option value="card"{% if filtre.plata == 'card' %} selected{% endif %}>{{ t('admin.rezervari.fel.card') }}</option><option value="transfer"{% if filtre.plata == 'transfer' %} selected{% endif %}>{{ t('admin.rezervari.fel.transfer') }}</option><option value="cash"{% if filtre.plata == 'cash' %} selected{% endif %}>{{ t('admin.rezervari.fel.cash') }}</option></select></p>
+<p><label for="pa-f-de">{{ t('admin.rezervari.sosire_de') }}</label><input id="pa-f-de" name="de" type="date" value="{{ filtre.de }}"></p>
+<p><label for="pa-f-pana">{{ t('admin.rezervari.sosire_pana') }}</label><input id="pa-f-pana" name="pana" type="date" value="{{ filtre.pana }}"></p>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.rezervari.filtreaza') }}</button>{% if cu_filtre %}<a class="pa-buton-secundar" href="{{ url.baza }}">{{ t('admin.rezervari.toate') }}</a>{% endif %}</p>
+</form>
+{% if lista %}<p role="status">{{ t('admin.rezervari.gasite', {n: total}) }}</p>
+{% else %}<p class="pa-gol" role="status">{{ t(cu_filtre ? 'admin.rezervari.gol_filtre' : 'admin.rezervari.gol') }}</p>{% endif %}
+{% endif %}
+{% if lista %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rezervari.cod') }}</th><th scope="col">{{ t('admin.rezervari.col.creata') }}</th><th scope="col">{{ t('admin.plati.col.sejur') }}</th><th scope="col">{{ t('admin.rezervari.col.camera') }}</th><th scope="col">{{ t('admin.rez.oaspete') }}</th><th scope="col">{{ t('admin.rezervari.col.total') }}</th><th scope="col">{{ t('admin.rezervari.col.plata') }}</th><th scope="col">{{ t('admin.rezervari.col.platit') }}</th><th scope="col">{{ t('admin.rez.rest_sosire') }}</th><th scope="col">{{ t('admin.rezervari.col.stare') }}</th></tr></thead>
+<tbody>{% for x in lista %}<tr data-ref="{{ x.ref }}"><th scope="row" class="pa-fix" data-eticheta="{{ t('admin.rezervari.cod') }}"><a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a>{% if x.ec_url|default(null) %}<br><a class="pa-ajutor" href="{{ x.ec_url }}" rel="noopener">{{ t('admin.rez.ec.deschide') }}<span class="pa-ascuns"> ({{ x.ref }})</span></a>{% endif %}</th><td data-eticheta="{{ t('admin.rezervari.col.creata') }}">{{ x.creata }}</td><td data-eticheta="{{ t('admin.plati.col.sejur') }}">{{ x.sejur }}</td><td data-eticheta="{{ t('admin.rezervari.col.camera') }}">{{ x.camera }}</td><td data-eticheta="{{ t('admin.rez.oaspete') }}">{{ x.oaspete }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rezervari.col.total') }}">{{ x.total }}</td><td data-eticheta="{{ t('admin.rezervari.col.plata') }}">{{ x.fel }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rezervari.col.platit') }}">{{ x.platit }}{% if x.returnat %} <span class="pa-ajutor">({{ x.returnat }})</span>{% endif %}</td><td class="pa-fix" data-eticheta="{{ t('admin.rez.rest_sosire') }}">{{ x.la_sosire }}</td><td data-eticheta="{{ t('admin.rezervari.col.stare') }}"><span class="pa-stare {{ x.stare_clasa }}">{{ x.stare }}</span>{% if x.suprapunere %} <span class="pa-stare pa-stare-problema">{{ t('admin.rezervari.suprapunere') }}</span>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% if url.inainte or url.dupa %}<div class="pa-actiuni">{% if url.inainte %}<a class="pa-buton-secundar" href="{{ url.inainte }}">{{ t('admin.pagina.inainte') }}</a>{% endif %}{% if url.dupa %}<a class="pa-buton-secundar" href="{{ url.dupa }}">{{ t('admin.pagina.dupa') }}</a>{% endif %}</div>{% endif %}
+{% endif %}
+{% if url.csv and lista %}<p><a class="pa-buton-secundar" href="{{ url.csv }}">{{ t('admin.rezervari.csv') }}</a></p>{% endif %}
+{% include 'admin/_raport.twig' %}
+{% endblock %}

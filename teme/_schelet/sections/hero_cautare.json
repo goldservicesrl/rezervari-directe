@@ -1,0 +1,5 @@
+{"nume": {"ro": "Căutarea ca prim ecran", "en": "Search hero"}, "setari": [
+  {"id": "varianta", "tip": "select", "optiuni": ["simplu", "poza"], "implicit": "simplu"},
+  {"id": "cu_poza", "tip": "checkbox", "implicit": false},
+  {"id": "subtitlu", "tip": "text", "implicit": "hero.subtitlu"}
+]}

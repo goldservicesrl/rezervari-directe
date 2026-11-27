@@ -1,0 +1,17 @@
+{
+  "slug": "_pornire",
+  "nume": {"ro": "Pornire", "en": "Starter"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Autorul temei"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=0.1 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "latime_rem": 70,
+  "pentru": "punctul de plecare pentru o temă nouă",
+  "componente": [],
+  "continut": [],
+  "fonturi": [],
+  "css": ["assets/css/pornire.css"],
+  "stiluri": [],
+  "buget": {"css_kb_gz": 10, "js_kb_gz": 0}
+}

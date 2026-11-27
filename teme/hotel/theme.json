@@ -1,0 +1,28 @@
+{
+  "slug": "hotel",
+  "nume": {"ro": "Hotel", "en": "Hotel"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Cazo"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=1.0 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "latime_rem": 74,
+  "pentru": "hotel sau motel, în oraș",
+  "captura": "captura.webp",
+  "componente": [],
+  "continut": ["repere"],
+  "fonturi": [
+    {"familie": "Jost", "fisier": "assets/fonts/jost-400-latin.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Cormorant", "fisier": "assets/fonts/cormorant-500-latin.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Jost", "fisier": "assets/fonts/jost-400-latin-ext.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Jost", "fisier": "assets/fonts/jost-500-latin.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Jost", "fisier": "assets/fonts/jost-500-latin-ext.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Cormorant", "fisier": "assets/fonts/cormorant-500-latin-ext.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Cormorant", "fisier": "assets/fonts/cormorant-600-italic-latin.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Cormorant", "fisier": "assets/fonts/cormorant-600-italic-latin-ext.woff2", "licenta": "OFL-1.1"}
+  ],
+  "css": ["assets/css/hotel.css"],
+  "js": ["assets/js/pasi.js"],
+  "stiluri": [],
+  "buget": {"css_kb_gz": 14, "js_kb_gz": 2}
+}

@@ -1,0 +1,184 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.rez.titlu', {ref: ref}) }}</h1>
+{% include 'admin/_stare.twig' %}
+<p><a href="{{ url.lista }}">{{ t('admin.rez.inapoi_lista') }}</a></p>
+<p>{{ t('admin.rez.stare_eticheta') }} <span class="pa-stare {{ stare_clasa }}">{{ stare }}</span></p>
+{% if transfer_ec|default(null) %}<p class="pa-info" role="status">{{ t('admin.transfer.confirmare_ec') }} <a href="{{ transfer_ec }}" rel="noopener">{{ t('admin.transfer.ec_link') }}</a></p>{% endif %}
+{#- pe cheia de probă, plata unei rezervări de probă se hotărăște de aici, cu butoanele de probă (ca pe Acasă). -#}
+{% if transfer_proba|default(null) %}<div class="pa-info pa-rez-proba">
+{% if transfer_proba.poate %}<p>{{ t('admin.transfer.proba_info') }}</p>
+<div class="pa-actiuni"><form method="post" action="{{ transfer_proba.url }}/proba-confirma"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="inapoi" value="rezervare"><button type="submit" class="pa-buton">{{ t('admin.transfer.proba_confirma') }}</button></form>
+<details class="pa-confirma"><summary>{{ t('admin.transfer.proba_refuza') }}</summary>
+<form method="post" action="{{ transfer_proba.url }}/proba-refuza"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="inapoi" value="rezervare"><p>{{ t('admin.transfer.refuz_confirmare') }}</p><button type="submit" class="pa-buton-pericol">{{ t('admin.transfer.refuz_da') }}</button></form></details></div>
+{% if transfer_proba.prelungire %}<form method="post" action="{{ transfer_proba.url }}/prelungeste" class="pa-actiuni"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="inapoi" value="rezervare"><label for="pz-rez">{{ t('admin.transfer.prelungiti_cu') }}</label> <select id="pz-rez" name="zile">{% for z, text in transfer_proba.variante %}<option value="{{ z }}">{{ text }}</option>{% endfor %}</select> <button type="submit" class="pa-buton-secundar">{{ t('admin.transfer.prelungiti') }}</button></form>{% endif %}
+{% else %}<p>{{ t('admin.transfer.proba_proprietar') }}</p>{% endif %}</div>{% endif %}
+{% if rambursare_in_curs is defined %}<p class="pa-avertizare" role="status">{{ rambursare_in_curs }}</p>{% endif %}
+{% if anulare_in_lucru is defined %}<p class="pa-avertizare" role="status">{{ anulare_in_lucru }}</p>{% endif %}
+{#- în modurile E și P, hotărârile despre bani stau în EasyCheck; aici starea lor, legătura și,
+    pe cheia de probă, butoanele care joacă rolul gazdei. -#}
+{% if ec_deschide|default(null) %}<p><a class="pa-buton-secundar" href="{{ ec_deschide }}" rel="noopener">{{ t('admin.rez.ec.deschide') }}</a></p>{% endif %}
+{% if ec_hotarare|default(null) %}<section class="pa-card" aria-labelledby="pa-rez-ec"><h2 id="pa-rez-ec">{{ t('admin.rez.ec.titlu') }}</h2>
+{% for x in ec_hotarare.texte %}<p>{{ x }}</p>{% endfor %}
+<p><a class="pa-buton-secundar" href="{{ ec_hotarare.url }}" rel="noopener">{{ t('admin.rez.ec.deschide') }}</a></p>
+{% if probe_ec|default([]) %}<p class="pa-ajutor">{{ t('admin.rez.proba.info') }}</p>
+{% for b in probe_ec %}<form method="post" action="{{ url.baza }}/{{ b.cale }}" class="pa-actiuni"><input type="hidden" name="_csrf" value="{{ csrf }}">{% if b.suma is not null %}<label for="pa-proba-{{ b.cale }}">{{ t('admin.rez.proba.suma') }}</label> <input id="pa-proba-{{ b.cale }}" class="pa-scurt" name="suma" type="text" inputmode="decimal" value="{{ b.suma }}"> {% endif %}<button type="submit" class="pa-buton-secundar">{{ t('admin.rez.proba.' ~ b.cale) }}</button></form>
+{% endfor %}{% endif %}
+</section>{% endif %}
+<section class="pa-card pa-rez-date" aria-labelledby="pa-rez-date"><h2 id="pa-rez-date">{{ t('admin.rez.date_titlu') }}</h2>
+<dl class="pa-detalii">
+<dt>{{ t('admin.plati.col.sejur') }}</dt><dd>{{ sejur }}</dd>
+{% if camere %}<dt>{{ t(camere|length > 1 ? 'admin.rez.camere' : 'admin.rez.camera') }}</dt><dd>{% for x in camere %}{{ x.titlu }} ({{ x.oaspeti }}){% if not loop.last %}<br>{% endif %}{% endfor %}</dd>{% endif %}
+{% if tarif %}<dt>{{ t('admin.rez.tarif') }}</dt><dd>{{ tarif }}</dd>{% endif %}
+<dt>{{ t('admin.rezervari.col.plata') }}</dt><dd>{{ plata_fel }}</dd>
+<dt>{{ t('admin.rez.creata') }}</dt><dd>{{ creata }}</dd>
+</dl>
+<h3>{{ t('admin.rez.oaspete') }}</h3>
+{% if anonimizata %}<p class="pa-gol">{{ t('admin.rez.anonimizata') }}</p>{% else %}
+<dl class="pa-detalii">
+<dt>{{ t('admin.rez.nume') }}</dt><dd>{{ oaspete.nume }}</dd>
+{% if oaspete.email %}<dt>{{ t('admin.rez.email') }}</dt><dd><a href="mailto:{{ oaspete.email }}">{{ oaspete.email }}</a></dd>{% endif %}
+{% if oaspete.telefon %}<dt>{{ t('admin.rez.telefon') }}</dt><dd>{% if oaspete.tel %}<a href="tel:{{ oaspete.tel }}">{{ oaspete.telefon }}</a>{% else %}{{ oaspete.telefon }}{% endif %}</dd>{% endif %}
+{% if oaspete.tara %}<dt>{{ t('admin.rez.tara') }}</dt><dd>{{ oaspete.tara }}</dd>{% endif %}
+{% if oaspete.limba %}<dt>{{ t('admin.rez.limba') }}</dt><dd>{{ oaspete.limba }}</dd>{% endif %}
+<dt>{{ t('admin.rez.mesaj_oaspete') }}</dt><dd>{% if nota %}<span class="pa-rez-nota">{{ nota }}</span>{% else %}{{ t('admin.rez.mesaj_oaspete_gol') }}{% endif %}</dd>
+</dl>{% endif %}
+<h3>{{ t('admin.rez.sume_titlu') }}</h3>
+<dl class="pa-detalii">
+{% for s in sume %}<dt>{{ s[0] }}</dt><dd>{{ s[1] }}</dd>{% endfor %}
+<dt>{{ t('admin.rez.regula_titlu') }}</dt><dd>{{ regula }}</dd>
+</dl>
+{% if retrimite or reia %}<div class="pa-actiuni">
+{% if retrimite %}<form method="post" action="{{ url.baza }}/retrimite"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.rezervari.retrimite') }}</button></form>{% endif %}
+{% if reia %}<form method="post" action="{{ url.baza }}/reia"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar" aria-describedby="pa-reia-ajutor">{{ t('admin.rezervari.reia') }}</button></form>{% endif %}
+</div>{% if reia %}<p class="pa-ajutor" id="pa-reia-ajutor">{{ t('admin.rezervari.reia_ajutor') }}</p>{% endif %}{% endif %}
+</section>
+{% if anulare_in_lucru is defined and (reincearca or renunta) %}
+<section class="pa-card" aria-labelledby="pa-rez-anulare-lucru"><h2 id="pa-rez-anulare-lucru">{{ t('admin.rez.anulare_lucru_titlu') }}</h2>
+{% if reincearca %}<form method="post" action="{{ url.baza }}/reincearca"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% include 'admin/_reauth.twig' with {id: 'reincearca'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.rez.reincearca') }}</button></form>{% endif %}
+{% if renunta %}<p>{{ renunta_ajutor }}</p><form method="post" action="{{ url.baza }}/renunta"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% include 'admin/_reauth.twig' with {id: 'renunta'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.rez.renunta') }}</button></form>{% endif %}
+</section>
+{% endif %}
+{% if taxa_de_returnat %}
+<section class="pa-card" aria-labelledby="pa-rez-taxa"><h2 id="pa-rez-taxa">{{ t('admin.rez.taxa_titlu') }}</h2>
+<p>{{ taxa_de_returnat.text }}</p>
+{% if taxa_de_returnat.buton %}<form method="post" action="{{ url.baza }}/taxa"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.rez.taxa_returnata_buton') }}</button></form>{% endif %}
+</section>
+{% endif %}
+{#- despăgubirea datorată oaspetelui după anularea gazdei (clauza din contract), plătită de gazdă din bancă. -#}
+{% if despagubire %}
+<section class="pa-card" aria-labelledby="pa-rez-despagubire"><h2 id="pa-rez-despagubire">{{ t('admin.rez.despagubire_titlu') }}</h2>
+<p>{{ despagubire.text }}</p>
+{% if despagubire.buton %}<form method="post" action="{{ url.baza }}/despagubire"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.rez.despagubire_buton') }}</button></form>
+{% if despagubire.forta_majora %}<details class="pa-confirma"><summary>{{ t('admin.rez.forta_majora') }}</summary>
+<form method="post" action="{{ url.baza }}/forta_majora"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.rez.forta_majora_dupa') }}</p>
+{% include 'admin/_reauth.twig' with {id: 'forta_majora'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.rez.forta_majora') }}</button></form></details>{% endif %}{% endif %}
+</section>
+{% endif %}
+{#- anularea gazdei cu despăgubirea „de la caz la caz”, făcută fără dialog în panou: decizia se cere aici. -#}
+{% if despagubire_decizie %}
+<section class="pa-card" aria-labelledby="pa-rez-despagubire-caz"><h2 id="pa-rez-despagubire-caz">{{ t('admin.rez.despagubire_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}/despagubire_caz"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-despagubire-d">{{ t('admin.rez.despagubire_caz') }}</label><span class="pa-ajutor" id="pa-despagubire-d-ajutor">{{ t('admin.rez.despagubire_caz_ajutor') }}</span><input id="pa-despagubire-d" class="pa-scurt" name="despagubire_suma" type="text" inputmode="decimal" required aria-describedby="pa-despagubire-d-ajutor"></p>
+{% include 'admin/_reauth.twig' with {id: 'despagubire_caz'} %}
+<button type="submit" class="pa-buton">{{ t('admin.rez.despagubire_caz_salveaza') }}</button></form>
+</section>
+{% endif %}
+{% if inchidere %}
+<section class="pa-card" aria-labelledby="pa-rez-inchidere"><h2 id="pa-rez-inchidere">{{ t('admin.rez.inchidere_titlu') }}</h2>
+<p>{{ t('admin.plati.inchide_ajutor') }}</p>
+<p>{{ inchidere.sume }}</p>
+<form method="post" action="{{ inchidere.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% if inchidere.rest %}<p><input type="checkbox" id="pa-confirm-rest" name="confirm_rest" value="1"><label for="pa-confirm-rest">{{ inchidere.rest }}</label></p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'inchidere'} %}
+<button type="submit" class="pa-buton">{{ t('admin.plati.inchide') }}</button></form>
+</section>
+{% endif %}
+{% if lamurire is defined %}
+<section class="pa-card" aria-labelledby="pa-rez-lamurire"><h2 id="pa-rez-lamurire">{{ t('admin.rez.lamurire_titlu') }}</h2>
+<p>{{ lamurire.text }}</p>
+<p>{{ lamurire.drept }}</p>
+{% if not lamurire.in_curs %}<form method="post" action="{{ url.baza }}/lamurire"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-suma-l">{{ t('admin.rez.suma_returnata', {net: lamurire.net}) }}</label><input id="pa-suma-l" class="pa-scurt" name="suma" type="text" inputmode="decimal" value="{{ lamurire.suma }}" required{% if lamurire.eroare %} aria-invalid="true" aria-describedby="pa-suma-l-eroare"{% endif %}>{% if lamurire.eroare %}<span class="pa-eroare-camp" id="pa-suma-l-eroare">{{ t('admin.rez.eroare.suma') }}</span>{% endif %}</p>
+{% if forta_majora %}<p><input id="pa-forta-majora-l" name="forta_majora" type="checkbox" value="1" aria-describedby="pa-forta-majora-l-ajutor"><label for="pa-forta-majora-l">{{ t('admin.rez.forta_majora') }}</label><span class="pa-ajutor" id="pa-forta-majora-l-ajutor">{{ t('admin.rez.forta_majora_ajutor') }}</span></p>{% endif %}
+{% if despagubire_caz %}<p><label for="pa-despagubire-l">{{ t('admin.rez.despagubire_caz') }}</label><span class="pa-ajutor" id="pa-despagubire-l-ajutor">{{ t('admin.rez.despagubire_caz_ajutor') }}</span><input id="pa-despagubire-l" class="pa-scurt" name="despagubire_suma" type="text" inputmode="decimal" aria-describedby="pa-despagubire-l-ajutor"></p>{% endif %}
+{% if lamurire.avertizare %}<p class="pa-avertizare" role="alert" id="pa-mai-putin-l-text">{{ lamurire.avertizare }}</p>{% endif %}
+{% if lamurire.mai_putin %}<p><input id="pa-mai-putin-l" name="mai_putin" type="checkbox" value="1"{% if lamurire.avertizare %} aria-describedby="pa-mai-putin-l-text"{% endif %}><label for="pa-mai-putin-l">{{ t('admin.rez.mai_putin') }}</label></p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'lamurire'} %}
+<div class="pa-actiuni"><button type="submit" class="pa-buton" name="alegere" value="suma">{{ t('admin.rez.lamurire_trimite') }}</button>
+<button type="submit" class="pa-buton-secundar" name="alegere" value="tot" formnovalidate>{{ t('admin.rez.lamurire_tot', {net: lamurire.net}) }}</button>
+<button type="submit" class="pa-buton-pericol" name="alegere" value="nimic" formnovalidate>{{ t('admin.rez.lamurire_nimic') }}</button></div>
+<p class="pa-ajutor">{{ t('admin.rez.lamurire_ajutor') }}</p></form>{% endif %}
+</section>
+{% endif %}
+{% if decizie is defined %}
+<section class="pa-card" aria-labelledby="pa-rez-decizie"><h2 id="pa-rez-decizie">{{ t('admin.rez.cerere_titlu') }}</h2>
+<p>{{ decizie.text }}</p>
+<form method="post" action="{{ url.baza }}/decizie"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="decizie" value="accepta">
+<p><label for="pa-suma-d">{{ t('admin.rez.suma_returnata', {net: decizie.net}) }}</label><input id="pa-suma-d" class="pa-scurt" name="suma" type="text" inputmode="decimal" value="{{ decizie.suma }}" required{% if decizie.eroare %} aria-invalid="true" aria-describedby="pa-suma-d-eroare"{% endif %}>{% if decizie.eroare %}<span class="pa-eroare-camp" id="pa-suma-d-eroare">{{ t('admin.rez.eroare.suma') }}</span>{% endif %}</p>
+{% include 'admin/_reauth.twig' with {id: 'decizie'} %}
+<p class="pa-ajutor">{{ t('admin.rez.accepta_ajutor') }}</p>
+<button type="submit" class="pa-buton">{{ t('admin.rez.accepta') }}</button></form>
+<form method="post" action="{{ url.baza }}/decizie"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="decizie" value="pastreaza">
+<p class="pa-ajutor">{{ t('admin.rez.pastreaza_ajutor') }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.rez.pastreaza') }}</button></form>
+</section>
+{% endif %}
+{% if rambursare is defined %}
+<section class="pa-card" aria-labelledby="pa-rez-rambursare"><h2 id="pa-rez-rambursare">{{ t('admin.rez.rambursare_titlu') }}</h2>
+{% if rambursare.propunere %}<p>{{ rambursare.propunere }}</p>{% endif %}
+<form method="post" action="{{ url.baza }}/rambursare"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="jeton" value="{{ rambursare.jeton }}">
+<p><label for="pa-suma-r">{{ t('admin.rez.suma_returnata', {net: rambursare.net}) }}</label><input id="pa-suma-r" class="pa-scurt" name="suma" type="text" inputmode="decimal" value="{{ rambursare.suma }}" required{% if rambursare.eroare %} aria-invalid="true" aria-describedby="pa-suma-r-eroare"{% endif %}>{% if rambursare.eroare %}<span class="pa-eroare-camp" id="pa-suma-r-eroare">{{ t('admin.rez.eroare.suma') }}</span>{% endif %}</p>
+<p><label for="pa-motiv">{{ t('admin.rez.motiv_titlu') }}</label><select id="pa-motiv" name="motiv">{% for m in rambursare.motive %}<option value="{{ m }}"{% if m == rambursare.motiv %} selected{% endif %}>{{ t('admin.rez.motiv_panou.' ~ m) }}</option>{% endfor %}</select></p>
+<p><label for="pa-nota">{{ t('admin.rez.nota') }}</label><textarea id="pa-nota" name="nota" maxlength="500" rows="2">{{ rambursare.nota }}</textarea></p>
+{% if rambursare.anuleaza %}<p><input id="pa-anuleaza" name="anuleaza" type="checkbox" value="1"{% if rambursare.anuleaza_bifat %} checked{% endif %} aria-describedby="pa-anuleaza-ajutor"><label for="pa-anuleaza">{{ t('admin.rez.si_anuleaza') }}</label><span class="pa-ajutor" id="pa-anuleaza-ajutor">{{ t('admin.rez.si_anuleaza_ajutor') }}</span></p>{% endif %}
+{% if rambursare.anuleaza %}{% if forta_majora %}<p><input id="pa-forta-majora-r" name="forta_majora" type="checkbox" value="1" aria-describedby="pa-forta-majora-r-ajutor"><label for="pa-forta-majora-r">{{ t('admin.rez.forta_majora') }}</label><span class="pa-ajutor" id="pa-forta-majora-r-ajutor">{{ t('admin.rez.forta_majora_ajutor') }}</span></p>{% endif %}{% endif %}
+{% if rambursare.anuleaza %}{% if despagubire_caz %}<p><label for="pa-despagubire-r">{{ t('admin.rez.despagubire_caz') }}</label><span class="pa-ajutor" id="pa-despagubire-r-ajutor">{{ t('admin.rez.despagubire_caz_ajutor') }}</span><input id="pa-despagubire-r" class="pa-scurt" name="despagubire_suma" type="text" inputmode="decimal" aria-describedby="pa-despagubire-r-ajutor"></p>{% endif %}{% endif %}
+{% if rambursare.anuleaza %}{% if rambursare.avertizare %}<p class="pa-avertizare" role="alert" id="pa-mai-putin-r-text">{{ rambursare.avertizare }}</p>{% endif %}
+{% if rambursare.mai_putin %}<p><input id="pa-mai-putin-r" name="mai_putin" type="checkbox" value="1"{% if rambursare.avertizare %} aria-describedby="pa-mai-putin-r-text"{% endif %}><label for="pa-mai-putin-r">{{ t('admin.rez.mai_putin') }}</label></p>{% endif %}
+{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'rambursare'} %}
+<button type="submit" class="pa-buton">{{ t('admin.rez.ramburseaza') }}</button></form>
+<p class="pa-ajutor">{{ t('admin.rez.rambursare_ajutor') }}</p>
+</section>
+{% endif %}
+{% if anulare is defined %}
+<section class="pa-card" aria-labelledby="pa-rez-anulare"><h2 id="pa-rez-anulare">{{ t('admin.rez.anulare_titlu') }}</h2>
+<p>{{ t(fel == 'cash' ? 'admin.rez.anulare_cash' : (fel == 'transfer' ? 'admin.rez.anulare_transfer' : 'admin.rez.anulare_fara_bani')) }}</p>
+<details class="pa-confirma"><summary>{{ t('admin.rez.anuleaza') }}</summary>
+<form method="post" action="{{ url.baza }}/anulare"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.rez.anulare_confirmare') }}</p>
+{% if forta_majora %}<p><input id="pa-forta-majora-a" name="forta_majora" type="checkbox" value="1" aria-describedby="pa-forta-majora-a-ajutor"><label for="pa-forta-majora-a">{{ t('admin.rez.forta_majora') }}</label><span class="pa-ajutor" id="pa-forta-majora-a-ajutor">{{ t('admin.rez.forta_majora_ajutor') }}</span></p>{% endif %}
+{% if despagubire_caz %}<p><label for="pa-despagubire-a">{{ t('admin.rez.despagubire_caz') }}</label><span class="pa-ajutor" id="pa-despagubire-a-ajutor">{{ t('admin.rez.despagubire_caz_ajutor') }}</span><input id="pa-despagubire-a" class="pa-scurt" name="despagubire_suma" type="text" inputmode="decimal" aria-describedby="pa-despagubire-a-ajutor"></p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'anulare'} %}
+<button type="submit" class="pa-buton-pericol">{{ t('admin.rez.anuleaza_da') }}</button></form></details>
+</section>
+{% endif %}
+{% if schimbari %}
+<h2>{{ t('admin.rez.schimbari_titlu') }}</h2>
+<ul class="pa-intamplari">{% for s in schimbari %}<li>{{ s.text }}</li>{% endfor %}</ul>
+{% endif %}
+{% if operatii %}
+<h2>{{ t('admin.rez.operatii_titlu') }}</h2>
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rez.col.la') }}</th><th scope="col">{{ t('admin.rez.col.suma') }}</th><th scope="col">{{ t('admin.rez.col.motiv') }}</th><th scope="col">{{ t('admin.rez.col.stare') }}</th><th scope="col">{{ t('admin.rez.col.nota') }}</th></tr></thead>
+<tbody>{% for o in operatii %}<tr><td data-eticheta="{{ t('admin.rez.col.la') }}">{{ o.la }}</td><td data-eticheta="{{ t('admin.rez.col.suma') }}">{{ o.suma }}</td><td data-eticheta="{{ t('admin.rez.col.motiv') }}">{{ o.motiv }}</td><td data-eticheta="{{ t('admin.rez.col.stare') }}"><span class="pa-stare {{ o.stare_clasa }}">{{ o.stare }}</span>{% if o.eroare %} ({{ o.eroare }}){% endif %}</td><td data-eticheta="{{ t('admin.rez.col.nota') }}">{{ o.nota }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endif %}
+<h2>{{ t('admin.rez.jurnal_titlu') }}</h2>
+{% if jurnal %}<ul class="pa-intamplari">{% for j in jurnal %}<li><span class="pa-cand">{{ j.la }}:</span> {{ j.text }}</li>{% endfor %}</ul>{% else %}<p class="pa-gol">{{ t('admin.rez.jurnal_gol') }}</p>{% endif %}
+<details class="pa-avansat"><summary>{{ t('admin.rez.suport_titlu') }}</summary>
+<p class="pa-ajutor">{{ t('admin.rez.suport_ajutor') }}</p>
+{% if suport %}<dl class="pa-detalii">{% for k, v in suport %}<dt>{{ t('admin.rez.suport.' ~ k) }}</dt><dd><code>{{ v }}</code></dd>{% endfor %}</dl>{% endif %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rez.col.la') }}</th><th scope="col">{{ t('admin.rez.col.trecere') }}</th><th scope="col">{{ t('admin.rez.col.actor') }}</th><th scope="col">{{ t('admin.rez.col.detalii') }}</th></tr></thead>
+<tbody>{% for j in jurnal_brut %}<tr><td data-eticheta="{{ t('admin.rez.col.la') }}">{{ j.la }}</td><td data-eticheta="{{ t('admin.rez.col.trecere') }}"><code>{{ j.din }} → {{ j.in }}</code></td><td data-eticheta="{{ t('admin.rez.col.actor') }}"><code>{{ j.actor }}</code></td><td data-eticheta="{{ t('admin.rez.col.detalii') }}"><code>{{ j.detalii }}</code></td></tr>{% endfor %}</tbody>
+</table></div>
+</details>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.sabloane.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if ec is defined %}<p>{{ t('admin.sabloane.in_easycheck') }}</p>
+<p><a class="pa-buton-secundar" href="{{ ec.url }}" rel="noopener">{{ t('admin.sabloane.deschide_ec') }}</a></p>
+{% else %}<p>{{ t('admin.sabloane.explicatie') }}</p>{% endif %}
+<form method="get" action="{{ url.baza }}" class="pa-filtre">
+<p><label for="pa-sb">{{ t('admin.sabloane.mesajul') }}</label><select id="pa-sb" name="sablon">{% for x in sabloane %}<option value="{{ x.cheie }}"{% if x.cheie == ales %} selected{% endif %}>{{ x.text }}</option>{% endfor %}</select></p>
+<p><label for="pa-sl">{{ t('admin.sabloane.limba') }}</label><select id="pa-sl" name="limba"><option value="ro"{% if limba_sablon == 'ro' %} selected{% endif %}>Română</option><option value="en"{% if limba_sablon == 'en' %} selected{% endif %}>English</option></select></p>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.sabloane.deschide') }}</button></p></form>
+<h2>{{ nume_ales }}</h2>
+<p>{{ cand }}</p>
+{% if ec is defined %}{% if ec.respins %}<p class="pa-eroare">{{ ec.respins }}</p>{% endif %}
+<p class="pa-info">{{ t(ec.sursa == 'ec' ? 'admin.sabloane.sursa_ec' : 'admin.sabloane.sursa_standard') }}</p>
+{% else %}<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="sablon" value="{{ ales }}"><input type="hidden" name="limba" value="{{ limba_sablon }}">
+<p><label for="pa-sn">{{ t('admin.sabloane.nota') }}</label><span class="pa-ajutor" id="pa-sn-a">{{ t('admin.sabloane.nota_ajutor', {n: maxim}) }}</span><textarea id="pa-sn" name="nota" rows="5" maxlength="{{ maxim }}" {% if limba_sablon == 'en' %}lang="en"{% endif %} aria-describedby="pa-sn-a">{{ nota }}</textarea></p>
+<button type="submit" class="pa-buton">{{ t('admin.sabloane.salveaza') }}</button></form>{% endif %}
+<h3>{{ t('admin.sabloane.previzualizare') }}</h3>
+{% if previzualizare %}
+{% if exemplu %}<p class="pa-info">{{ t('admin.sabloane.exemplu', {ref: ref_exemplu}) }}</p>{% endif %}
+<p><span class="pa-eticheta">{{ t('admin.sabloane.subiect') }}</span> {{ previzualizare.subiect }}</p>
+<pre class="pa-previzualizare"{% if limba_sablon == 'en' %} lang="en"{% endif %}>{{ previzualizare.text }}</pre>
+{% elseif eroare_previzualizare %}<p class="pa-eroare">{{ eroare_previzualizare }}</p>
+{% else %}<p class="pa-gol">{{ t('admin.sabloane.previzualizare_gol') }}</p>{% endif %}
+{% endblock %}

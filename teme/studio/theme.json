@@ -1,0 +1,22 @@
+{
+  "slug": "studio",
+  "nume": {"ro": "Studio", "en": "Studio"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Cazo"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=1.0 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "latime_rem": 55,
+  "pentru": "apartamente în regim hotelier, hostel sau camere de închiriat, în oraș",
+  "captura": "captura.webp",
+  "componente": [],
+  "continut": ["repere"],
+  "fonturi": [
+    {"familie": "Bodoni Moda", "fisier": "assets/fonts/bodoni-moda.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Instrument Sans", "fisier": "assets/fonts/instrument-sans.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Bodoni Moda", "fisier": "assets/fonts/bodoni-moda-italic.woff2", "licenta": "OFL-1.1", "preincarcat": false}
+  ],
+  "css": ["assets/css/studio.css"],
+  "stiluri": [],
+  "buget": {"css_kb_gz": 12, "js_kb_gz": 0}
+}

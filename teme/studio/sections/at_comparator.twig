@@ -1,0 +1,35 @@
+{#- Masa de lumină: toate grupurile unul lângă altul, doar de la două în sus; coloanele fără date la nicio cameră lipsesc. -#}
+{% if camere|length > 1 %}
+{% set cu_unitati = false %}{% set cu_oaspeti = false %}{% set cu_pat = false %}{% set cu_mp = false %}{% set cu_vedere = false %}
+{% for c in camere %}
+{% if c.unitati > 1 %}{% set cu_unitati = true %}{% endif %}
+{% if c.oaspeti_max %}{% set cu_oaspeti = true %}{% endif %}
+{% if c.fisa.pat %}{% set cu_pat = true %}{% endif %}
+{% if c.fisa.suprafata_mp %}{% set cu_mp = true %}{% endif %}
+{% if c.fisa.vedere %}{% set cu_vedere = true %}{% endif %}
+{% endfor %}
+<section class="at-comparator at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('comparator.titlu') }}</h2></header>
+<ul class="at-diapozitive">
+{% for c in camere %}
+<li class="at-diapozitiv">
+<a href="{{ c.url }}">
+{% if c.poza_principala %}<span class="at-diapozitiv-poza" aria-hidden="true">{{ img(c.poza_principala, [480], false, '(min-width: 48rem) 14rem, 45vw') }}</span>{% endif %}
+<span class="at-diapozitiv-titlu"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</span>
+{% if cu_unitati or cu_oaspeti or cu_pat or cu_mp or cu_vedere %}<dl>
+{% if cu_unitati %}<div><dt>{{ t('comparator.unitati') }}</dt><dd>{{ c.unitati }}</dd></div>{% endif %}
+{% if cu_oaspeti %}<div><dt>{{ t('comparator.oaspeti') }}</dt><dd>{% if c.oaspeti_max %}{{ c.oaspeti_max }}{% else %}<span aria-hidden="true">–</span>{% endif %}</dd></div>{% endif %}
+{% if cu_pat %}<div><dt>{{ t('spec.pat') }}</dt><dd>{% if c.fisa.pat %}{{ c.fisa.pat }}{% else %}<span aria-hidden="true">–</span>{% endif %}</dd></div>{% endif %}
+{% if cu_mp %}<div><dt>{{ t('spec.suprafata') }}</dt><dd>{% if c.fisa.suprafata_mp %}{{ t('spec.mp', {n: c.fisa.suprafata_mp}) }}{% else %}<span aria-hidden="true">–</span>{% endif %}</dd></div>{% endif %}
+{% if cu_vedere %}<div><dt>{{ t('spec.vedere') }}</dt><dd>{% if c.fisa.vedere %}{{ c.fisa.vedere }}{% else %}<span aria-hidden="true">–</span>{% endif %}</dd></div>{% endif %}
+</dl>{% endif %}
+{% if c.pret_de_la %}<span class="at-diapozitiv-pret">{{ c.pret_de_la.text }}</span>{% endif %}
+</a>
+</li>
+{% endfor %}
+</ul>
+<p class="at-nota">{{ t('comparator.nota') }}</p>
+</div>
+</section>
+{% endif %}

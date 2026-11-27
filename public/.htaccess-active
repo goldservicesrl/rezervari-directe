@@ -1,0 +1,31 @@
+# Cazo: copiat ca .htaccess în _c/, _t/, _s/ și media/.
+# Aici ajung doar fișiere scrise de Cazo, cu extensii neexecutabile; regulile de mai jos sunt o a doua barieră.
+
+Options -Indexes -ExecCGI
+RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .pht .cgi .pl .py
+RemoveType .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .pht
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<FilesMatch "\.(php\d?|phtml|phar|pht|cgi|pl|py)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    # Activele și pozele se încarcă doar de pe site-ul acesta.
+    Header set Cross-Origin-Resource-Policy "same-origin"
+    # Auditul de securitate.2026: a doua barieră pentru un fișier deschis direct în browser. Politica se aplică
+    # doar documentelor (o poză, un SVG sau un CSS deschis singur), nu foilor de stil, fonturilor, scripturilor și
+    # pozelor încărcate de pagini, care rămân sub CSP-ul paginii. Fără scripturi (sandbox), doar resurse de aici.
+    Header set Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; sandbox"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+</IfModule>

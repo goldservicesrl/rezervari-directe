@@ -1,0 +1,9 @@
+{#- Acasă, „Starea site-ului”: cele trei rânduri (site-ul, sarcinile automate, e-mailurile), fiecare cu
+    legătura spre locul unde se repară. Detaliile tehnice stau la Setări › Întreținere, sub „Avansat”. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.sistem.titlu') }}</h1>
+<ul class="pa-stari">
+{% for x in stari %}<li class="{{ x.clasa }}"><span>{{ x.text }}{% if x.url %} <a href="{{ x.url }}">{{ x.link }}</a>{% endif %}</span></li>
+{% endfor %}</ul>
+{% endblock %}

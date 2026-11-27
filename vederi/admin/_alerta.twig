@@ -1,0 +1,6 @@
+{#- O alertă de acum, pe Acasă și pe pagina Alerte: textul, codurile rezervărilor, legătura spre locul unde
+    se rezolvă și, la notele de informare pe care gazda le poate ascunde, butonul „Am înțeles” (doar proprietarul).
+    Legătura și butonul sunt legate de textul alertei prin aria-describedby, așa că textul stă pe pagină o singură dată.
+    Primește: a (alerta), id (id-ul textului, unic pe pagină), inapoi ('acasa' sau 'alerte'). -#}
+<span id="{{ id }}">{{ a.text }}</span>{% if a.refs %} {% for x in a.refs %}<a href="{{ url.rezervari }}{{ x }}">{{ x }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}{% if a.url %} <a href="{{ a.url }}" aria-describedby="{{ id }}">{% if a.cheie == 'doi_pasi' %}{{ t('admin.2fa.porneste') }}{% elseif a.grav %}{{ t('admin.alerte.rezolva') }}{% else %}{{ t(a.cheie == 'cheie' ? 'admin.alerte.cum_trec' : 'admin.alerte.vedeti') }}{% endif %}</a>{% endif %}
+{% if a.ascunde|default(false) and proprietar|default(false) %}<form method="post" action="{{ url.ascunde }}" class="pa-nota-ascunde"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="cheie" value="{{ a.cheie }}"><input type="hidden" name="inapoi" value="{{ inapoi }}"><button type="submit" class="pa-buton-secundar" aria-describedby="{{ id }}">{{ t('admin.alerte.am_inteles') }}</button></form>{% endif %}

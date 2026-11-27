@@ -1,0 +1,23 @@
+{#- Împrejurimile, ca un cuprins cu puncte de conducere: 0-5 repere de la gazdă, apoi adresa și harta nucleului. -#}
+{#- Reperele vin din model (repere, ca la celelalte teme); continut.repere rămâne doar pentru temele vechi. -#}
+{% set repere = repere is defined and repere is iterable and repere|length > 0 ? repere|slice(0, 5) : (continut.repere is defined and continut.repere is iterable ? continut.repere|slice(0, 5) : []) %}
+{% set cu_repere = false %}{% set din_osm = false %}
+{% for r in repere %}{% if r.nume|default('') != '' %}{% set cu_repere = true %}{% if r.sursa|default('') == 'osm' %}{% set din_osm = true %}{% endif %}{% endif %}{% endfor %}
+<section class="at-imprejurimi at-pagina"{% if cu_repere %} aria-labelledby="{{ sectiune.id }}-t"{% endif %}>
+<div class="at-latime">
+{% if cu_repere %}<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('imprejurimi.titlu') }}</h2></header>{% endif %}
+<div class="at-imprejurimi-grila{% if cu_repere %} at-cu-repere{% endif %}">
+{% if cu_repere %}
+<div class="at-repere">
+<ol class="at-cuprins">
+{% for r in repere %}{% if r.nume|default('') != '' %}{% set cheie_cat = 'repere.categorie.' ~ r.categorie|default('') %}
+<li><span class="at-cuprins-nume">{{ r.nume }}{% if t(cheie_cat) != cheie_cat %}<small>{{ t(cheie_cat) }}</small>{% endif %}</span>{% set valoare %}{% include "partials/reper_valoare.twig" with {r: r} %}{% endset %}{% if valoare|trim %}<span class="at-cuprins-valoare">{{ valoare|trim }}</span>{% endif %}</li>
+{% endif %}{% endfor %}
+</ol>
+{% if din_osm %}<p class="at-nota">{{ t('repere.osm', {sursa: 'OpenStreetMap'}) }}</p>{% endif %}
+</div>
+{% endif %}
+<div class="at-harta">{{ cazo.harta() }}</div>
+</div>
+</div>
+</section>

@@ -1,0 +1,17 @@
+{#- O pagină legală din model, conținutul nucleului în layoutul temei. -#}
+<article class="pg-legal-pagina" data-pg="continut-legal" aria-labelledby="pg-legal-titlu">
+<h1 id="pg-legal-titlu" class="pg-titlu-pagina">{{ titlu }}</h1>
+{% for p in intro %}<p class="pg-legal-intro">{{ p }}</p>{% endfor %}
+{% if operator is defined %}
+<dl class="pg-legal-operator">{% for r in operator %}<div class="pg-legal-rand"><dt>{{ r.eticheta }}</dt><dd>{{ r.valoare }}</dd></div>{% endfor %}
+{% if contact.adresa %}<div class="pg-legal-rand"><dt>{{ t('legal.adresa') }}</dt><dd>{{ contact.adresa }}</dd></div>{% endif %}
+{% if contact.email %}<div class="pg-legal-rand"><dt>{{ t('contact.email') }}</dt><dd><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd></div>{% endif %}
+{% if contact.telefon %}<div class="pg-legal-rand"><dt>{{ t('contact.telefon') }}</dt><dd><a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a></dd></div>{% endif %}
+</dl>
+{% endif %}
+{% for s in sectiuni %}
+<section class="pg-legal-sectiune"{% if s.ancora %} id="{{ s.ancora }}"{% endif %}><h2>{{ s.titlu }}</h2>{% for p in s.paragrafe %}<p>{{ p }}</p>{% endfor %}</section>
+{% endfor %}
+{% if sal_url is defined %}<p class="pg-legal-sal"><a href="{{ sal_url }}" rel="noopener"><img src="{{ sal_img }}" alt="{{ t('legal.sal_alt') }}" width="201" height="50" loading="lazy" decoding="async"></a></p>{% endif %}
+{% if actualizat ?? '' %}<p class="pg-legal-versiune">{{ t('legal.actualizat', {data: actualizat}) }}</p>{% endif %}
+</article>

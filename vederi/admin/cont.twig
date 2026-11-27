@@ -1,0 +1,58 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.cont.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<dl class="pa-detalii"><dt>{{ t('admin.intrare.email') }}</dt><dd>{{ utilizator.email }}</dd><dt>{{ t('admin.cont.rol') }}</dt><dd>{{ rol }}</dd></dl>
+<section class="pa-card" aria-labelledby="pa-date-titlu"><h2 id="pa-date-titlu">{{ t('admin.cont.date_titlu') }}</h2>
+<form method="post" action="{{ url.cont }}/date"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-nume">{{ t('admin.cont.nume') }}</label><input id="pa-nume" name="nume" type="text" autocomplete="name" maxlength="120" value="{{ nume }}"></p>
+<p><label for="pa-limba">{{ t('admin.cont.limba') }}</label><span class="pa-ajutor" id="pa-limba-ajutor">{{ t('admin.cont.limba_ajutor') }}</span><select id="pa-limba" name="limba" aria-describedby="pa-limba-ajutor"><option value="ro"{% if utilizator.limba_panou == 'ro' %} selected{% endif %} lang="ro">Română</option><option value="en"{% if utilizator.limba_panou == 'en' %} selected{% endif %} lang="en">English</option></select></p>
+<button type="submit" class="pa-buton">{{ t('admin.cont.date_salveaza') }}</button></form>
+</section>
+<section class="pa-card" aria-labelledby="pa-parola-titlu"><h2 id="pa-parola-titlu">{{ t('admin.cont.parola_titlu') }}</h2>
+<form method="post" action="{{ url.cont }}/parola"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<input type="hidden" name="email" value="{{ utilizator.email }}" autocomplete="username">
+<p><label for="pa-parola-v">{{ t('admin.cont.parola_actuala') }}</label><input id="pa-parola-v" name="parola" type="password" autocomplete="current-password" required></p>
+<p><label for="pa-parola-n">{{ t('admin.cont.parola_noua') }}</label><span class="pa-ajutor" id="pa-parola-n-ajutor">{{ t('admin.cont.parola_regula') }}</span><input id="pa-parola-n" name="parola_noua" type="password" autocomplete="new-password" minlength="12" required aria-describedby="pa-parola-n-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.cont.parola_schimba') }}</button></form>
+</section>
+<section class="pa-card" id="doi-pasi" aria-labelledby="pa-2fa-titlu"><h2 id="pa-2fa-titlu">{{ t('admin.2fa.titlu') }}</h2>
+{% if doi_factori %}
+<p><span class="pa-stare pa-stare-confirmata">{{ t('admin.2fa.stare_pornita') }}</span> {{ t('admin.2fa.activa') }}</p>
+<p>{{ t('admin.cont.coduri_ramase', {n: coduri_ramase}) }}</p>
+{% if coduri_putine %}<p class="pa-avertizare">{{ t('admin.cont.coduri_putine') }}</p>{% endif %}
+<form method="post" action="{{ url.cont }}/coduri"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p class="pa-ajutor">{{ t('admin.cont.coduri_regenerare') }}</p>
+{% include 'admin/_reauth.twig' with {id: 'coduri'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.cont.coduri_genereaza') }}</button></form>
+<h3>{{ t('admin.2fa.inlocuieste') }}</h3>
+<p>{{ t('admin.2fa.inlocuieste_text') }}</p>
+{% if in_lucru %}<p><a class="pa-buton-secundar" href="{{ url['2fa_pagina'] }}">{{ t('admin.2fa.continua') }}</a></p>{% else %}
+<form method="post" action="{{ url['2fa'] }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="incepe">
+{% include 'admin/_reauth.twig' with {id: '2fa-inlocuire'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.2fa.inlocuieste') }}</button></form>{% endif %}
+<h3>{{ t('admin.2fa.opreste') }}</h3>
+<details class="pa-confirma"><summary>{{ t('admin.2fa.opreste') }}</summary>
+<form method="post" action="{{ url['2fa'] }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="opreste">
+<p>{{ t('admin.2fa.opreste_text') }}</p>
+<p><label for="pa-cod-o">{{ t('admin.cont.cod_sau_rezerva') }}</label><input id="pa-cod-o" class="pa-scurt" name="cod" type="text" autocomplete="one-time-code" maxlength="12" required></p>
+<p><label for="pa-parola-2">{{ t('admin.plati.parola') }}</label><input id="pa-parola-2" name="parola" type="password" autocomplete="current-password" required></p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.2fa.opreste') }}</button></form></details>
+{% else %}
+{% if recomanda_2fa %}<p class="pa-info">{{ t(utilizator.rol == 'proprietar' ? 'admin.cont.recomandare_proprietar' : 'admin.2fa.recomandare_rambursari') }}</p>{% endif %}
+<p><span class="pa-stare pa-stare-refuzata">{{ t('admin.2fa.stare_oprita') }}</span> {{ t('admin.2fa.explicatie') }}</p>
+{% if in_lucru %}<p><a class="pa-buton" href="{{ url['2fa_pagina'] }}">{{ t('admin.2fa.continua') }}</a></p>{% else %}
+<form method="post" action="{{ url['2fa'] }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="incepe">
+{% include 'admin/_reauth.twig' with {id: '2fa-pornire'} %}
+<button type="submit" class="pa-buton">{{ t('admin.2fa.porneste') }}</button></form>{% endif %}
+{% endif %}
+</section>
+<section class="pa-card" aria-labelledby="pa-sesiuni-titlu"><h2 id="pa-sesiuni-titlu">{{ t('admin.cont.sesiuni_titlu') }}</h2>
+<p class="pa-ajutor">{{ t('admin.cont.sesiuni_explicatie') }}</p>
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.cont.sesiune_browser') }}</th><th scope="col">{{ t('admin.cont.sesiune_creata') }}</th><th scope="col">{{ t('admin.cont.sesiune_vazuta') }}</th><th scope="col">{{ t('admin.cont.sesiune_retea') }}</th></tr></thead>
+<tbody>{% for x in sesiuni %}<tr><td data-eticheta="{{ t('admin.cont.sesiune_browser') }}">{{ x.agent }}{% if x.curenta %} <span class="pa-stare pa-stare-confirmata">{{ t('admin.cont.sesiune_curenta') }}</span>{% endif %}</td><td data-eticheta="{{ t('admin.cont.sesiune_creata') }}">{{ x.creat_la }}</td><td data-eticheta="{{ t('admin.cont.sesiune_vazuta') }}">{{ x.vazut_la }}</td><td data-eticheta="{{ t('admin.cont.sesiune_retea') }}">{{ x.ip24 }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% if alte_sesiuni %}<form method="post" action="{{ url.cont }}/sesiuni"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.cont.sesiuni_inchide') }}</button></form>{% endif %}
+</section>
+{% endblock %}

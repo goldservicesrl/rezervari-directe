@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ site.limba }}">
+<head>
+{{ cazo.head() }}
+</head>
+<body class="ru-corp">
+<a class="ru-salt" href="#continut">{{ t('salt_continut') }}</a>
+{% include "partials/antet.twig" %}
+<main id="continut" class="ru-principal">
+{% block continut %}{% endblock %}
+</main>
+{% include "partials/subsol.twig" %}
+{{ cazo.foot() }}
+</body>
+</html>

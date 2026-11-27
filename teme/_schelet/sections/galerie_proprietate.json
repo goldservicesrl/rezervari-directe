@@ -1,0 +1,1 @@
+{"nume": {"ro": "Galeria proprietății", "en": "Property gallery"}, "setari": [{"id": "titlu", "tip": "text", "implicit": "galerie.titlu"}, {"id": "numar", "tip": "range", "min": 2, "max": 24, "implicit": 9}]}

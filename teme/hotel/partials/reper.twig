@@ -1,0 +1,5 @@
+{#- Un reper: numele, apoi distanța („2 min” pe jos sau cu mașina, altfel „6,4 km”, zecimala după limbă). Fără
+    distanță, doar numele. -#}
+{%- set km = (r.km ?? null) ? (limba == 'ro' ? (r.km ~ '')|replace({'.': ','}) : r.km) : null -%}
+{%- set masina = (r.mod ?? '') == 'masina' -%}
+<span class="et-reper-nume">{{ r.nume }}</span>{% if r.minute ?? null %} <b>{{ t('reper.min', {n: r.minute}) }}</b> <span class="et-reper-mod">{{ t(masina ? 'reper.cu_masina' : 'reper.pe_jos') }}</span>{% elseif km %} <b>{{ t('reper.km', {n: km}) }}</b>{% endif %}

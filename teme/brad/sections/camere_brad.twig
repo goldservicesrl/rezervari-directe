@@ -1,0 +1,31 @@
+{#- Camerele, ca fișe: câte una pe grupul din EasyCheck. Pe fișă: poza, titlul, câte unități, capacitatea, patul, baia,
+    suprafața, vederea, spațiile (când modelul le dă), cel mult 3 dotări, prețul de pornire. Câmpurile goale lipsesc. -#}
+{% if camere %}
+<section class="br-cap br-camere" aria-labelledby="{{ sectiune.id }}-t">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: 'capitol.camere'} %}
+<h2 id="{{ sectiune.id }}-t" class="br-titlu-cap">{{ t(sectiune.setari.titlu == 'alegeti' ? 'camere.alegeti' : 'camere.titlu') }}</h2>
+<ul class="br-camere-lista">
+{% for c in camere %}
+<li><article class="br-camera" aria-labelledby="{{ sectiune.id }}-c{{ loop.index }}">
+{% if c.poza_principala %}<figure class="br-camera-poza">{{ img(c.poza_principala, [480, 960], false, '(min-width: 60rem) 22rem, (min-width: 40rem) 50vw, 100vw') }}{% if c.poza_principala.legenda is defined and c.poza_principala.legenda %}<figcaption class="br-legenda br-legenda--pe">{{ c.poza_principala.legenda }}</figcaption>{% endif %}</figure>{% endif %}
+<div class="br-camera-corp">
+<h3 id="{{ sectiune.id }}-c{{ loop.index }}" class="br-camera-titlu"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</h3>
+{% if c.unitati > 1 %}<p class="br-camera-unitati">{{ t((c.unitati % 100 == 0 or c.unitati % 100 >= 20) ? 'card.unitati_de' : 'card.unitati', {n: c.unitati}) }}</p>{% endif %}
+<ul class="br-camera-date">
+{% if c.oaspeti_max %}<li>{{ t(c.oaspeti_max == 1 ? 'card.oaspeti_1' : ((c.oaspeti_max % 100 == 0 or c.oaspeti_max % 100 >= 20) ? 'card.oaspeti_de' : 'card.oaspeti'), {n: c.oaspeti_max}) }}</li>{% endif %}
+{% if c.fisa.pat %}<li>{{ c.fisa.pat }}</li>{% endif %}
+{% if c.fisa.baie %}<li>{{ c.fisa.baie }}</li>{% endif %}
+{% if c.fisa.suprafata_mp %}<li>{{ t('fisa.mp', {n: c.fisa.suprafata_mp}) }}</li>{% endif %}
+{% if c.fisa.vedere %}<li>{{ c.fisa.vedere }}</li>{% endif %}
+</ul>
+{% if c.spatii is defined and c.spatii %}<ul class="br-camera-spatii" aria-label="{{ t('card.spatii') }}">{% for s in c.spatii %}{% if s.eticheta is defined %}<li>{{ s.eticheta }}</li>{% endif %}{% endfor %}</ul>{% endif %}
+{% if c.dotari %}<ul class="br-camera-dotari" aria-label="{{ t('fisa.dotari') }}">{% for d in c.dotari|slice(0, 3) %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+<p class="br-camera-subsol">{% if c.pret_de_la %}<span>{{ t('pret.de_la') }} <strong>{{ c.pret_de_la.suma|lei }}</strong> {{ t('pret.pe_noapte') }}</span>{% endif %}<a href="{{ c.url }}">{{ t('card.detalii') }}<span class="br-ascuns"> {{ c.titlu }}</span></a></p>
+</div>
+</article></li>
+{% endfor %}
+</ul>
+</div>
+</section>
+{% endif %}

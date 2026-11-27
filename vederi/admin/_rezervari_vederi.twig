@@ -1,0 +1,6 @@
+{#- Vederile paginii Rezervări: rezervările, plățile online și avansurile, pentru proprietar și angajatul cu dreptul
+    de rambursare. Primește `activa`: 'rezervari', 'plati' sau 'avansuri'. În modurile E și P (`url.jurnal_card`),
+    plățile online se numesc „Jurnalul plăților cu cardul”. -#}
+{% if url.vedere_plati is defined %}<nav aria-label="{{ t('admin.rezervari.vederi') }}"><ul class="pa-legaturi">
+{% for v in ['rezervari', 'plati', 'avansuri'] %}{% set e = v == 'plati' and url.jurnal_card is defined ? 'admin.rezervari.vedere.plati_ec' : 'admin.rezervari.vedere.' ~ v %}<li>{% if v == activa %}<a href="{{ url['vedere_' ~ v] }}" aria-current="true"><strong>{{ t(e) }}</strong></a>{% else %}<a href="{{ url['vedere_' ~ v] }}">{{ t(e) }}</a>{% endif %}</li>{% endfor %}
+</ul></nav>{% endif %}

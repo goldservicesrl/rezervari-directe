@@ -1,0 +1,109 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+{% set pl = plati %}
+<h1>{{ t('admin.plati.metode_titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if pl.oprita %}<div class="pa-avertizare" role="status"><p>{{ t('admin.plati.oprita') }}</p><ul>{% for m in pl.motive %}<li>{{ m }}</li>{% endfor %}</ul></div>{% endif %}
+{% if pl.fara_politica %}<p class="pa-avertizare">{{ t('admin.plati.fara_politica', {planuri: pl.fara_politica|join(', ')}) }}</p>{% endif %}
+{% if pl.nota_avans_zero %}<p class="pa-info">{{ pl.nota_avans_zero }}</p>{% endif %}
+{% if pl.nota_nerambursabil %}<p class="pa-info">{{ pl.nota_nerambursabil }}</p>{% endif %}
+{% if pl.nota_cu_avans %}<p class="pa-info">{{ pl.nota_cu_avans }}</p>{% endif %}
+{% if pl.recomanda_2fa %}<p class="pa-info">{{ t('admin.2fa.recomandare_proprietar') }} <a href="{{ pl.url_cont }}">{{ t('admin.nav.cont') }}</a></p>{% endif %}
+{#- după salvarea contului, softul propune forma cu majuscule a titularului și a băncii, fără să o impună. -#}
+{% if transfer_setari.majuscule %}<form class="pa-info pa-propunere" method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="majuscule">
+<p>{{ t('admin.transfer.majuscule', {acum: transfer_setari.majuscule.acum, propus: transfer_setari.majuscule.propus}) }}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.transfer.majuscule_buton', {propus: transfer_setari.majuscule.propus}) }}</button></form>{% endif %}
+<section class="pa-card" aria-labelledby="pa-metode-titlu"><h2 id="pa-metode-titlu">{{ t('admin.plati.metode_cum') }}</h2>
+<p>{{ pl.metode_alege ? t('admin.plati.metode_alegeti') : t('admin.plati.metode_' ~ pl.metode) }}</p>
+{#- bifa transferului și contul lui se salvează împreună, din acest formular; contul apare sub bifă doar cât e
+    pusă (foaia de stil, cu :has(), fără scripturi). Schimbarea contului bancar cere parola confirmată. -#}
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="metode">
+<fieldset class="pa-metode"><legend>{{ t('admin.plati.metode_legenda') }}</legend>
+{% for m in pl.metode_lista %}<div class="pa-metoda"><p><input type="checkbox" class="pa-metoda-bifa" id="pa-metoda-{{ m.cheie }}" name="metoda_{{ m.cheie }}" value="1"{% if m.bifat %} checked{% endif %}{% if not m.disponibil %} disabled aria-describedby="pa-metoda-{{ m.cheie }}-ajutor"{% endif %}><label for="pa-metoda-{{ m.cheie }}">{{ t('admin.plati.metoda.' ~ m.cheie) }}</label>{% if m.ajutor %}<span class="pa-ajutor" id="pa-metoda-{{ m.cheie }}-ajutor">{{ m.ajutor }}</span>{% endif %}</p>
+{% if m.cheie == 'transfer' %}<div class="pa-metoda-detalii" id="transfer">
+<h3 id="pa-transfer-titlu">{{ t('admin.transfer.titlu') }}</h3>
+{% include 'admin/_transfer.twig' with {tr: transfer_setari} only %}
+{% if not reautentificat %}<p><label for="pa-reauth-transfer">{{ t('admin.reauth.parola') }}</label><span class="pa-ajutor" id="pa-reauth-transfer-ajutor">{{ t('admin.transfer.parola_ajutor') }}</span><input id="pa-reauth-transfer" name="parola_reauth" type="password" autocomplete="current-password" aria-describedby="pa-reauth-transfer-ajutor{% if transfer_setari.erori.reauth is defined %} pa-reauth-transfer-eroare{% endif %}"{% if transfer_setari.erori.reauth is defined %} aria-invalid="true"{% endif %}>
+{% if transfer_setari.erori.reauth is defined %}<span class="pa-eroare-camp" id="pa-reauth-transfer-eroare">{{ transfer_setari.erori.reauth }}</span>{% endif %}</p>
+{% elseif transfer_setari.erori.reauth is defined %}<p class="pa-eroare-camp">{{ transfer_setari.erori.reauth }}</p>{% endif %}
+</div>{% endif %}
+</div>
+{% endfor %}</fieldset>
+<p class="pa-ajutor">{{ t('admin.plati.metode_ajutor') }} {{ t('admin.plati.avans_zero') }}</p>
+<p class="pa-ajutor">{{ t('admin.plati.avertizare_cash') }}</p>
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza_metodele') }}</button></form>
+</section>
+{#- după o mutare pe alte date, ce avans se păstrează la anularea după termen. -#}
+{% if pl.proprietar %}<section class="pa-card" id="avans-mutare" aria-labelledby="pa-avans-mutare-titlu"><h2 id="pa-avans-mutare-titlu">{{ t('admin.plati.avans_mutare_sectiune') }}</h2>
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="avans_mutare">
+<fieldset><legend>{{ t('admin.plati.avans_mutare_titlu') }}</legend>
+{% for v in ['recalculat', 'initial'] %}<p><input type="radio" id="pa-avans-mutare-{{ v }}" name="avans_mutare" value="{{ v }}"{% if pl.avans_mutare == v %} checked{% endif %}><label for="pa-avans-mutare-{{ v }}">{{ t('admin.plati.avans_mutare.' ~ v) }}</label></p>
+{% endfor %}</fieldset>
+<p class="pa-ajutor">{{ t('admin.plati.avans_mutare_ajutor') }}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.plati.avans_mutare_salveaza') }}</button></form>
+</section>{% endif %}
+{#- ce primește oaspetele când gazda anulează rezervarea (în informarea precontractuală și în contract). -#}
+{% if pl.proprietar %}<section class="pa-card" id="anulare-gazda" aria-labelledby="pa-anulare-gazda-titlu"><h2 id="pa-anulare-gazda-titlu">{{ t('admin.plati.anulare_gazda_sectiune') }}</h2>
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="anulare_gazda">
+<fieldset aria-describedby="pa-anulare-gazda-nota"><legend>{{ t('admin.plati.anulare_gazda_titlu') }}</legend>
+{#- Fără variantă implicită: niciuna bifată până la alegerea gazdei. -#}
+{% for v in ['tot', 'despagubire', 'caz'] %}<p><input type="radio" id="pa-anulare-gazda-{{ v }}" name="anulare_gazda" value="{{ v }}"{% if pl.anulare_gazda is not null and pl.anulare_gazda == v %} checked{% endif %} required><label for="pa-anulare-gazda-{{ v }}">{{ t('admin.plati.anulare_gazda.' ~ v) }}</label></p>
+{% endfor %}</fieldset>
+<p class="pa-ajutor" id="pa-anulare-gazda-nota">{{ t('admin.plati.anulare_gazda_nota') }}</p>
+<p class="pa-ajutor">{{ t('admin.plati.anulare_gazda_ajutor') }}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.plati.anulare_gazda_salveaza') }}</button></form>
+</section>{% endif %}
+<section class="pa-card" id="stripe" aria-labelledby="pa-stripe-titlu"><h2 id="pa-stripe-titlu">{{ t('admin.plati.stripe_titlu') }}</h2>
+{% if pl.stripe.configurata %}
+<p>{{ t('admin.plati.cheia', {ultimele4: pl.stripe.ultimele4, mod: pl.stripe.mod}) }} {{ pl.stripe.ok ? t('admin.plati.cheie_ok') : t('admin.plati.cheie_verificare') }}</p>
+{% if pl.metode_stripe %}<p>{{ t('admin.plati.metode_stripe', {metode: pl.metode_stripe}) }}</p>{% endif %}
+<p>{{ pl.stripe.anunt.mod == 'auto' ? t('admin.plati.anunt_auto') : t('admin.plati.anunt_manual', {adresa: pl.stripe.anunt.url, evenimente: pl.evenimente}) }}</p>
+{% if pl.stripe.anunt.mod != 'auto' %}
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="secret_anunt">
+<p><label for="pa-whsec">{{ t('admin.plati.secret_anunt') }}</label><span class="pa-ajutor" id="pa-whsec-ajutor">{{ t('admin.plati.secret_anunt_ajutor') }}</span><input id="pa-whsec" name="secret" type="password" autocomplete="off" required aria-describedby="pa-whsec-ajutor"></p>
+<p><label for="pa-parola-a">{{ t('admin.plati.parola') }}</label><span class="pa-ajutor" id="pa-parola-a-ajutor">{{ t('admin.plati.parola_mereu') }}</span><input id="pa-parola-a" name="parola" type="password" autocomplete="current-password" required aria-describedby="pa-parola-a-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza_secretul') }}</button></form>
+{% endif %}
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="verifica"><button type="submit" class="pa-buton-secundar">{{ t('admin.plati.verifica') }}</button></form>
+<h3>{{ t('admin.plati.cheie_schimba') }}</h3>
+{% else %}
+<p>{{ t('admin.plati.stripe_fara') }}</p>
+{% endif %}
+<p>{{ t('admin.plati.cheie_pasi') }}</p>
+<ol class="pa-pasi-numerotati"><li>{{ t('admin.plati.cheie_pas.1') }}</li><li>{{ t('admin.plati.cheie_pas.2') }}
+<ul>{% for x in pl.permisiuni %}<li>{{ x.nume }}{% if pl.stripe.configurata %}: {{ x.ok ? t('admin.plati.perm_ok') : t('admin.plati.perm_lipsa') }}{% endif %}</li>{% endfor %}</ul></li><li>{{ t('admin.plati.cheie_pas.3') }}</li></ol>
+<p>{{ t('admin.plati.cheie_fel') }}</p>
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="cheie">
+<p><label for="pa-rk">{{ t('admin.plati.cheie_noua') }}</label><span class="pa-ajutor" id="pa-rk-ajutor">{{ t('admin.plati.cheie_noua_ajutor') }}</span><input id="pa-rk" name="cheie" type="password" autocomplete="off" required aria-describedby="pa-rk-ajutor"></p>
+<p><label for="pa-parola-k">{{ t('admin.plati.parola') }}</label><span class="pa-ajutor" id="pa-parola-k-ajutor">{{ t('admin.plati.parola_mereu') }}</span><input id="pa-parola-k" name="parola" type="password" autocomplete="current-password" required aria-describedby="pa-parola-k-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza_cheia') }}</button></form>
+</section>
+{% if pl.personal %}
+<section class="pa-card" aria-labelledby="pa-ramb-titlu"><h2 id="pa-ramb-titlu">{{ t('admin.plati.rambursari_titlu') }}</h2>
+<p>{{ t('admin.plati.rambursari_explicatie') }}</p>
+<ul class="pa-alerte">{% for x in pl.personal %}<li>{{ x.email }}: {{ x.poate ? t('admin.plati.poate_rambursa') : t('admin.plati.fara_rambursari') }}
+<form method="post" action="{{ pl.url }}" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="drept"><input type="hidden" name="utilizator" value="{{ x.id }}"><input type="hidden" name="da" value="{{ x.poate ? '0' : '1' }}"><button type="submit" class="pa-buton-secundar">{{ x.poate ? t('admin.plati.ia_dreptul') : t('admin.plati.da_dreptul') }}<span class="pa-ascuns">: {{ x.email }}</span></button></form></li>{% endfor %}</ul>
+</section>
+{% endif %}
+{#- doar în modurile E și P, doar pentru proprietar, cu parola confirmată. -#}
+{% if pl.rambursari_ec %}{% set re = pl.rambursari_ec %}
+<section class="pa-card" id="rambursari-ec" aria-labelledby="pa-ramb-ec-titlu"><h2 id="pa-ramb-ec-titlu">{{ t('admin.plati.ec_titlu') }}</h2>
+<p>{{ re.text }}</p>
+<form method="post" action="{{ pl.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="rambursari_ec">
+<p><input type="checkbox" id="pa-ramb-ec-permise" name="permise" value="1"{% if re.permise %} checked{% endif %} aria-describedby="pa-ramb-ec-permise-ajutor"><label for="pa-ramb-ec-permise">{{ t('admin.plati.ec_permise') }}</label><span class="pa-ajutor" id="pa-ramb-ec-permise-ajutor">{{ t('admin.plati.ec_permise_ajutor') }}</span></p>
+<fieldset><legend>{{ t('admin.plati.ec_plafon_legenda') }}</legend>
+<p><input type="radio" id="pa-ramb-ec-cu" name="plafon" value="cu"{% if re.cu_plafon %} checked{% endif %}><label for="pa-ramb-ec-cu">{{ t('admin.plati.ec_plafon_cu') }}</label></p>
+<p><label for="pa-ramb-ec-numar">{{ t('admin.plati.ec_plafon_numar') }}</label><input id="pa-ramb-ec-numar" class="pa-scurt" name="plafon_numar" type="text" inputmode="numeric" value="{{ re.numar }}"></p>
+<p><label for="pa-ramb-ec-suma">{{ t('admin.plati.ec_plafon_suma') }}</label><input id="pa-ramb-ec-suma" class="pa-scurt" name="plafon_suma" type="text" inputmode="decimal" value="{{ re.suma }}"></p>
+<p><input type="radio" id="pa-ramb-ec-fara" name="plafon" value="fara"{% if not re.cu_plafon %} checked{% endif %}><label for="pa-ramb-ec-fara">{{ t('admin.plati.ec_plafon_fara') }}</label></p>
+</fieldset>
+{% include 'admin/_reauth.twig' with {id: 'ramb-ec'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.plati.ec_salveaza') }}</button></form>
+</section>{% endif %}
+{#- în modurile E și P, jurnalul plăților cu cardul, de citit, cu exportul pentru contabilitate. -#}
+{% if pl.jurnal_card|default(null) %}<section class="pa-card" id="jurnal-plati" aria-labelledby="pa-jurnal-card-titlu"><h2 id="pa-jurnal-card-titlu">{{ t('admin.platile.titlu_ec') }}</h2>
+<p>{{ t('admin.plati.jurnal_card_text') }}</p>
+<p><a class="pa-buton-secundar" href="{{ pl.jurnal_card }}">{{ t('admin.plati.jurnal_card_deschide') }}</a></p></section>{% endif %}
+{% if pl.drept_ec %}<section class="pa-card" aria-labelledby="pa-ramb-titlu"><h2 id="pa-ramb-titlu">{{ t('admin.plati.rambursari_titlu') }}</h2>
+<p>{{ t('admin.plati.ec_drept') }}</p></section>{% endif %}
+{% endblock %}

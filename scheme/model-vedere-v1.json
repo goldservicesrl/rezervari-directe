@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cazo.ro/scheme/model-vedere-v1.json",
+  "title": "Modelul de vizualizare v1: contextul pe care îl primesc șabloanele temei",
+  "description": "Doar tablouri și scalari. Datele firmei care operează site-ul lipsesc: blocul legal îl pune nucleul. Variabilele de mai jos sunt singurele disponibile în șabloane, plus `sectiune` în secțiuni.",
+  "type": "object",
+  "required": ["site", "proprietate", "camere", "camera", "pagina", "continut", "setari", "meniu", "cerere", "vreme"],
+  "properties": {
+    "site": {
+      "type": "object",
+      "required": ["nume", "limba", "limbi", "url_baza", "mod_proba", "an"],
+      "properties": {
+        "nume": {"type": "string"},
+        "limba": {"enum": ["ro", "en"]},
+        "limbi": {"type": "array", "items": {"type": "object", "required": ["cod", "url", "activa", "nume"], "properties": {"cod": {"enum": ["ro", "en"]}, "url": {"type": "string"}, "activa": {"type": "boolean"}, "nume": {"type": "string"}}}},
+        "url_baza": {"type": "string"},
+        "mod_proba": {"type": "boolean"},
+        "an": {"type": "integer"},
+        "sigla": {"type": ["object", "null"], "description": "Sigla încărcată de gazdă în panou, sau null: adresa imaginii (PNG sau WebP din _s/img/), lățimea și înălțimea la înălțimea aleasă pentru calculator (atributele <img>; înălțimea pe ecran o dă nucleul prin clasa pg-sigla-img) și cu_nume (numele proprietății rămâne lângă siglă).", "required": ["url", "latime", "inaltime", "cu_nume"], "properties": {"url": {"type": "string"}, "latime": {"type": "integer"}, "inaltime": {"type": "integer"}, "cu_nume": {"type": "boolean"}}}
+      }
+    },
+    "proprietate": {
+      "type": "object",
+      "required": ["nume", "tip", "descriere", "adresa", "coordonate", "ore", "reguli_casa", "anulare_zile", "contact", "linkuri_platforme", "poze"],
+      "properties": {
+        "nume": {"type": "string"},
+        "tip": {"type": "string"},
+        "descriere": {"type": "string", "description": "Text simplu; temele îl afișează escapat (cu nl2br, eventual)."},
+        "descriere_limba": {"enum": ["ro", "en"]},
+        "descriere_titlu": {"type": "string", "description": "Titlul de pe primul rând al descrierii, când e scurt și urmat de text; altfel gol."},
+        "descriere_paragrafe": {"type": "array", "items": {"type": "string"}, "description": "Descrierea întreagă, pe paragrafe, fără titlu."},
+        "adresa": {"type": "object", "required": ["strada", "localitate", "judet"], "properties": {"strada": {"type": "string", "description": "Adresa clădirii, fără scară, etaj și apartament."}, "localitate": {"type": "string"}, "judet": {"type": "string"}}},
+        "coordonate": {"type": ["object", "null"], "properties": {"lat": {"type": "number"}, "lng": {"type": "number"}}},
+        "ore": {"type": "object", "properties": {"checkin_de_la": {"type": "string"}, "plecare_pana_la": {"type": "string"}}},
+        "reguli_casa": {"type": "object"},
+        "anulare_zile": {"type": ["integer", "null"]},
+        "contact": {"type": "object", "properties": {"email": {"type": "string"}, "telefon": {"type": "string"}}},
+        "linkuri_platforme": {"type": "array"},
+        "poze": {"type": "array", "maxItems": 200, "items": {"$ref": "#/$defs/poza"}}
+      }
+    },
+    "camere": {"type": "array", "maxItems": 50, "items": {"$ref": "#/$defs/camera"}},
+    "camera": {"oneOf": [{"$ref": "#/$defs/camera"}, {"type": "null"}], "description": "Doar pe pagina camerei."},
+    "pagina": {
+      "type": "object",
+      "required": ["tip", "titlu", "sectiuni", "corp", "seo"],
+      "properties": {
+        "tip": {"type": "string"},
+        "titlu": {"type": "string"},
+        "sectiuni": {"type": "array", "maxItems": 50, "items": {"type": "object", "required": ["id", "tip", "sablon", "setari", "blocuri"]}},
+        "corp": {"type": "string", "description": "HTML curățat de nucleu, doar pe paginile gazdei; tema îl afișează prin cazo.continut()."},
+        "seo": {"type": "object"}
+      }
+    },
+    "continut": {"type": "object", "description": "Blocurile de conținut administrate în panou, după cheie."},
+    "setari": {"type": "object", "description": "Valorile setărilor temei: implicitele din settings.schema.json, cu alegerile gazdei peste ele."},
+    "meniu": {
+      "type": "object",
+      "required": ["principal", "subsol"],
+      "properties": {
+        "principal": {"type": "array", "items": {"$ref": "#/$defs/link"}},
+        "subsol": {"type": "array", "items": {"$ref": "#/$defs/link"}}
+      }
+    },
+    "cerere": {"type": ["object", "null"], "properties": {"sosire": {"type": "string"}, "plecare": {"type": "string"}, "camere": {"type": "array"}}},
+    "vreme": {"type": ["object", "null"], "properties": {"temperatura": {"type": "integer"}, "stare": {"type": "string"}, "text": {"type": "string"}, "zile": {"type": "array"}, "rasarit": {"type": ["string", "null"]}, "apus": {"type": ["string", "null"]}, "sursa": {"type": "string"}, "sursa_url": {"type": "string"}}},
+    "soare": {"type": ["object", "null"], "description": "Răsăritul și apusul de azi, calculate local.", "properties": {"rasarit": {"type": ["string", "null"]}, "apus": {"type": ["string", "null"]}}},
+    "repere": {"type": "array", "description": "Punctele de reper ale gazdei, 0-5.", "maxItems": 5, "items": {"type": "object", "properties": {"nume": {"type": "string"}, "categorie": {"type": "string"}, "minute": {"type": ["integer", "null"]}, "km": {"type": ["string", "null"]}, "mod": {"type": ["string", "null"]}, "principal": {"type": "boolean"}, "sursa": {"type": "string"}}}},
+    "repere_atribuire": {"type": "string", "description": "Atribuirea OpenStreetMap, doar cât lista are un reper luat de acolo; altfel gol."},
+    "planuri": {"type": "array", "description": "Planurile tarifare vizibile pe site, cu regula de anulare și masa inclusă (masa = mic_dejun, demipensiune, pensiune_completa, all_inclusive sau null; masa_eticheta = eticheta în limba paginii; fără masă, „Doar cazare” când alt plan din listă are masa, altfel gol)."},
+    "preturi_sezon": {"type": ["object", "null"], "description": "Harta termică a prețurilor (componenta harta_termica_preturi din manifest), doar pe paginile de început și a camerelor."},
+    "galerie": {"description": "Modelul de conținut, în așteptare: temele îl citesc cu ?? până îl dă nucleul."},
+    "prezentare": {"description": "Modelul de conținut, în așteptare."},
+    "gazda": {"description": "Modelul de conținut („Despre gazdă”), în așteptare."},
+    "acces": {"description": "Modelul de conținut (accesul și check-in-ul), în așteptare."},
+    "parcare": {"description": "Modelul de conținut, în așteptare."},
+    "recenzii": {"description": "Modelul de conținut, în așteptare."},
+    "pret": {"description": "Modelul de conținut (de exemplu sejur_lung), în așteptare."}
+  },
+  "$defs": {
+    "poza": {
+      "type": "object",
+      "required": ["sha", "alt", "rol", "latime", "inaltime"],
+      "properties": {
+        "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "alt": {"type": "string"},
+        "rol": {"type": "string"},
+        "latime": {"type": "integer"},
+        "inaltime": {"type": "integer"}
+      }
+    },
+    "camera": {
+      "type": "object",
+      "required": ["id", "slug", "url", "titlu", "titlu_limba", "descriere", "unitati", "oaspeti_max", "fisa", "dotari", "poze", "poza_principala", "pret_de_la"],
+      "properties": {
+        "id": {"type": "string"},
+        "slug": {"type": "string"},
+        "url": {"type": "string"},
+        "titlu": {"type": "string"},
+        "titlu_limba": {"enum": ["ro", "en"]},
+        "descriere": {"type": "string"},
+        "unitati": {"type": "integer"},
+        "oaspeti_max": {"type": ["integer", "null"]},
+        "fisa": {"type": "object", "properties": {"pat": {"type": "string"}, "baie": {"type": "string"}, "suprafata_mp": {"type": ["integer", "null"]}, "vedere": {"type": "string"}}},
+        "dotari": {"type": "array", "items": {"type": "string"}},
+        "poze": {"type": "array", "maxItems": 60, "items": {"$ref": "#/$defs/poza"}},
+        "poza_principala": {"oneOf": [{"$ref": "#/$defs/poza"}, {"type": "null"}]},
+        "pret_de_la": {"type": ["object", "null"], "properties": {"suma": {"type": "integer"}, "text": {"type": "string"}}}
+      }
+    },
+    "link": {"type": "object", "required": ["titlu", "url", "activ"], "properties": {"titlu": {"type": "string"}, "url": {"type": "string"}, "activ": {"type": "boolean"}}}
+  }
+}

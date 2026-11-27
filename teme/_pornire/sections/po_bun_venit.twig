@@ -1,0 +1,9 @@
+{# O secțiune a temei: primește `sectiune` (id, tip, setari, blocuri) și modelul de vizualizare. #}
+<section class="po-sectiune po-bun-venit" aria-labelledby="{{ sectiune.id }}-titlu">
+{% if sectiune.setari.cu_poza and proprietate.poze|length > 0 %}<div class="po-bun-venit-poza">{{ img(proprietate.poze|first, [960, 1440, 2048], true, '100vw') }}</div>{% endif %}
+<div class="po-latime">
+<h1 id="{{ sectiune.id }}-titlu">{{ proprietate.nume }}</h1>
+{% if proprietate.adresa.localitate %}<p class="po-subtitlu">{{ t('bun_venit.subtitlu', {localitate: proprietate.adresa.localitate}) }}</p>{% endif %}
+{{ cazo.bara_rezervare() }}
+</div>
+</section>

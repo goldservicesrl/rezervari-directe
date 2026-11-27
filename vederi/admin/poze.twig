@@ -1,0 +1,47 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.poze.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if in_lucru %}<p class="pa-info" role="status">{{ t('admin.poze.in_lucru', {n: in_lucru}) }}</p>{% endif %}
+<p>{{ t('admin.poze.explicatie') }}</p>
+<ul>
+<li>{{ t('admin.poze.ordine_ajutor') }}</li>
+<li>{{ t('admin.poze.categorie_ec') }}</li>
+<li>{{ t('admin.poze.indice_ajutor') }}</li>
+</ul>
+<section class="pa-card" aria-labelledby="pa-incarca-titlu"><h2 id="pa-incarca-titlu">{{ t('admin.poze.incarca_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}/incarca" enctype="multipart/form-data"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-poza">{{ t('admin.poze.fisier') }}</label><span class="pa-ajutor" id="pa-poza-ajutor">{{ t('admin.poze.fisier_ajutor', {mb: maxim_mb}) }}{% if limita_gazduire %} {{ t('admin.poze.limita_gazduire') }}{% endif %}</span><input id="pa-poza" name="poza" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="pa-poza-ajutor{% if eroare_fisier %} pa-poza-eroare{% endif %}"{% if eroare_fisier %} aria-invalid="true"{% endif %}>
+{% if eroare_fisier %}<span class="pa-eroare-camp" id="pa-poza-eroare">{{ eroare_fisier }}</span>{% endif %}</p>
+<p><label for="pa-poza-cat">{{ t('admin.poze.categoria') }}</label><span class="pa-ajutor" id="pa-poza-cat-ajutor">{{ t('admin.poze.categoria_ajutor') }}</span><select id="pa-poza-cat" name="categorie" aria-describedby="pa-poza-cat-ajutor"><option value="">{{ t('admin.poze.categorie_alegeti') }}</option>{% for c in categorii %}<option value="{{ c.cheie }}">{{ c.text }}</option>{% endfor %}</select></p>
+<button type="submit" class="pa-buton">{{ t('admin.poze.incarca') }}</button></form>
+</section>
+<h2>{{ t('admin.poze.lista_titlu') }}</h2>
+{% if poze %}
+<ul class="pa-grila pa-poze">
+{% for x in poze %}
+<li class="pa-card pa-poza" id="pa-poza-{{ x.n }}"><h3>{{ x.titlu }}</h3>
+<p class="pa-ajutor">{{ x.incarcata ? t('admin.poze.sursa_site') : t('admin.poze.sursa_ec') }}{% if x.principala %} · <strong>{{ t('admin.poze.principala') }}</strong>{% endif %}{% if x.ascunsa %} · {{ t('admin.poze.ascunsa_acum') }}{% endif %}</p>
+{% if x.fisiere_lipsa %}<p class="pa-eroare">{{ x.incarcata ? t('admin.poze.fisiere_lipsa') : t('admin.poze.fisiere_lipsa_ec') }}</p>{% elseif x.miniatura %}<img src="{{ x.miniatura }}" alt="{{ x.titlu }}" width="480" height="360" loading="lazy" class="pa-miniatura">{% else %}<p class="pa-gol">{{ t('admin.poze.in_lucru') }}</p>{% endif %}
+<details><summary>{{ t('admin.poze.schimba') }}<span class="pa-ascuns"> ({{ x.titlu }}, {{ t('admin.poze.poza_n', {n: x.n}) }})</span></summary>
+<form method="post" action="{{ url.baza }}/{{ x.sha256 }}/seteaza"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% if x.incarcata %}
+<p><label for="pa-pc-{{ x.n }}">{{ t('admin.poze.categoria') }}</label><select id="pa-pc-{{ x.n }}" name="categorie"><option value="">{{ t('admin.poze.categorie_alegeti') }}</option>{% for c in categorii %}<option value="{{ c.cheie }}"{% if c.cheie == x.categorie %} selected{% endif %}>{{ c.text }}</option>{% endfor %}</select></p>
+<p><label for="pa-pi-{{ x.n }}">{{ t('admin.poze.indice') }}</label><input id="pa-pi-{{ x.n }}" name="indice" type="number" min="1" max="20" value="{{ x.indice }}"></p>
+{% endif %}
+<p><label for="pa-po-{{ x.n }}">{{ t('admin.poze.ordine') }}</label><input id="pa-po-{{ x.n }}" name="ordine" type="number" min="-999" max="9999" value="{{ x.ordine }}"></p>
+<p><input type="checkbox" id="pa-pp-{{ x.n }}" name="principala" value="1"{% if x.principala %} checked{% endif %}><label for="pa-pp-{{ x.n }}">{{ t('admin.poze.principala_eticheta') }}</label></p>
+<p><input type="checkbox" id="pa-pa-{{ x.n }}" name="ascunsa" value="1"{% if x.ascunsa %} checked{% endif %}><label for="pa-pa-{{ x.n }}">{{ t('admin.poze.ascunsa') }}</label></p>
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza') }}<span class="pa-ascuns"> ({{ x.titlu }}, {{ t('admin.poze.poza_n', {n: x.n}) }})</span></button></form>
+</details>
+{% if x.incarcata %}<details class="pa-confirma"><summary>{{ t('admin.poze.sterge') }}<span class="pa-ascuns"> ({{ x.titlu }}, {{ t('admin.poze.poza_n', {n: x.n}) }})</span></summary>
+<form method="post" action="{{ url.baza }}/{{ x.sha256 }}/sterge"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.poze.sterge_efect') }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.poze.sterge_da') }}</button></form></details>{% endif %}
+</li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="pa-gol">{{ t('admin.poze.gol') }}</p>
+{% endif %}
+{% endblock %}

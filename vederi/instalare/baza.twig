@@ -1,0 +1,28 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.baza') }}</h1>
+{% if detaliu %}<p class="pa-ajutor">{{ t('instalare.baza.detaliu', {detaliu: detaliu}) }}</p>{% endif %}
+<p>{{ t('instalare.baza.text') }}</p>
+{# SQLite vine aleasă și cere doar un clic; datele MySQL apar doar când e aleasă MySQL (foaia de stil, cu :has(), fără scripturi). #}
+<form class="pa-formular pi-baza" method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+<fieldset><legend>{{ t('instalare.baza.felul') }}</legend>
+{% if drivere.sqlite %}<p><input type="radio" id="pi-sqlite" name="driver" value="sqlite"{% if formular.driver == 'sqlite' %} checked{% endif %} aria-describedby="pi-sqlite-ajutor"><label for="pi-sqlite">{{ t('instalare.baza.sqlite') }}</label><span class="pa-ajutor" id="pi-sqlite-ajutor">{{ t('instalare.baza.sqlite_ajutor') }}</span></p>{% endif %}
+{% if drivere.mysql %}<p><input type="radio" id="pi-mysql" name="driver" value="mysql"{% if formular.driver == 'mysql' %} checked{% endif %} aria-describedby="pi-mysql-ajutor"><label for="pi-mysql">{{ t('instalare.baza.mysql') }}</label><span class="pa-ajutor" id="pi-mysql-ajutor">{{ t('instalare.baza.mysql_ajutor') }}</span></p>{% endif %}
+</fieldset>
+{% if drivere.mysql %}
+<div class="pi-baza-mysql">
+<h2>{{ t('instalare.baza.mysql_titlu') }}</h2>
+<p>{{ t('instalare.baza.cpanel') }}</p>
+<p><label for="pi-gazda">{{ t('instalare.baza.gazda') }}</label><input id="pi-gazda" name="gazda" value="{{ formular.gazda }}"></p>
+<p><label for="pi-port">{{ t('instalare.baza.port') }}</label><input id="pi-port" name="port" inputmode="numeric" value="{{ formular.port }}"></p>
+<p><label for="pi-nume">{{ t('instalare.baza.nume') }}</label><input id="pi-nume" name="nume" value="{{ formular.nume }}" autocomplete="off"></p>
+<p><label for="pi-utilizator">{{ t('instalare.baza.utilizator') }}</label><input id="pi-utilizator" name="utilizator" value="{{ formular.utilizator }}" autocomplete="off"></p>
+<p><label for="pi-parola">{{ t('instalare.baza.parola') }}</label><input id="pi-parola" name="parola" type="password" autocomplete="new-password"></p>
+<p><label for="pi-prefix">{{ t('instalare.baza.prefix') }}</label><span class="pa-ajutor" id="pi-prefix-ajutor">{{ t('instalare.baza.prefix_ajutor') }}</span><input id="pi-prefix" name="prefix" value="{{ formular.prefix }}" aria-describedby="pi-prefix-ajutor" maxlength="16"></p>
+</div>
+{% else %}<input type="hidden" name="prefix" value="{{ formular.prefix }}">
+{% endif %}
+<p><button type="submit" class="pa-buton">{{ t('instalare.baza.buton') }}</button></p>
+</form>
+{% endblock %}

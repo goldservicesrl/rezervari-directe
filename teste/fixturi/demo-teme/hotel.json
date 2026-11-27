@@ -1,0 +1,96 @@
+{
+  "fraza": "Un hotel cu nouă camere în Orașul de Sus din Sibiu, cu camere duble spre piață și camere la mansardă.",
+  "ilustratie": "bloc",
+  "masa_standard": "mic_dejun",
+  "proprietate": {
+    "nume": "Hotel Cazopolis",
+    "tip": "hotel",
+    "descriere": {
+      "ro": "Avem nouă camere pe patru niveluri, într-o casă cu acoperiș înalt din Orașul de Sus. Din camerele de la mansardă vedeți Turnul Sfatului prin ochii acoperișului. Recepția e la parter, iar micul dejun îl servim în pivnița boltită.",
+      "en": "We have nine rooms on four floors, in a tall-roofed house in the Upper Town. From the attic rooms you can see the Council Tower through the roof's eyelid windows. Reception is on the ground floor, and breakfast is served in the vaulted cellar."
+    },
+    "adresa": {
+      "strada": "Strada Avram Iancu 23",
+      "localitate": "Sibiu",
+      "judet": "Sibiu"
+    },
+    "coordonate": {
+      "lat": 45.7979,
+      "lng": 24.1521
+    },
+    "ore": {
+      "checkin_de_la": "14:00",
+      "checkin_pana_la": "22:00",
+      "plecare_pana_la": "11:00",
+      "setate_de_gazda": true
+    },
+    "reguli_casa": {
+      "copii": true,
+      "bebelusi": true,
+      "animale": true,
+      "animale_max": 1,
+      "evenimente": false,
+      "fumat": false
+    },
+    "contact": {
+      "email": "rezervari@hotel-cazopolis.test",
+      "telefon": "+40 700 000 000"
+    },
+    "operator": {
+      "denumire": "Cazopolis Ospitalitate SRL",
+      "sediu": "Sibiu, Strada Avram Iancu 23",
+      "forma": "srl",
+      "capital_social": "200 lei",
+      "cui": "RO12345678",
+      "registrul_comertului": "J32/123/2021",
+      "clasificari": [
+        {
+          "fel": "certificat",
+          "numar": "1234/2026",
+          "tip_structura": "Hotel",
+          "tip_structura_en": "Hotel",
+          "categorie": 3,
+          "camere": []
+        }
+      ]
+    }
+  },
+  "camere": [
+    {
+      "id": "dubla",
+      "titlu": "Cameră dublă spre Piața Mică",
+      "unitati": 6,
+      "oaspeti_max": 2,
+      "pret": 42000,
+      "weekend": 6000,
+      "sejur_minim": 1,
+      "spatii": "dubla"
+    },
+    {
+      "id": "apartament",
+      "titlu": "Camera de la mansardă",
+      "unitati": 3,
+      "oaspeti_max": 3,
+      "pret": 56000,
+      "weekend": 6000,
+      "sejur_minim": 1,
+      "spatii": "dubla"
+    }
+  ],
+  "repere": [
+    {"nume": "Piața Mică", "categorie": "atractie", "minute": 2, "principal": true},
+    {"nume": "Turnul Sfatului", "categorie": "atractie", "minute": 3},
+    {"nume": "Podul Minciunilor", "categorie": "atractie", "minute": 3},
+    {"nume": "Muzeul Național Brukenthal", "categorie": "atractie", "minute": 5},
+    {"nume": "Gara Sibiu", "categorie": "transport", "km": 1.6}
+  ],
+  "poze": [
+    {"fisier": "hotel-exterior.jpg", "categorie": "exterior"},
+    {"fisier": "hotel-camera.jpg", "categorie": "camera"},
+    {"fisier": "hotel-mansarda.jpg", "categorie": "camera"},
+    {"fisier": "hotel-baie.jpg", "categorie": "baie"},
+    {"fisier": "hotel-receptie.jpg", "categorie": "spatii_comune"},
+    {"fisier": "hotel-dejun.jpg", "categorie": "loc_de_masa"},
+    {"fisier": "hotel-priveliste.jpg", "categorie": "priveliste"}
+  ]
+}

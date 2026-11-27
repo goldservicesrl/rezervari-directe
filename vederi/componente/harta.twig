@@ -1,0 +1,8 @@
+{#- Harta (cazo.harta()): adresa și legătura spre aplicația de hărți; cu JavaScript, harta interactivă se încarcă singură când se apropie de ecran. -#}
+<cazo-harta class="pg-harta" data-pg="harta"{% if lat is not null %} data-lat="{{ lat }}" data-lng="{{ lng }}" data-placi="{{ placi }}" data-leaflet-js="{{ leaflet_js }}" data-leaflet-css="{{ leaflet_css }}" data-nume="{{ nume }}"{% endif %}>
+{% set n = nivel|default(2) %}<h{{ n }} class="pg-harta-titlu">{{ t('harta.titlu') }}</h{{ n }}>
+<p class="pg-harta-adresa">{{ adresa }}</p>
+{% if geo %}<ul class="pg-harta-linkuri">
+<li><a href="{{ geo }}">{{ t('harta.aplicatie') }}</a></li>
+</ul>{% endif %}
+</cazo-harta>

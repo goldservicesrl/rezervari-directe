@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+// Unealta autorilor de teme: init, verifica, previzualizeaza, impacheteaza.
+// Rulează din depozit (php bin/cazo-tema ...) sau ca cazo-tema.phar (bin/cazo tema-phar îl construiește).
+
+if (PHP_SAPI !== 'cli') {
+    exit;
+}
+
+define('CAZO', true);
+$radacina = dirname(__DIR__);
+require $radacina . '/app/incarca.php';
+
+set_error_handler(static function (int $nivel, string $mesaj, string $fisier = '', int $linie = 0): bool {
+    if (!(error_reporting() & $nivel)) {
+        return false;
+    }
+    throw new \ErrorException($mesaj, 0, $nivel, $fisier, $linie);
+});
+
+exit((new \Cazo\Dezvoltare\UneltaTeme($radacina))->ruleaza(array_slice($argv, 1)));

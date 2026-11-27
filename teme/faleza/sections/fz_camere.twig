@@ -1,0 +1,54 @@
+{#- Camerele, în carusel orizontal (macheta: banda camerelor). Forma C (mai multe grupuri): câte un
+    card pe grup, cu filtrul pe vedere doar când camerele au cel puțin două vederi diferite (casete radio cu
+    :has(), fără JavaScript; fără :has() rămân toate vizibile). Formele A și B (o singură unitate sau mai multe la
+    fel): spațiile generate de nucleu (camere[].spatii[]: eticheta, paturi[], poze[]), ca „Spațiile”; fără ele,
+    cardul unității. Setări: aranjamentul (carusel sau grilă) și titlul secțiunii (fără el, cardurile urcă un nivel).
+    Numele tagurilor rămân fixe (h2 sau h3, nu h{{ nivel }}): validatorul citește tagurile din textul literal. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set spatii = g ? (g.spatii ?? []) : [] %}
+{% set cu_titlu = sectiune.setari.cu_titlu ?? true %}
+{% set nivel = cu_titlu ? 3 : 2 %}
+{% set grila = (sectiune.setari.aranjament ?? 'carusel') == 'grila' %}
+{% if camere|length > 0 %}
+{% set vederi = '' %}
+{% for c in camere %}{% set v = c.vedere ?? c.fisa.vedere ?? '' %}{% if v and ('|' ~ v ~ '|') not in vederi %}{% set vederi = vederi ~ '|' ~ v ~ '|' %}{% endif %}{% endfor %}
+{% set vederi_cheie = vederi ? vederi|slice(1, vederi|length - 2)|split('||')|slice(0, 5) : [] %}
+{% set filtru = forma == 'C' and spatii|length == 0 and vederi_cheie|length >= 2 %}
+<section class="fz-camere{% if grila %} fz-camere-grila{% endif %}"{% if cu_titlu %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t(spatii|length > 0 ? 'spatii.titlu' : 'camere.titlu_banda') }}"{% endif %}>
+{% if cu_titlu or filtru %}<div class="fz-latime fz-banda-cap">
+{% if cu_titlu %}<h2 id="{{ sectiune.id }}-t" class="fz-titlu">{{ t(spatii|length > 0 ? 'spatii.titlu' : 'camere.titlu_banda') }}</h2>{% endif %}
+{% if filtru %}<fieldset class="fz-filtru">
+<legend class="fz-ascuns">{{ t('filtru.legenda') }}</legend>
+<input class="fz-f-1" type="radio" name="{{ sectiune.id }}-f" id="{{ sectiune.id }}-f1" checked><label for="{{ sectiune.id }}-f1">{{ t('filtru.toate', {n: camere|length}) }}</label>
+{% for v in vederi_cheie %}{% set n = 0 %}{% for c in camere %}{% if (c.vedere ?? c.fisa.vedere ?? '') == v %}{% set n = n + 1 %}{% endif %}{% endfor %}
+<input class="fz-f-{{ loop.index + 1 }}" type="radio" name="{{ sectiune.id }}-f" id="{{ sectiune.id }}-f{{ loop.index + 1 }}"><label for="{{ sectiune.id }}-f{{ loop.index + 1 }}">{{ t('filtru.vedere', {vedere: v in ['oras', 'mare', 'munte', 'lac', 'curte', 'gradina'] ? t('vedere.' ~ v) : v, n: n}) }}</label>
+{% endfor %}
+</fieldset>{% endif %}
+</div>{% endif %}
+<div class="fz-carusel"{% if not grila %} tabindex="0" role="region" aria-label="{{ t('carusel.eticheta') }}"{% endif %}>
+<ul class="fz-carduri">
+{% if spatii|length > 0 %}
+{% for s in spatii %}<li class="fz-card fz-spatiu">
+<div class="fz-card-poza">{% set p = (s.poze ?? [])|first %}{% if p %}<figure>{{ img(p, [480, 960], false, '(min-width: 45rem) 18rem, 85vw') }}</figure>{% else %}<span class="fz-card-fara-poza" aria-hidden="true"></span>{% endif %}</div>
+<div class="fz-card-corp">
+{% if nivel == 2 %}<h2 class="fz-card-titlu">{{ s.eticheta }}</h2>{% else %}<h3 class="fz-card-titlu">{{ s.eticheta }}</h3>{% endif %}
+{% set paturi = s.paturi ?? [] %}
+{% if paturi|length > 0 or (s.tip == 'baie' and (g.baie_tip ?? '') in ['proprie', 'comuna']) %}<ul class="fz-card-date">
+{% for p in paturi %}<li>{% include "partials/eticheta.twig" with {d: p} only %}</li>{% endfor %}
+{% if s.tip == 'baie' and (g.baie_tip ?? '') in ['proprie', 'comuna'] %}<li>{{ t('baie.' ~ g.baie_tip) }}</li>{% endif %}
+</ul>{% endif %}
+</div>
+</li>{% endfor %}
+{% else %}
+{% for c in camere %}{% include "partials/card_camera.twig" %}{% endfor %}
+{% endif %}
+</ul>
+</div>
+{% if spatii|length > 0 %}<div class="fz-latime fz-camere-unitate">
+{% if g.unitati > 1 %}<p class="fz-card-unitati">{{ t('camera.la_fel', {n: g.unitati}) }}</p>{% endif %}
+{% if g.dotari|length > 0 %}<ul class="fz-dotari" aria-label="{{ t('dotari.eticheta') }}">{% for d in g.dotari|slice(0, 12) %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+<a class="fz-buton fz-buton-linie" href="{{ g.url }}">{{ t('spatii.calendar') }}</a>
+</div>{% endif %}
+</section>
+{% endif %}

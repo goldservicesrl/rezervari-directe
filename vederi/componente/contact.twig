@@ -1,0 +1,16 @@
+{#- Contactul (cazo.contact()), în același loc pe toate paginile (WCAG 3.2.6), cu Microdata LodgingBusiness: prima zonă
+    a subsolului, cu numele proprietății, adresa publică (fără etaj și apartament) și e-mailul;
+    telefonul apare doar când gazda a ales să-l arate pe site. Gazda îl poate schimba din panou: `editat`
+    are titlul și rândurile, text simplu, cu adresele verificate de nucleu. -#}
+<address class="pg-contact" data-pg="contact" itemscope itemtype="https://schema.org/{{ tip_schema }}">
+<meta itemprop="name" content="{{ nume }}"><link itemprop="url" href="{{ url }}">
+{% if editat %}
+{% if editat.titlu %}<span class="pg-contact-titlu">{{ editat.titlu }}</span>{% endif %}
+{% for r in editat.linii %}<span class="pg-contact-linie">{% if r.url %}<a href="{{ r.url }}">{{ r.text }}</a>{% else %}{{ r.text }}{% endif %}</span>{% endfor %}
+{% else %}
+<span class="pg-contact-titlu">{{ nume }}</span>
+{% if adresa.strada or adresa.localitate %}<span class="pg-contact-linie" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"><span itemprop="streetAddress">{{ adresa.strada }}</span>{% if adresa.localitate %}{% if adresa.strada %}, {% endif %}<span itemprop="addressLocality">{{ adresa.localitate }}</span>{% endif %}{% if adresa.judet %}, <span itemprop="addressRegion">{{ adresa.judet }}</span>{% endif %}<meta itemprop="addressCountry" content="RO"></span>{% endif %}
+{% if email %}<span class="pg-contact-linie"><a href="mailto:{{ email }}" itemprop="email">{{ email }}</a></span>{% endif %}
+{% if telefon %}<span class="pg-contact-linie"><a href="tel:{{ telefon|replace({' ': ''}) }}" itemprop="telephone">{{ telefon }}</a></span>{% endif %}
+{% endif %}
+</address>

@@ -1,0 +1,28 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.tema') }}</h1>
+<p>{{ t('instalare.tema.text') }}</p>
+<form method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+<h2>{{ t('instalare.tema.lista') }}</h2>
+<ul class="pa-teme">
+{% for tm in teme %}
+{% set nume = tm.nume[limba] ?? tm.nume.ro %}
+{% set marcata = activa == tm.slug %}
+<li class="pa-tema{% if marcata %} pa-tema-activa{% endif %}" data-tema="{{ tm.slug }}">
+{% if tm.captura %}<img class="pa-tema-imagine" src="{{ tm.captura }}" alt="{{ t('instalare.tema.captura_alt', {tema: nume}) }}" width="600" height="750" loading="lazy" decoding="async">{% else %}<div class="pa-tema-imagine pa-tema-fara-imagine" aria-hidden="true"><span>{{ nume }}</span></div>{% endif %}
+<div class="pa-tema-corp">
+<h3 class="pa-tema-nume">{{ nume }}</h3>
+{% if propusa == tm.slug %}<p class="pa-tema-acum"><strong>{{ t('instalare.tema.propusa') }}</strong></p>{% elseif marcata %}<p class="pa-tema-acum"><strong>{{ t('instalare.tema.aleasa') }}</strong></p>{% endif %}
+{% if tm.pentru %}<p class="pa-tema-pentru">{{ t('instalare.tema.potrivita', {pentru: tm.pentru}) }}</p>{% endif %}
+<div class="pa-tema-actiuni">
+<a class="pa-tema-legatura" href="{{ url_previzualizare }}{{ tm.slug }}" target="_blank" rel="noopener">{{ t('instalare.tema.previzualizare') }}<span class="pa-ascuns">: {{ nume }} ({{ t('instalare.tema.fila_noua') }})</span></a>
+<button type="submit" name="tema" value="{{ tm.slug }}" class="{{ marcata ? 'pa-buton' : 'pa-buton-secundar' }}">{{ t('instalare.tema.alegeti') }}<span class="pa-ascuns">: {{ nume }}</span></button>
+</div>
+</div>
+</li>
+{% endfor %}
+</ul>
+<p class="pa-ajutor">{{ t('instalare.tema.mai_tarziu') }}</p>
+</form>
+{% endblock %}

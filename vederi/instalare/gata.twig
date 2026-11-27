@@ -1,0 +1,29 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.gata') }}</h1>
+{% if sonda and not sonda.ok %}
+<div class="pa-eroare" role="alert"><p>{{ t('instalare.gata.sonda') }}</p>
+<ul>{% for r in sonda.rezultate %}<li>{{ r.fisier }}: {{ r.status ?? t('instalare.loc.fara_raspuns') }}</li>{% endfor %}</ul>
+<p>{{ t('instalare.loc.pasi') }}</p></div>
+{% endif %}
+{% if lipsa %}
+<div class="pa-eroare" role="alert"><p>{{ t('instalare.gata.lipsa') }}</p>
+<ul>{% for p in lipsa %}<li><a href="{{ p.url }}">{{ t(p.titlu) }}</a></li>{% endfor %}</ul></div>
+{% else %}
+<p>{{ t('instalare.gata.text') }}</p>
+{# Rezumatul alegerilor, din setările salvate; fiecare rând duce la pasul lui. Metodele de plată și taxa locală își iau textele din catalogul panoului. #}
+<h2>{{ t('instalare.gata.rezumat') }}</h2>
+<dl class="pa-rezumat">
+{% for r in rezumat %}
+<div data-rezumat="{{ r.id }}"><dt>{{ t('instalare.gata.rezumat.' ~ r.id) }}</dt>
+<dd>{% if r.id == 'proprietate' %}{{ r.nume }} ({{ r.live ? t('instalare.gata.cheie_live') : t('instalare.gata.cheie_proba') }}){% elseif r.id == 'legal' %}{{ r.denumire }}{% if r.forma %}{% if r.denumire %}; {% endif %}{{ t('instalare.legal.forma.' ~ r.forma) }}{% endif %}{% if r.cui %}; {{ t('instalare.legal.camp.cui') }}: {{ r.cui }}{% endif %}{% if r.capital %}; {{ t('instalare.legal.camp.capital_social') }}: {{ r.capital }}{% endif %}{% elseif r.id == 'plati' %}{% for m in r.metode %}{{ t('admin.plati.metoda.' ~ m) }}{% if m == 'transfer' and r.cont|default('') %} ({{ t('instalare.gata.transfer_cont', {iban: r.cont}) }}){% endif %}{% if not loop.last %}; {% endif %}{% endfor %}{% elseif r.id == 'include' %}{{ t('instalare.gata.nopti') }}{% if r.taxe %}; {{ t('admin.pret.include.taxe') }}{% endif %}; {{ t('admin.pret.include.taxa_locala') }}: {{ t('admin.pret.taxa.' ~ r.taxa_locala) }}{% elseif r.id == 'tema' %}{{ r.nume }}{% else %}{{ r.email }}{% endif %} <a href="{{ r.url }}">{{ t('instalare.gata.schimbati') }}<span class="pa-ascuns">: {{ t('instalare.gata.rezumat.' ~ r.id) }}</span></a>
+{#- titularul și banca rămân cum le-a scris gazda; forma cu majuscule e doar propusă, cu un buton. -#}
+{% if r.id == 'plati' and r.majuscule|default(null) %}<form class="pa-propunere" method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="majuscule">
+<p>{{ t('admin.transfer.majuscule', {acum: r.majuscule.acum, propus: r.majuscule.propus}) }}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.transfer.majuscule_buton', {propus: r.majuscule.propus}) }}</button></form>{% endif %}</dd></div>
+{% endfor %}
+</dl>
+<p>{{ t('instalare.gata.pregatire') }}</p>
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<button type="submit" class="pa-buton">{{ t('instalare.gata.buton') }}</button></form>
+{% endif %}
+{% endblock %}

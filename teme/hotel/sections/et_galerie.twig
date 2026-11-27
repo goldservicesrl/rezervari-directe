@@ -1,0 +1,34 @@
+{#- Galeria: pozele de după cea principală (galerie.grila, o poză pe categorie; până atunci pozele
+    proprietății), toate decupate la același raport (object-fit: cover), deci pozele în picioare și cele late stau la
+    fel. Se arată 6, 3 sau 1-2 poze, ca grila să rămână plină: pe ecran lat, prima ocupă două coloane și două rânduri.
+    Legenda e eticheta categoriei. Restul fotografiilor, grupate pe categorii (galerie.grupe), într-un <details>, fără
+    JavaScript; fiecare se deschide întreagă la clic. Fără poze în afara celei principale, secțiunea lipsește. -#}
+{% set toate = proprietate.poze %}
+{% set sursa = galerie.grila ?? toate|slice(1, 6) %}
+{% set n = sursa|length >= 6 ? 6 : (sursa|length >= 3 ? 3 : sursa|length) %}
+{% set grila = sursa|slice(0, n) %}
+{% set numar = galerie.numar ?? toate|length %}
+{% if grila|length > 0 %}
+<section class="et-sectiune et-galerie-sectiune" aria-labelledby="{{ sectiune.id }}-t">
+<div class="et-latime">
+<div class="et-cap">
+<p class="et-cheie">{% include "partials/numar.twig" with {n: numar, cheie: 'galerie.numar'} only %}</p>
+<h2 id="{{ sectiune.id }}-t" class="et-titlu">{{ t('galerie.titlu') }}</h2>
+</div>
+<ul class="et-galerie et-galerie-{{ n }}">
+{% for p in grila %}<li><figure>{{ img(p, loop.first ? [960, 1440] : [480, 960], false, loop.first ? '(min-width: 48rem) 48rem, 100vw' : '(min-width: 48rem) 24rem, 50vw', true) }}{% if p.legenda ?? '' %}<figcaption>{{ p.legenda }}</figcaption>{% endif %}</figure></li>{% endfor %}
+</ul>
+{% if numar > n + 1 %}
+<details class="et-toate">
+<summary>{{ t('galerie.toate', {n: numar}) }}</summary>
+{% if galerie.grupe ?? false %}
+{% for gr in galerie.grupe %}{% if gr.eticheta ?? '' %}<h3>{{ gr.eticheta }}</h3>{% endif %}
+<ul class="et-toate-lista">{% for p in gr.poze %}<li>{{ img(p, [480, 960], false, '(min-width: 48rem) 14rem, 50vw', true) }}</li>{% endfor %}</ul>{% endfor %}
+{% else %}
+<ul class="et-toate-lista">{% for p in toate %}<li>{{ img(p, [480, 960], false, '(min-width: 48rem) 14rem, 50vw', true) }}</li>{% endfor %}</ul>
+{% endif %}
+</details>
+{% endif %}
+</div>
+</section>
+{% endif %}

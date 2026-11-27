@@ -1,0 +1,26 @@
+{#- Masa: tarifele de pe site care au masa inclusă (planuri[].masa, codul din EasyCheck 7.550.142), fiecare
+    cu numele, felul mesei și anularea scrisă de nucleu; prețul îl calculează nucleul, după date și oaspeți. Fără niciun
+    tarif cu masă (sau cu un EasyCheck mai vechi), secțiunea lipsește. Meniul și orele mesei nu vin din model, deci
+    lipsesc. -#}
+{% set n = 0 %}
+{% for p in planuri %}{% if p.masa ?? '' %}{% set n = n + 1 %}{% endif %}{% endfor %}
+{% if n > 0 %}
+{% include "partials/brau.twig" %}
+<section class="ru-banda ru-banda-suprafata ru-masa-sectiune" aria-labelledby="{{ sectiune.id }}-t">
+<div class="ru-latime">
+<div class="ru-cap">
+<p class="ru-semn">{{ t('masa.semn') }}</p>
+<h2 id="{{ sectiune.id }}-t">{{ t('masa.titlu') }}</h2>
+<p>{{ t('masa.text') }}</p>
+</div>
+<ul class="ru-planuri">
+{% for p in planuri %}{% if p.masa ?? '' %}<li class="ru-plan">
+<h3>{{ p.titlu }}</h3>
+<p class="ru-plan-masa">{{ p.masa_eticheta }}</p>
+<p class="ru-plan-anulare">{{ p.politica }}</p>
+</li>{% endif %}{% endfor %}
+</ul>
+<p class="ru-nota">{{ t('masa.nota') }}</p>
+</div>
+</section>
+{% endif %}

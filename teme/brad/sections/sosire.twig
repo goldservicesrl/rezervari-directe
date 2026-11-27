@@ -1,0 +1,26 @@
+{#- Sosirea: orele din EasyCheck (cu ora de sfârșit a check-in-ului, când modelul o dă) și regulile casei
+    din EasyCheck, cu textele aprobate ale bibliotecii. Fără ore și fără reguli, capitolul lipsește și nu lasă gol în numerotare. -#}
+{% set o = proprietate.ore %}
+{% set r = proprietate.reguli_casa %}
+{% set pana = o.checkin_pana_la is defined and o.checkin_pana_la ? o.checkin_pana_la : '' %}
+{% set are_reguli = false %}
+{% for k in ['copii', 'animale', 'evenimente', 'fumat'] %}{% if r[k] is defined and r[k] is not null %}{% set are_reguli = true %}{% endif %}{% endfor %}
+{% if o.checkin_de_la or o.plecare_pana_la or are_reguli %}
+<section class="br-cap br-sosire" aria-labelledby="{{ sectiune.id }}-t">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: 'capitol.sosire'} %}
+<h2 id="{{ sectiune.id }}-t" class="br-titlu-cap">{{ t('sosire.titlu') }}</h2>
+{% if o.checkin_de_la or o.plecare_pana_la %}
+<p class="br-ore">{% if o.checkin_de_la %}<span>{{ pana ? t('sosire.checkin_interval', {de_la: o.checkin_de_la, pana_la: pana}) : t('sosire.checkin', {ora: o.checkin_de_la}) }}</span>{% endif %}{% if o.checkin_de_la and o.plecare_pana_la %} <span class="br-ore-sep" aria-hidden="true">·</span> {% endif %}{% if o.plecare_pana_la %}<span>{{ t('sosire.plecare', {ora: o.plecare_pana_la}) }}</span>{% endif %}</p>
+{% endif %}
+{% if are_reguli %}
+<dl class="br-reguli">
+{% if r.copii is defined and r.copii is not null %}<div><dt>{{ t('sosire.familii') }}</dt><dd>{{ t(r.copii ? 'reguli.copii.da' : 'reguli.copii.nu') }}{% if r.bebelusi is defined and r.bebelusi is not null %} {{ t(r.bebelusi ? 'reguli.bebelusi.da' : 'reguli.bebelusi.nu') }}{% endif %}</dd></div>{% endif %}
+{% if r.animale is defined and r.animale is not null %}<div><dt>{{ t('sosire.animale') }}</dt><dd>{% if r.animale and r.animale_max is defined and r.animale_max %}{{ t('sosire.animale_max', {n: r.animale_max}) }}{% else %}{{ t(r.animale ? 'reguli.animale.da' : 'reguli.animale.nu') }}{% endif %}</dd></div>{% endif %}
+{% if r.evenimente is defined and r.evenimente is not null %}<div><dt>{{ t('sosire.evenimente') }}</dt><dd>{{ t(r.evenimente ? 'reguli.evenimente.da' : 'reguli.evenimente.nu') }}</dd></div>{% endif %}
+{% if r.fumat is defined and r.fumat is not null %}<div><dt>{{ t('sosire.fumat') }}</dt><dd>{{ t(r.fumat ? 'reguli.fumat.da' : 'reguli.fumat.nu') }}</dd></div>{% endif %}
+</dl>
+{% endif %}
+</div>
+</section>
+{% endif %}

@@ -1,0 +1,48 @@
+{#- Sosirea și șederile lungi.
+    Sosirea: orele stau în plăcuța de sus a grilei; aici, poza de la intrare (categoria
+    „intrare”), apoi pașii de self check-in (texte fixe) când proprietate.acces.self_checkin e adevărat, sau
+    rândul „Gazda vă întâmpină” când e fals. Codul din desen e decor, marcat „exemplu”.
+    Șederile lungi: dotările bifate potrivite (spațiu de lucru, Wi-Fi, mașină de spălat, din dotari[{cheie, eticheta}]),
+    factura pe firmă (proprietate.factura_firma) și planul EasyCheck de sejur lung (pret.sejur_lung: titlu, prag_nopti,
+    suma, nota), cu prețul pe noapte, fără procent de reducere; prețul apare doar împreună cu nota nucleului. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set ore = proprietate.ore %}
+{% set autonom = proprietate.acces.self_checkin ?? null %}
+{% set intrare = null %}
+{% for p in proprietate.poze %}{% if intrare is null and (p.categorie ?? '') == 'intrare' %}{% set intrare = p %}{% endif %}{% endfor %}
+{% set chei_lungi = ['spatiu_lucru', 'wifi', 'masina_spalat'] %}
+{% set n_lungi = 0 %}
+{% if g %}{% for d in g.dotari %}{% if d is iterable and (d.cheie ?? '') in chei_lungi %}{% set n_lungi = n_lungi + 1 %}{% endif %}{% endfor %}{% endif %}
+{% set sl = pret.sejur_lung ?? null %}
+{% set cu_plan = sl is not null and (sl.nota ?? '') != '' %}
+{% set factura = proprietate.factura_firma ?? false %}
+{#- Fără poză de la intrare și fără modul de acces ales în EasyCheck, cardul „Check-in” ar rămâne doar cu titlul: nu apare. -#}
+{% set cu_sosire = intrare is not null or autonom is not null %}
+{% if cu_sosire or n_lungi > 0 or factura or cu_plan %}
+<section class="bv-duo" aria-labelledby="{{ sectiune.id }}-t">
+{% if cu_sosire %}<div class="bv-sosire">
+<h2 id="{{ sectiune.id }}-t">{{ t('sosire.titlu') }}</h2>
+{% if intrare %}<figure class="bv-intrare">{{ img(intrare, [960, 1440], false, '(min-width: 56.25rem) 33rem, 100vw') }}{% if intrare.legenda ?? '' %}<figcaption>{{ intrare.legenda }}</figcaption>{% endif %}</figure>{% endif %}
+{% if autonom is same as(true) %}
+<ol class="bv-pasi" aria-label="{{ t('sosire.pasi') }}">
+<li><span class="bv-pas-nr" aria-hidden="true">1</span><div class="bv-desen bv-desen-plic" aria-hidden="true"><span></span></div><h3>{{ t('sosire.pas1.titlu') }}</h3><p>{{ t('sosire.pas1.text') }}</p></li>
+<li><span class="bv-pas-nr" aria-hidden="true">2</span><div class="bv-desen bv-desen-cod" aria-hidden="true"><span>4</span><span>8</span><span>2</span><span>1</span><em>{{ t('sosire.exemplu') }}</em></div><h3>{{ t('sosire.pas2.titlu') }}</h3><p>{{ t('sosire.pas2.text') }}</p></li>
+<li><span class="bv-pas-nr" aria-hidden="true">3</span><div class="bv-desen bv-desen-usa" aria-hidden="true"><span></span></div><h3>{{ t('sosire.pas3.titlu') }}</h3>{% if ore.checkin_de_la %}<p>{{ t('sosire.pas3.text', {ora: ore.checkin_de_la}) }}</p>{% endif %}</li>
+</ol>
+{% elseif autonom is same as(false) %}
+<p class="bv-gazda">{{ t('sosire.gazda') }}</p>
+{% endif %}
+</div>{% endif %}
+{% if n_lungi > 0 or factura or cu_plan %}
+<div class="bv-lung">
+<h2 id="{{ sectiune.id }}{{ cu_sosire ? '-lung' : '-t' }}">{{ t('lung.titlu') }}</h2>
+{% if n_lungi > 0 or factura %}<ul>
+{% if g %}{% for d in g.dotari %}{% if d is iterable and (d.cheie ?? '') in chei_lungi %}<li><span>{{ d.eticheta }}</span><b>{{ t('lung.da') }}</b></li>{% endif %}{% endfor %}{% endif %}
+{% if factura %}<li><span>{{ t('lung.factura') }}</span><b>{{ t('lung.da') }}</b></li>{% endif %}
+</ul>{% endif %}
+{% if cu_plan %}<p class="bv-lung-pret"><span>{{ t('lung.plan', {titlu: sl.titlu, nopti: sl.prag_nopti|nopti}) }}</span><strong>{{ sl.suma|lei }}</strong> {{ t('lung.pe_noapte') }}<small>{{ sl.nota }}</small></p>{% endif %}
+</div>
+{% endif %}
+</section>
+{% endif %}

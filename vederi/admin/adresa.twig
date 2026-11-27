@@ -1,0 +1,51 @@
+{% extends 'admin/baza.twig' %}
+{% block antet %}{% include 'admin/_antet.twig' %}{% endblock %}
+{% block continut %}
+{#- Adresa site-ului: adresa de acum și, cu cheie EasyCheck, trecerea pe subdomeniul gratuit cazo.ro rezervat pentru cheie. -#}
+<h1>{{ t('admin.adresa.titlu') }}</h1>
+{% if mesaj %}<p class="pa-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if eroare %}<p class="pa-eroare" role="alert">{{ eroare }}</p>{% endif %}
+<dl class="pa-detalii" data-adresa-curenta="{{ adresa }}">
+<dt>{{ t('admin.adresa.acum') }}</dt><dd><a href="{{ adresa }}/">{{ adresa }}</a></dd>
+</dl>
+{% if veche %}<p class="pa-info">{{ t('admin.adresa.veche', {veche: veche, adresa: adresa}) }}</p>{% endif %}
+{% if not cu_cheie %}
+<p>{{ t('admin.adresa.domeniu_propriu') }}</p>
+{% elseif pe_rezervat %}
+<p data-adresa="pe-cazo">{{ t('admin.adresa.pe_subdomeniu', {domeniu: rezervare.domeniu}) }}</p>
+{% elseif trecere %}
+<section class="pa-card" aria-labelledby="pa-adr-trecere" data-adresa="trecere" data-cpanel="{{ trecere.cpanel }}"><h2 id="pa-adr-trecere">{{ t('admin.adresa.trecere_titlu', {domeniu: trecere.domeniu}) }}</h2>
+{% if trecere.cpanel in ['adaugat', 'exista'] %}
+<p>{{ t('admin.adresa.cpanel_adaugat', {domeniu: trecere.domeniu}) }}</p>
+{% else %}
+<p>{{ t('admin.adresa.manual_intro') }}</p>
+<ol>
+<li>{{ t('admin.adresa.manual_1', {domeniu: trecere.domeniu}) }}
+<p><label for="pa-adr-dosar">{{ t('admin.adresa.dosar') }}</label><input id="pa-adr-dosar" class="pa-de-copiat" value="{{ dosar }}" readonly></p></li>
+<li>{{ t('admin.adresa.manual_2', {domeniu: trecere.domeniu}) }}</li>
+<li>{{ t('admin.adresa.manual_3') }}</li>
+</ol>
+{% endif %}
+{% if trecere.rezultat %}<p class="pa-nota" role="status" data-rezultat="{{ trecere.rezultat }}">{{ t('admin.adresa.rezultat.' ~ trecere.rezultat, {domeniu: trecere.domeniu}) }}</p>{% endif %}
+<p class="pa-ajutor">{{ t('admin.adresa.dupa_trecere') }}</p>
+<form method="post" action="{{ url.adresa }}verifica" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.adresa.verificati') }}</button></form>
+<form method="post" action="{{ url.adresa }}renunta" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.adresa.renuntati') }}</button></form>
+</section>
+{% elseif rezervare.stare == 'rezervat' %}
+<section class="pa-card" aria-labelledby="pa-adr-rez" data-adresa="rezervat"><h2 id="pa-adr-rez">{{ t('admin.adresa.subdomeniu_titlu') }}</h2>
+<p>{{ t('admin.adresa.rezervat', {domeniu: rezervare.domeniu}) }}</p>
+{% if rezervare.dns != 'activ' %}<p class="pa-nota">{{ t('admin.adresa.dns_asteptare', {domeniu: rezervare.domeniu}) }}</p>{% endif %}
+<p>{{ t(automat ? 'admin.adresa.explicatie_automat' : 'admin.adresa.explicatie_manual', {domeniu: rezervare.domeniu}) }}</p>
+<form method="post" action="{{ url.adresa }}treci"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.adresa.treceti', {domeniu: rezervare.domeniu}) }}</button></form>
+</section>
+{% else %}
+<section class="pa-card" aria-labelledby="pa-adr-gratuit" data-adresa="{{ rezervare.stare ?? 'necunoscut' }}"><h2 id="pa-adr-gratuit">{{ t('admin.adresa.subdomeniu_titlu') }}</h2>
+<p>{{ t('admin.adresa.gratuit') }}</p>
+<ol>
+<li>{{ t('admin.adresa.gratuit_1') }} <a href="{{ url_ec }}" target="_blank" rel="noopener">{{ t('admin.adresa.link_ec') }}</a></li>
+<li>{{ t('admin.adresa.gratuit_2') }}</li>
+<li>{{ t('admin.adresa.gratuit_3') }}</li>
+</ol>
+</section>
+{% endif %}
+{% endblock %}

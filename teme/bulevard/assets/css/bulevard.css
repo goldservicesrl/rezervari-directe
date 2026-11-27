@@ -1,0 +1,340 @@
+/* Bulevard: grilă bento pe o coloană de cel mult 900 px, ghidul cartierului pe cercuri de
+   minute, pașii de self check-in, șederile lungi. Beton, grafit și galbenul tramvaiului. Fonturile Inter și
+   Space Grotesk, servite local. Toate culorile de text și de fundal vin din setările gazdei (jetoanele --pg-*),
+   numai în perechile verificate de nucleu (text pe fundal, text pe suprafață și invers, contrastul accentului pe
+   accent), așa că orice paletă acceptată de panou rămâne lizibilă. Galbenul e doar decor (punctul, buline,
+   cercul de 5 minute, conturul focusului), fără text pe el și fără informație purtată numai de el. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../fonts/inter-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(../fonts/inter-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/space-grotesk-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/space-grotesk-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@view-transition { navigation: auto; }
+
+.bv-corp {
+  --bv-galben: #f2c230;
+  --bv-linie-fina: color-mix(in srgb, var(--pg-culoare-linie) 40%, var(--pg-culoare-suprafata));
+  --bv-plasa: color-mix(in srgb, var(--pg-culoare-text) 6%, transparent);
+  --bv-raza-mare: calc(var(--pg-raza) + 6px);
+}
+
+/* ---- baza ---- */
+.bv-corp { font-family: var(--pg-font-text); font-size: 0.9375rem; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--pg-font-titlu); letter-spacing: -0.02em; line-height: 1.12; font-weight: 700; margin: 0; }
+h2 { font-size: 1.3125rem; }
+h3 { font-size: 1.0625rem; }
+p { margin: 0; }
+figure { margin: 0; }
+a { color: inherit; text-underline-offset: 3px; }
+img { display: block; max-width: 100%; height: auto; }
+:where(a, button, input, select, summary):focus-visible { outline: 3px solid var(--pg-culoare-text); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bv-galben); }
+.bv-ascuns { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.bv-salt { position: absolute; left: -100vw; top: 0; padding: var(--pg-spatiu-2) var(--pg-spatiu-4); background: var(--pg-culoare-accent); color: var(--pg-culoare-accent-contrast); }
+.bv-salt:focus { left: var(--pg-spatiu-2); z-index: 30; }
+
+.bv-pagina { max-width: 56.25rem; margin: 0 auto; padding: 12px; display: grid; gap: 12px; }
+.bv-principal { display: grid; gap: 12px; min-width: 0; }
+.bv-principal > * { min-width: 0; }
+
+.bv-buton { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; font: 600 0.875rem/1 var(--pg-font-text); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.bv-buton-plin { background: var(--pg-culoare-accent); color: var(--pg-culoare-accent-contrast); box-shadow: inset 0 -3px 0 var(--bv-galben); }
+.bv-buton-plin:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bv-buton-linie { background: var(--pg-culoare-suprafata); color: var(--pg-culoare-text); border: 1.5px solid var(--pg-culoare-text); }
+.bv-buton-linie:hover { background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); }
+
+/* ---- antetul ---- */
+.bv-antet { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 6px 0; }
+.bv-sigla { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-right: auto; min-width: 0; font: 700 1.0625rem/1.2 var(--pg-font-titlu); letter-spacing: -0.02em; text-decoration: none; }
+.bv-sigla-nume { overflow-wrap: anywhere; }
+.bv-sigla-semn { flex: none; display: grid; place-items: center; width: 32px; height: 32px; background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); border-radius: 8px 8px 8px 0; font-size: 1.125rem; }
+.bv-meniu { order: 3; width: 100%; }
+.bv-meniu ul { display: flex; flex-wrap: wrap; gap: 0 18px; list-style: none; margin: 0; padding: 0; font-size: 0.875rem; font-weight: 500; }
+.bv-meniu a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; border-bottom: 2px solid transparent; }
+.bv-meniu a:hover, .bv-meniu a[aria-current] { border-bottom-color: var(--pg-culoare-text); }
+.bv-limba { font-weight: 700; min-width: 44px; justify-content: center; }
+
+/* ---- căutarea (bara nucleului) ---- */
+.bv-cautare { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); padding: 10px; display: grid; gap: 8px; }
+.bv-cautare .pg-bara-formular { gap: 8px; }
+.bv-cautare .pg-camp label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--pg-culoare-text); }
+.bv-cautare .pg-camp input, .bv-cautare .pg-camp select { background: var(--pg-culoare-fundal); border-radius: 10px; font-weight: 500; }
+.bv-cautare .pg-buton { border-radius: 999px; padding: 0 22px; }
+.bv-cautare-pret { padding: 0 6px; font: 700 1rem/1.35 var(--pg-font-titlu); }
+
+/* ---- bento ---- */
+.bv-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.bv-erou { grid-column: 1 / -1; position: relative; min-height: 26rem; border-radius: var(--bv-raza-mare); overflow: hidden; background: var(--pg-culoare-suprafata); display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; padding: 12px; }
+.bv-erou-poza { position: absolute; inset: 0; }
+.bv-erou-poza picture, .bv-erou-poza img { width: 100%; height: 100%; object-fit: cover; }
+.bv-erou-poza::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--pg-culoare-text) 35%, transparent) 0, transparent 22%, transparent 55%, color-mix(in srgb, var(--pg-culoare-text) 50%, transparent) 100%); }
+.bv-erou-reper { position: absolute; top: 12px; left: 12px; right: 12px; justify-self: start; display: inline-flex; align-items: center; gap: 8px; width: fit-content; max-width: calc(100% - 24px); background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); font-size: 0.8125rem; font-weight: 500; padding: 7px 12px 7px 10px; border-radius: 999px; }
+.bv-punct { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--bv-galben); box-shadow: 0 0 0 3px color-mix(in srgb, var(--bv-galben) 35%, transparent); }
+.bv-erou-legenda { position: relative; align-self: flex-end; background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+.bv-erou-gol { min-height: 0; background: transparent; padding: 0; overflow: visible; }
+.bv-erou-gol .bv-erou-reper { position: static; max-width: 100%; }
+.bv-erou-gol .bv-erou-text { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); }
+.bv-erou-text { position: relative; background: var(--pg-culoare-fundal); border-radius: var(--pg-raza); padding: 14px 16px; }
+.bv-supratitlu { font-size: 0.75rem; font-weight: 600; color: var(--pg-culoare-text); text-transform: uppercase; letter-spacing: 0.06em; }
+.bv-erou h1 { font-size: 1.5rem; line-height: 1.08; margin-top: 6px; overflow-wrap: anywhere; }
+.bv-insigne { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.bv-insigne li { font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); }
+
+.bv-placa { border-radius: var(--bv-raza-mare); padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; font-size: 0.8125rem; line-height: 1.4; min-width: 0; }
+.bv-placa-eticheta { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.bv-placa-mare { font: 700 2.125rem/1 var(--pg-font-titlu); letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.bv-placa-mare small { font-size: 1rem; font-weight: 500; letter-spacing: 0; }
+.bv-placa-reper { background: var(--pg-culoare-suprafata); color: var(--pg-culoare-text); border: 1px solid var(--bv-linie-fina); box-shadow: inset 0 6px 0 var(--bv-galben); }
+.bv-placa-ore { background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); }
+.bv-placa-ore .bv-placa-mare { color: var(--pg-culoare-suprafata); font-size: 1.375rem; letter-spacing: -0.03em; }
+.bv-placa-ore strong { color: var(--pg-culoare-suprafata); font-weight: 600; }
+.bv-placa-cifre, .bv-placa-text { grid-column: 1 / -1; background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); justify-content: center; }
+.bv-placa-text { font-size: 0.9375rem; line-height: 1.5; }
+.bv-descriere { justify-content: flex-start; }
+.bv-descriere p { margin: 0; }
+.bv-descriere-titlu { font-weight: 700; font-size: 1.0625rem; }
+.bv-descriere-rest summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.bv-descriere-rest p { margin: 0 0 0.625rem; }
+.bv-despre p + p { margin-top: 0.625rem; }
+.bv-placa-cifre dl { margin: 0; }
+.bv-placa-cifre div { display: flex; gap: 10px; align-items: baseline; padding: 4px 0; border-bottom: 1px dashed var(--bv-linie-fina); color: var(--pg-culoare-text); }
+.bv-placa-cifre div:last-child { border-bottom: 0; }
+.bv-placa-cifre dd { order: -1; margin: 0; min-width: 52px; font: 700 1.0625rem/1.2 var(--pg-font-titlu); color: var(--pg-culoare-text); }
+
+/* ---- cardurile secțiunilor ---- */
+.bv-card { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); padding: 14px; }
+.bv-sectiune-cap { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 12px; }
+.bv-sectiune-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.875rem; font-weight: 600; }
+
+/* ---- galeria ---- */
+.bv-galerie-grila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.bv-galerie-grila li:first-child { grid-column: 1 / -1; }
+.bv-galerie-grila figure, .bv-galerie-lista figure { display: flex; flex-direction: column; gap: 6px; height: 100%; }
+.bv-galerie-grila picture, .bv-galerie-grila img, .bv-galerie-lista img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--pg-raza); background: var(--pg-culoare-fundal); }
+.bv-galerie-grila li:first-child img { aspect-ratio: 16 / 10; }
+figcaption { font-size: 0.8125rem; font-weight: 500; color: var(--pg-culoare-text); }
+.bv-galerie-toate { margin-top: 12px; }
+.bv-galerie-toate summary { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.bv-galerie-toate h3 { margin: 12px 0 8px; font-size: 0.9375rem; }
+.bv-galerie-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 10px; margin: 8px 0 0; padding: 0; list-style: none; }
+
+/* ---- spațiile și camerele ---- */
+.bv-spatii-lista { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.bv-spatiu { display: flex; flex-direction: column; gap: 6px; background: var(--pg-culoare-fundal); border-radius: var(--pg-raza); padding: 14px; min-height: 118px; }
+.bv-spatiu-nr { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px 10px 10px 0; background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); font: 700 0.875rem/1 var(--pg-font-titlu); }
+.bv-spatiu h3 { margin-top: 4px; overflow-wrap: anywhere; }
+.bv-spatiu--poza { padding: 0 0 14px; overflow: hidden; }
+.bv-spatiu--poza > :not(.bv-spatiu-poza) { margin-left: 14px; margin-right: 14px; }
+.bv-spatiu-poza img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.bv-spatiu p { font-size: 0.8125rem; color: var(--pg-culoare-text); line-height: 1.35; }
+.bv-spatiu .bv-spatiu-foto { margin-top: auto; font-weight: 600; color: var(--pg-culoare-text); }
+.bv-spatii-descriere { margin-top: 12px; }
+.bv-dotari { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid var(--bv-linie-fina); list-style: none; }
+.bv-dotari li { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; font-weight: 500; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--bv-linie-fina); background: var(--pg-culoare-suprafata); }
+.bv-dotari li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--bv-galben); box-shadow: 0 0 0 1.5px var(--pg-culoare-text); }
+.bv-dotari-mici { margin-top: 8px; padding-top: 0; border-top: 0; }
+.bv-camere-lista { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bv-camera { display: flex; flex-direction: column; gap: 8px; background: var(--pg-culoare-fundal); border-radius: var(--pg-raza); padding: 12px; min-width: 0; }
+.bv-camera-poza img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: calc(var(--pg-raza) - 4px); }
+.bv-camera h3 { font-size: 1.1875rem; overflow-wrap: anywhere; }
+.bv-camera h3 a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.bv-camera h3 a:hover { text-decoration: underline; }
+.bv-camera-date { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 0.8125rem; color: var(--pg-culoare-text); }
+.bv-camera-pret { margin-top: auto; font: 700 1rem/1.3 var(--pg-font-titlu); }
+
+/* ---- împrejurimi ---- */
+.bv-imprejurimi { display: grid; gap: 12px; }
+.bv-ghid { display: grid; gap: 14px; background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); padding: 14px; }
+.bv-ghid-cap { display: flex; flex-wrap: wrap; align-items: end; gap: 8px 18px; }
+.bv-ghid-cap h2 { width: 100%; }
+.bv-ghid-cap p { flex: 1 1 15rem; font-size: 0.875rem; color: var(--pg-culoare-text); }
+.bv-cipuri { display: flex; flex-wrap: wrap; gap: 6px; }
+.bv-cip { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--pg-culoare-text); font-size: 0.8125rem; font-weight: 600; cursor: pointer; user-select: none; background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); }
+.bv-cip::before { content: ""; width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid var(--pg-culoare-suprafata); background: var(--pg-culoare-suprafata); }
+.bv-cip:has(input:not(:checked)) { background: transparent; color: var(--pg-culoare-text); }
+.bv-cip:has(input:not(:checked))::before { background: transparent; border-color: currentColor; }
+.bv-cip:has(input:focus-visible) { outline: 3px solid var(--pg-culoare-text); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bv-galben); }
+.bv-ghid:has(.bv-cip-transport input:not(:checked)) .bv-cat-transport,
+.bv-ghid:has(.bv-cip-restaurant input:not(:checked)) .bv-cat-restaurant,
+.bv-ghid:has(.bv-cip-parc input:not(:checked)) .bv-cat-parc,
+.bv-ghid:has(.bv-cip-atractie input:not(:checked)) .bv-cat-atractie,
+.bv-ghid:has(.bv-cip-magazin input:not(:checked)) .bv-cat-magazin,
+.bv-ghid:has(.bv-cip-servicii input:not(:checked)) .bv-cat-servicii,
+.bv-ghid:has(.bv-cip-natura input:not(:checked)) .bv-cat-natura { display: none; }
+
+.bv-cat-transport .bv-eticheta { border-color: var(--bv-galben); }
+.bv-cat-parc .bv-eticheta { border-radius: 6px; }
+.bv-cat-atractie .bv-eticheta { border-radius: 6px 6px 6px 0; }
+.bv-cat-magazin .bv-eticheta { border-radius: 2px; }
+.bv-cat-servicii .bv-eticheta { border-radius: 0 50% 50% 50%; }
+.bv-cat-natura .bv-eticheta { border-radius: 50% 50% 50% 0; }
+.bv-locuri { display: flex; flex-direction: column; min-width: 0; }
+.bv-locuri ul { display: grid; align-content: start; margin: 0; padding: 0; list-style: none; }
+.bv-locuri li { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; padding: 10px 2px; border-bottom: 1px solid var(--bv-linie-fina); font-size: 0.875rem; }
+.bv-locuri li > span:nth-child(2) { min-width: 0; overflow-wrap: anywhere; }
+.bv-locuri small { display: block; font-size: 0.75rem; color: var(--pg-culoare-text); }
+.bv-locuri b { font: 700 0.875rem/1.2 var(--pg-font-titlu); text-align: right; white-space: nowrap; }
+.bv-locuri b span { display: block; font: 500 0.6875rem/1.2 var(--pg-font-text); color: var(--pg-culoare-text); }
+.bv-eticheta { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font: 700 0.6875rem/1 var(--pg-font-titlu); color: var(--pg-culoare-suprafata); background: var(--pg-culoare-text); border: 1.5px solid transparent; }
+.bv-departe .bv-eticheta { background: var(--pg-culoare-fundal); color: var(--pg-culoare-text); border-color: var(--pg-culoare-linie); border-radius: 50%; }
+.bv-harta { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); padding: 14px; }
+.bv-harta [data-pg] .pg-harta-titlu { font-size: 1.3125rem; margin: 0 0 10px; }
+
+/* ---- sosirea și șederile lungi ---- */
+.bv-duo { display: grid; gap: 12px; }
+.bv-sosire, .bv-lung { border-radius: var(--bv-raza-mare); padding: 16px; min-width: 0; }
+.bv-sosire { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); }
+.bv-sosire h2, .bv-lung h2 { font-size: 1.25rem; }
+.bv-sosire h2 { margin-bottom: 12px; }
+.bv-intrare { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.bv-intrare img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--pg-raza); }
+.bv-pasi { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.bv-pasi li { position: relative; display: grid; grid-template-columns: 76px 1fr; column-gap: 12px; align-items: center; background: var(--pg-culoare-fundal); border-radius: var(--pg-raza); padding: 12px; }
+.bv-pasi li > .bv-desen { grid-row: span 2; }
+.bv-pas-nr { position: absolute; top: 10px; right: 12px; font: 700 0.75rem/1 var(--pg-font-titlu); color: var(--pg-culoare-text); }
+.bv-pasi h3 { font-size: 0.9375rem; padding-right: 16px; }
+.bv-pasi p { font-size: 0.8125rem; color: var(--pg-culoare-text); margin-top: 2px; line-height: 1.4; }
+.bv-desen { display: flex; align-items: center; gap: 2px; min-height: 46px; flex-wrap: wrap; }
+.bv-desen-plic span { position: relative; width: 44px; height: 32px; background: var(--pg-culoare-text); border-radius: 5px; overflow: hidden; }
+.bv-desen-plic span::before { content: ""; position: absolute; left: 50%; top: -22px; width: 30px; height: 30px; transform: translateX(-50%) rotate(45deg); border: 2px solid var(--bv-galben); }
+.bv-desen-cod span { display: grid; place-items: center; width: 15px; height: 26px; background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); font: 700 0.8125rem/1 var(--pg-font-titlu); border-radius: 4px; }
+.bv-desen-cod em { width: 100%; margin: 2px 0 0; font-style: normal; font-size: 0.625rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--pg-culoare-text); }
+.bv-desen-usa { align-items: flex-end; }
+.bv-desen-usa span { position: relative; width: 32px; height: 44px; background: var(--pg-culoare-linie); border-radius: 4px 4px 0 0; box-shadow: inset -6px 0 0 color-mix(in srgb, var(--pg-culoare-linie) 70%, var(--pg-culoare-text)); }
+.bv-desen-usa span::after { content: ""; position: absolute; right: 9px; top: 22px; width: 5px; height: 5px; border-radius: 50%; background: var(--bv-galben); }
+.bv-gazda { font-weight: 600; }
+.bv-lung { background: var(--pg-culoare-text); color: var(--pg-culoare-suprafata); display: flex; flex-direction: column; }
+.bv-lung h2 { margin-bottom: 10px; }
+.bv-lung ul { flex: 1; margin: 0; padding: 0; list-style: none; }
+.bv-lung li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--pg-culoare-suprafata) 25%, var(--pg-culoare-text)); font-size: 0.84375rem; }
+.bv-lung li b { font-weight: 700; white-space: nowrap; }
+.bv-lung-pret { margin-top: 14px; background: var(--pg-culoare-suprafata); color: var(--pg-culoare-text); box-shadow: inset 6px 0 0 var(--bv-galben); border-radius: 12px; padding: 10px 12px; font-size: 0.8125rem; line-height: 1.35; }
+.bv-lung-pret span { display: block; font-weight: 600; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.bv-lung-pret strong { font: 700 1.5rem/1.2 var(--pg-font-titlu); }
+.bv-lung-pret small { display: block; font-size: 0.75rem; margin-top: 2px; }
+
+/* ---- secțiunile din biblioteca nucleului (pagina camerei, a camerelor, paginile gazdei) ---- */
+.sc-latime { max-width: none; margin: 0; padding: 0; }
+.sc-sectiune { background: var(--pg-culoare-suprafata); border: 1px solid var(--bv-linie-fina); border-radius: var(--bv-raza-mare); padding: 14px; }
+.sc-camere-antet, .sc-camera-antet { background: transparent; border: 0; padding: 6px 0; }
+.sc-camera-antet h1, .sc-camere-antet h1 { font-size: clamp(1.75rem, 5vw, 2.5rem); margin: 0 0 var(--pg-spatiu-2); overflow-wrap: anywhere; }
+.sc-firimituri { margin: 0 0 var(--pg-spatiu-2); font-size: 0.875rem; }
+.sc-camera-pret { font: 700 1.125rem/1.3 var(--pg-font-titlu); }
+.sc-camera-poza { margin-top: var(--pg-spatiu-4); }
+.sc-camera-poza img { width: 100%; max-height: 28rem; object-fit: cover; border-radius: var(--bv-raza-mare); }
+.sc-titlu-sectiune { margin: 0 0 12px; }
+/* calendarul pe toată lățimea cardului (cele două luni alături), cu „Sejurul dumneavoastră” sub el. */
+.sc-rezervare-grila { display: grid; gap: var(--pg-spatiu-5); grid-template-columns: minmax(0, 1fr); }
+.pg-calendar-titlu, .pg-rezumat-titlu { margin: 0 0 10px; }
+.pg-calendar-ajutor { margin-bottom: 10px; }
+.sc-rezervare-rezumat { border-top: 1px solid var(--bv-linie-fina); padding-top: var(--pg-spatiu-4); }
+/* grilă uniformă pe toată lățimea: 3 poze pe rând (2 pe telefon), toate decupate la 4:3 (object-fit: cover),
+   fără goluri; pe ultimul rând incomplet, pozele se lățesc până la marginea grilei, la aceeași înălțime. Poza întreagă
+   se deschide la clic (legătura pusă de img(..., true)). */
+.sc-galerie-grila { display: grid; gap: 4px; grid-template-columns: repeat(6, minmax(0, 1fr)); list-style: none; padding: 0; margin: 0; }
+.sc-galerie-grila > li { grid-column: span 3; min-width: 0; margin: 0; }
+.sc-galerie-grila :is(a, picture) { display: block; }
+.sc-galerie-grila img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--pg-raza); }
+.sc-galerie-grila > li:nth-child(2n+1):last-child { grid-column: span 6; }
+.sc-galerie-grila > li:nth-child(2n+1):last-child img { aspect-ratio: 8 / 3; }
+@media (min-width: 40rem) {
+  .sc-galerie-grila > li { grid-column: span 2; }
+  .sc-galerie-grila > li img { aspect-ratio: 4 / 3; }
+  .sc-galerie-grila > li:nth-child(3n+1):last-child { grid-column: span 6; }
+  .sc-galerie-grila > li:nth-child(3n+1):last-child img { aspect-ratio: 4 / 1; }
+  .sc-galerie-grila > li:nth-child(3n+1):nth-last-child(2), .sc-galerie-grila > li:nth-child(3n+2):last-child { grid-column: span 3; }
+  .sc-galerie-grila > li:nth-child(3n+1):nth-last-child(2) img, .sc-galerie-grila > li:nth-child(3n+2):last-child img { aspect-ratio: 2 / 1; }
+}
+.sc-galerie-grila > li:only-child img { aspect-ratio: 2 / 1; }
+.sc-reguli-lista { margin: 0; padding-left: 1.25rem; }
+.sc-reguli-lista li + li { margin-top: 4px; }
+.sc-text-interior { max-width: 46rem; }
+
+/* ---- subsolul (contactul și blocul legal ale nucleului) ---- */
+.bv-subsol { border-top: 2px solid var(--pg-culoare-text); padding: 14px 0 var(--pg-spatiu-8); font-size: 0.8125rem; color: var(--pg-culoare-text); display: grid; gap: 14px; }
+.bv-subsol a { color: var(--pg-culoare-text); text-underline-offset: 2px; }
+
+/* ---- ecranele mai late ---- */
+@media (min-width: 30rem) {
+  .bv-pagina { padding: 16px; }
+  .bv-spatii-lista { grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }
+  .bv-camere-lista { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  .bv-erou h1 { font-size: 1.5625rem; }
+  .bv-placa-ore .bv-placa-mare { font-size: 1.875rem; }
+  .bv-placa-mare { font-size: 2.125rem; }
+}
+@media (min-width: 45rem) {
+  .bv-antet { flex-wrap: nowrap; }
+  .bv-sigla { margin-right: 0; }
+  .bv-meniu { order: 0; width: auto; margin-left: auto; }
+  .bv-card, .bv-ghid, .bv-harta { padding: 18px; }
+  .bv-cautare { padding: 12px 14px; }
+  .bv-bento { grid-template-columns: repeat(6, 1fr); grid-auto-rows: minmax(118px, auto); }
+  .bv-erou { grid-column: span 4; grid-row: span 3; min-height: 24rem; padding: 16px; justify-content: space-between; }
+  .bv-erou-gol { grid-row: auto; min-height: 0; padding: 0; justify-content: flex-start; }
+  .bv-erou-gol .bv-erou-text { max-width: none; }
+  .bv-erou-reper { position: relative; top: auto; left: auto; right: auto; }
+  .bv-erou-text { max-width: 78%; margin-top: auto; }
+  .bv-erou-legenda { position: absolute; right: 16px; bottom: 16px; z-index: 1; }
+  .bv-erou h1 { font-size: 2rem; }
+  .bv-placa { grid-column: span 2; padding: 16px; }
+  .bv-placa-mare { font-size: 2.75rem; }
+  .bv-placa-ore .bv-placa-mare { font-size: 2.375rem; }
+  .bv-placa-cifre, .bv-placa-text { grid-column: span 2; }
+  .bv-placa-text { grid-column: 1 / -1; }
+  .bv-galerie-grila { grid-template-columns: repeat(4, 1fr); grid-auto-rows: auto; gap: 12px; }
+  .bv-galerie-grila li:first-child { grid-column: span 2; grid-row: span 2; }
+  .bv-galerie-grila li:first-child figure { height: 100%; }
+  .bv-galerie-grila li:first-child picture { flex: 1; min-height: 0; }
+  .bv-galerie-grila li:first-child img { height: 100%; aspect-ratio: auto; }
+  .bv-galerie-2 li:first-child, .bv-galerie-3 li:first-child { grid-row: span 1; }
+  .bv-galerie-2 li:first-child img, .bv-galerie-3 li:first-child img { aspect-ratio: 4 / 3; }
+  .bv-imprejurimi:has(.bv-ghid) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; }
+  .bv-duo:has(.bv-sosire):has(.bv-lung) { grid-template-columns: 1.6fr 1fr; }
+  .bv-pasi { grid-template-columns: repeat(3, 1fr); }
+  .bv-pasi li { display: block; }
+  .bv-pasi h3 { margin-top: 10px; }
+  .bv-desen-cod span { width: 24px; height: 32px; font-size: 1.0625rem; border-radius: 5px; }
+  .bv-desen-cod { gap: 4px; }
+  .bv-desen-cod em { width: auto; margin-left: 4px; align-self: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+@media (forced-colors: active) {
+  .bv-cip, .bv-buton, .bv-eticheta { border: 1px solid CanvasText; }
+}
+/* comutatorul de limbă, separat de meniu, în dreapta antetului: pastila „RO | EN”, cu limba curentă
+   evidențiată; pe telefon stă pe primul rând, lângă siglă, fără deschiderea meniului. */
+.bv-limbi { order: 2; flex: 0 0 auto; }
+.bv-limbi ul { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 2px; border: 1px solid currentColor; border-radius: 999px; }
+.bv-limbi li { margin: 0; padding: 0; }
+.bv-antet .bv-limbi a { display: flex; align-items: center; justify-content: center; min-width: 2.25rem; min-height: 2rem; padding: 0 0.5rem; border: 0; border-radius: 999px; color: inherit; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.04em; line-height: 1; text-decoration: none; text-transform: none; }
+.bv-antet .bv-limbi a[aria-current="true"] { background: color-mix(in srgb, currentColor 22%, transparent); font-weight: 800; }
+.bv-antet .bv-limbi a:hover { text-decoration: underline; }

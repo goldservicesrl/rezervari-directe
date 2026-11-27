@@ -1,0 +1,15 @@
+{# Layoutul temei: cazo.head() în <head> și cazo.foot() ultimul în <body> sunt obligatorii. #}
+<!doctype html>
+<html lang="{{ site.limba }}">
+<head>
+{{ cazo.head() }}
+</head>
+<body class="po-corp">
+<a class="po-salt" href="#continut">{{ t('salt_continut') }}</a>
+{% include "partials/antet.twig" %}
+<main id="continut" class="po-principal">
+{% block continut %}{% endblock %}
+</main>
+{{ cazo.foot() }}
+</body>
+</html>

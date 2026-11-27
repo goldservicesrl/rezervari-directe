@@ -1,0 +1,2 @@
+{#- „de la 250,00 lei / noapte”, cu mențiunea nucleului despre ocupare și costurile obligatorii, când o dă. -#}
+<p class="fz-de-la"><small>{{ t('pret.de_la') }}</small> <b>{{ p.suma|lei }}</b> <small>{{ t('pret.pe_noapte') }}</small>{% if p.mentiune ?? '' %}<em>{{ p.mentiune }}</em>{% endif %}</p>

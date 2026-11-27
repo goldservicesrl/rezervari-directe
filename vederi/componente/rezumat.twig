@@ -1,0 +1,26 @@
+{#- Rezumatul camerei (cazo.rezumat(camera)): datele, oaspeții, planul cu politica de anulare, totalul cu componentele. -#}
+<cazo-rezumat class="pg-rezumat" data-pg="rezumat" data-camera="{{ camera }}" data-api="{{ api }}" data-componente="{{ t('rezumat.componente') }}" data-lucreaza="{{ t('rezumat.calculam') }}" data-date-gresite="{{ t('cautare.date_gresite') }}">
+<h2 class="pg-rezumat-titlu">{{ t('rezumat.titlu') }}</h2>
+{% if activa %}
+<form class="pg-rezumat-formular" method="get" action="{{ formular.actiune }}">
+{% for a in formular.ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+<input type="hidden" name="camera" value="{{ camera }}">
+<div class="pg-camp"><label for="pg-rez-sosire">{{ t('bara.sosire') }}</label><input id="pg-rez-sosire" name="sosire" type="date" value="{{ sosire }}" required autocomplete="off"></div>
+<div class="pg-camp"><label for="pg-rez-plecare">{{ t('bara.plecare') }}</label><input id="pg-rez-plecare" name="plecare" type="date" value="{{ plecare }}" required autocomplete="off"></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-rez-adulti">{{ t('bara.adulti') }}</label><select id="pg-rez-adulti" name="adulti">{% for n in adulti_optiuni %}<option value="{{ n }}"{% if n == adulti %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-rez-copii">{{ t('bara.copii') }}</label><select id="pg-rez-copii" name="copii">{% for n in copii_optiuni %}<option value="{{ n }}"{% if n == copii %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+{% if planuri %}
+<fieldset class="pg-rezumat-planuri"><legend>{{ t('rezumat.plan') }}</legend>
+{% for p in planuri %}<div class="pg-plan"><input type="radio" id="pg-plan-{{ p.id }}" name="plan" value="{{ p.id }}"{% if p.id == plan %} checked{% endif %} aria-describedby="pg-plan-{{ p.id }}-politica"><label for="pg-plan-{{ p.id }}">{{ p.titlu }}</label><span class="pg-plan-politica" id="pg-plan-{{ p.id }}-politica">{{ p.politica }}</span></div>{% endfor %}
+</fieldset>
+{% endif %}
+<button class="pg-buton" type="submit">{{ t('rezumat.calculeaza') }}</button>
+</form>
+<div class="pg-rezumat-total" aria-live="polite">
+{% if total %}{% include 'componente/total.twig' with {r: total} only %}{% else %}<p class="pg-rezumat-indemn">{{ t('rezumat.alegeti_datele') }}</p>{% endif %}
+</div>
+{% else %}
+{% if oprite ?? false %}<p class="pg-oprite" role="status" data-pg="oprite">{{ t('rezervari.oprite') }}</p>{% endif %}
+<p class="pg-rezumat-contact">{% if contact.telefon or contact.email %}{{ t('bara.contact') }}{% if contact.telefon %} <a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a>{% endif %}{% if contact.email %} <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}{% else %}{{ t('bara.contact_fara_contact') }}{% endif %}</p>
+{% endif %}
+</cazo-rezumat>

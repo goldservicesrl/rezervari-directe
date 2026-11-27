@@ -1,0 +1,69 @@
+{#- Căutarea pe toate camerele, conținutul nucleului pe /disponibil. -#}
+<section class="pg-cautare" data-pg="cautare" aria-labelledby="pg-cautare-titlu">
+<h1 id="pg-cautare-titlu" class="pg-titlu-pagina">{{ t('cautare.titlu') }}</h1>
+{% if rezumat is defined %}<p class="pg-cautare-rezumat">{{ rezumat }}</p>{% endif %}
+<form class="pg-cautare-formular" method="get" action="{{ formular.actiune }}" role="search" aria-label="{{ t('cautare.formular') }}">
+{% for a in formular.ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+<div class="pg-camp"><label for="pg-c-sosire">{{ t('bara.sosire') }}</label><input id="pg-c-sosire" name="sosire" type="date" value="{{ cerere.sosire ?? '' }}" required autocomplete="off"></div>
+<div class="pg-camp"><label for="pg-c-plecare">{{ t('bara.plecare') }}</label><input id="pg-c-plecare" name="plecare" type="date" value="{{ cerere.plecare ?? '' }}" required autocomplete="off"></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-c-adulti">{{ t('bara.adulti') }}</label><select id="pg-c-adulti" name="adulti">{% for n in adulti_optiuni %}<option value="{{ n }}"{% if n == (cerere.adulti ?? 2) %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-c-copii">{{ t('bara.copii') }}</label><select id="pg-c-copii" name="copii">{% for n in copii_optiuni %}<option value="{{ n }}"{% if n == (cerere.copii ?? 0) %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<button class="pg-buton" type="submit">{{ t('bara.cauta') }}</button>
+</form>
+{% if not activa %}
+{% if oprite ?? false %}<p class="pg-oprite" role="status" data-pg="oprite">{{ t('rezervari.oprite') }}</p>{% endif %}
+<p class="pg-cautare-mesaj">{% if contact.telefon or contact.email %}{{ t('bara.contact') }}{% if contact.telefon %} <a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a>{% endif %}{% if contact.email %} <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}{% else %}{{ t('bara.contact_fara_contact') }}{% endif %}</p>
+{% elseif cautat and cerere is null %}
+<p class="pg-cautare-mesaj" role="alert">{{ t('cautare.date_gresite') }}</p>
+{% elseif cerere is null %}
+<p class="pg-cautare-mesaj">{{ t('cautare.introduceti') }}</p>
+{% elseif prea_lung ?? null %}
+<p class="pg-cautare-mesaj" role="status">{{ prea_lung }}</p>
+{% else %}
+{% if rezultate %}
+<h2 class="pg-cautare-subtitlu">{{ t('cautare.libere') }}</h2>
+{#- Un card pe unitate: numele și poza mică; pe fiecare tarif, numele cu nota reducerii, politica de
+    anulare pe rândul ei, totalul mare cu „3 nopți, 2 oaspeți” și un singur buton principal: „Rezervați” sau, când
+    sunt mai multe tarife ori camere de ales, „Alegeți”. Pagina camerei rămâne la un clic pe nume sau pe poză. -#}
+<ul class="pg-cautare-lista">
+{% for r in rezultate %}
+<li class="pg-card pg-card--unitate">
+<div class="pg-card-cap">
+{% if r.poza ?? null %}<a class="pg-card-poza" href="{{ r.camera.url }}" tabindex="-1" aria-hidden="true"><img src="{{ r.poza.src }}" alt="" width="{{ r.poza.latime }}" height="{{ r.poza.inaltime }}" loading="lazy" decoding="async"></a>{% endif %}
+<div class="pg-card-nume">
+<h3 class="pg-card-titlu"><a href="{{ r.camera.url }}">{{ r.camera.titlu }}</a></h3>
+{% if r.camera.pret_de_la %}<p class="pg-card-de-la">{{ r.camera.pret_de_la.text }}</p>{% endif %}
+</div>
+</div>
+<ul class="pg-card-planuri">
+{% for p in r.planuri %}
+<li class="pg-card-plan">
+<div class="pg-card-plan-text">
+<p class="pg-card-plan-titlu">{{ p.titlu }}</p>
+{% if p.masa ?? '' %}<p class="pg-masa">{{ p.masa }}</p>{% endif %}
+{% if p.nota ?? '' %}<p class="pg-card-plan-nota">{{ p.nota }}</p>{% endif %}
+<p class="pg-card-politica">{{ p.politica }}</p>
+</div>
+<div class="pg-card-plan-pret">
+{% if p.stare == 'ok' %}
+<p class="pg-card-total"><span class="pg-ascuns">{{ t('comanda.total') }}: </span>{{ p.total_text }}</p>
+<p class="pg-card-sejur">{{ sejur_text }}</p>
+{% else %}
+<p class="pg-card-mesaj">{{ p.mesaj }}</p>
+{% endif %}
+{% if p.rezerva ?? null %}<a class="pg-buton pg-card-alege" href="{{ p.rezerva }}">{{ t(de_ales ? 'cautare.alege' : 'cautare.rezerva') }}<span class="pg-ascuns"> {{ r.camera.titlu }}, {{ p.titlu }}</span></a>
+{% else %}<a class="pg-buton-secundar pg-card-alege" href="{{ p.url }}">{{ t('cautare.detalii') }}<span class="pg-ascuns"> {{ r.camera.titlu }}, {{ p.titlu }}</span></a>{% endif %}
+</div>
+</li>
+{% endfor %}
+</ul>
+</li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="pg-cautare-mesaj">{{ t('cautare.ocupat') }}</p>
+{% if vecine %}<h2 class="pg-cautare-subtitlu">{{ t('cautare.vecine') }}</h2><ul class="pg-cautare-vecine">{% for v in vecine %}<li><a href="{{ v.url }}">{{ v.text }}</a></li>{% endfor %}</ul>{% endif %}
+{% endif %}
+{% if ocupate %}<h2 class="pg-cautare-subtitlu">{{ t('cautare.ocupate') }}</h2><ul class="pg-cautare-ocupate">{% for o in ocupate %}<li><a href="{{ o.url }}">{{ o.titlu }}</a></li>{% endfor %}</ul>{% endif %}
+{% endif %}
+</section>

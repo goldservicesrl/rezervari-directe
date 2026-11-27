@@ -1,0 +1,74 @@
+{#- Grila bento: poza principală cu titlul, localitatea și zona, insignele (dotările bifate), reperul principal,
+    orele de sosire și plecare, cifrele-cheie. Fiecare plăcuță apare doar cu date.
+    Sloturi citite (modelul de conținut v1.1): prezentare.titlu, prezentare.insigne[], proprietate.zona,
+    galerie.principala, poza.legenda, repere[] (nume, minute, mod, km, principal), proprietate.ore.checkin_pana_la,
+    proprietate.forma, camere[].spatii[], camere[].suprafata_mp; în lipsa lor, câmpurile modelului de azi. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set poza = galerie.principala ?? (proprietate.poze|length > 0 ? proprietate.poze|first : null) %}
+{% set titlu = prezentare.titlu ?? proprietate.nume %}
+{#- Reperul din erou: cel marcat principal de gazdă; altfel cel mai apropiat, întâi cele pe jos, apoi cele cu mașina. -#}
+{% set reper = null %}{% set k_reper = 0 %}
+{% for r in repere ?? [] %}{% if r.minute ?? null %}{% set k = r.minute + ((r.mod ?? '') == 'masina' ? 1000 : 0) %}
+{% if r.principal ?? false %}{% if reper is null or not (reper.principal ?? false) %}{% set reper = r %}{% set k_reper = k %}{% endif %}
+{% elseif reper is null or (not (reper.principal ?? false) and k < k_reper) %}{% set reper = r %}{% set k_reper = k %}{% endif %}{% endif %}{% endfor %}
+{% set cu_masina = reper is not null and (reper.mod ?? '') == 'masina' %}
+{% set insigne = prezentare.insigne ?? (g ? g.dotari|slice(0, 4) : []) %}
+{% set ore = proprietate.ore %}
+{% set pana_la = ore.checkin_pana_la ?? '' %}
+{% set dormitoare = 0 %}
+{% if g %}{% for s in g.spatii ?? [] %}{% if s.tip == 'dormitor' %}{% set dormitoare = dormitoare + 1 %}{% endif %}{% endfor %}{% endif %}
+{% set mp = g ? (g.suprafata_mp ?? g.fisa.suprafata_mp ?? null) : null %}
+{#- La forma C, cifrele proprietății sunt numărul de camere și de tipuri; capacitatea rămâne pe fiecare cameră
+    (oaspeti_max e definit pe grup), în cardurile camerelor. -#}
+{% set n_camere = 0 %}
+{% for c in camere %}{% set n_camere = n_camere + c.unitati %}{% endfor %}
+<section class="bv-bento" aria-labelledby="{{ sectiune.id }}-t">
+<div class="bv-erou{% if not poza %} bv-erou-gol{% endif %}">
+{% if poza %}<div class="bv-erou-poza">{{ img(poza, [960, 1440, 2048], true, '(min-width: 56.25rem) 37rem, 100vw') }}</div>
+{% if poza.legenda ?? '' %}<p class="bv-erou-legenda" aria-hidden="true">{{ poza.legenda }}</p>{% endif %}{% endif %}
+{% if reper %}<p class="bv-erou-reper"><span class="bv-punct" aria-hidden="true"></span>{{ t(cu_masina ? 'reper.pana_la_masina' : 'reper.pana_la', {n: reper.minute, nume: reper.nume}) }}</p>{% endif %}
+<div class="bv-erou-text">
+<p class="bv-supratitlu">{{ proprietate.adresa.localitate }}{% if proprietate.zona ?? '' %} · {{ proprietate.zona }}{% endif %}</p>
+<h1 id="{{ sectiune.id }}-t">{{ titlu }}</h1>
+{% if insigne|length > 0 %}<ul class="bv-insigne" aria-label="{{ t('dotari.eticheta') }}">{% for d in insigne %}<li>{{ d is iterable ? d.eticheta : d }}</li>{% endfor %}</ul>{% endif %}
+</div>
+</div>
+{% if reper %}<div class="bv-placa bv-placa-reper">
+<p class="bv-placa-eticheta">{{ t('bento.aproape') }}</p>
+<p class="bv-placa-mare">{{ reper.minute }}<small> {{ t(cu_masina ? 'bento.min_masina' : 'bento.min_pe_jos') }}</small></p>
+<p>{{ t('bento.pana_la') }}<br><strong>{{ reper.nume }}</strong></p>
+</div>{% endif %}
+{% if ore.checkin_de_la %}<div class="bv-placa bv-placa-ore">
+<p class="bv-placa-eticheta">{{ pana_la ? t('ore.checkin') : t('ore.checkin_de_la') }}</p>
+<p class="bv-placa-mare">{{ ore.checkin_de_la }}{% if pana_la %}–{{ pana_la }}{% endif %}</p>
+{% if ore.plecare_pana_la %}<p><strong>{{ t('ore.plecare', {ora: ore.plecare_pana_la}) }}</strong></p>{% endif %}
+</div>{% endif %}
+{% if g and (mp or dormitoare > 0 or g.oaspeti_max or g.unitati > 1) or forma == 'C' and n_camere > 0 %}<div class="bv-placa bv-placa-cifre">
+<dl>
+{% if forma == 'C' %}
+<div><dt>{{ t('cifre.camere') }}</dt><dd>{{ n_camere }}</dd></div>
+<div><dt>{{ t('cifre.tipuri') }}</dt><dd>{{ camere|length }}</dd></div>
+{% else %}
+{% if mp %}<div><dt>{{ t('cifre.suprafata') }}</dt><dd>{{ t('cifre.mp', {n: mp}) }}</dd></div>{% endif %}
+{% if g.unitati > 1 %}<div><dt>{{ t('cifre.unitati') }}</dt><dd>{{ g.unitati }}</dd></div>{% endif %}
+{% if dormitoare > 0 %}<div><dt>{{ dormitoare == 1 ? t('cifre.dormitor') : t('cifre.dormitoare') }}</dt><dd>{{ dormitoare }}</dd></div>{% endif %}
+{% if g.oaspeti_max %}<div><dt>{{ t('cifre.oaspeti') }}</dt><dd>{{ g.oaspeti_max }}</dd></div>{% endif %}
+{% endif %}
+</dl>
+</div>{% endif %}
+{#- Descrierea întreagă, pe paragrafe, cu titlul de pe primul rând despărțit; una lungă își arată primul paragraf,
+    iar restul la „Citiți tot” (<details>, fără JavaScript). -#}
+{% if proprietate.descriere %}{% set paragrafe = proprietate.descriere_paragrafe ?? [proprietate.descriere] %}
+<div class="bv-placa bv-placa-text bv-descriere"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="bv-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+{% if proprietate.descriere|length > 420 and paragrafe|length > 1 %}
+<p>{{ paragrafe|first }}</p>
+<details class="bv-descriere-rest"><summary>{{ t('descriere.tot') }}</summary>
+{% for p in paragrafe|slice(1) %}<p>{{ p }}</p>{% endfor %}
+</details>
+{% else %}
+{% for p in paragrafe %}<p>{{ p }}</p>{% endfor %}
+{% endif %}
+</div>{% endif %}
+</section>

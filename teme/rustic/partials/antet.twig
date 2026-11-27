@@ -1,0 +1,14 @@
+{#- Antetul: sigla gazdei sau rombul brâului, numele și localitatea, meniul nucleului (pe telefon, sub nume, pe un rând
+    care se derulează), limbile și „Rezervați”, spre camere. Dedesubt, brâul. -#}
+{%- set sg = site.sigla ?? null -%}
+<header class="ru-antet">
+<div class="ru-latime ru-antet-interior">
+<a class="ru-marca" href="{{ site.url_baza }}">{% if sg %}<img class="pg-sigla-img" src="{{ sg.url }}" alt="{{ sg.cu_nume ? '' : site.nume }}" width="{{ sg.latime }}" height="{{ sg.inaltime }}">{% else %}<span class="ru-romb" aria-hidden="true"></span>{% endif %}{% if not sg or sg.cu_nume %}<span class="ru-marca-text"><b>{{ site.nume }}</b>{% if proprietate.adresa.localitate %}<small>{{ proprietate.adresa.localitate }}</small>{% endif %}</span>{% endif %}</a>
+<div class="ru-antet-dreapta">
+{% if site.limbi|length > 1 %}<nav class="ru-limbi" aria-label="{{ t('meniu.limba') }}"><ul>{% for l in site.limbi %}<li><a href="{{ l.url }}" hreflang="{{ l.cod }}" lang="{{ l.cod }}" title="{{ l.nume }}"{% if l.activa %} aria-current="true"{% endif %}>{{ l.cod|upper }}</a></li>{% endfor %}</ul></nav>{% endif %}
+<a class="ru-buton" href="{{ url('camere') }}">{{ t('antet.rezervati') }}</a>
+</div>
+{% if meniu.principal|length > 0 %}<nav class="ru-meniu" aria-label="{{ t('meniu.principal') }}"><ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}"{% if m.activ %} aria-current="page"{% endif %}>{{ m.titlu }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+{% include "partials/brau.twig" %}
+</header>

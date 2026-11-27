@@ -1,0 +1,69 @@
+{#- Asistentul trecerii pe datele din panou: câte un pas pe ecran, formulare și redirecționări, fără JavaScript.
+   Cu JavaScript, butoanele „Copiați” de lângă adrese (front/js/admin/copiaza.js); fără el, câmpul rămâne de selectat. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.local.as.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if gata %}
+<p class="{{ anunt_esuat ? 'pa-avertizare' : 'pa-mesaj' }}" role="status">{{ t(anunt_esuat ? 'admin.local.as.gata_neanuntat' : 'admin.local.as.gata') }}</p>
+{#- camerele fără calendar de platformă la pasul 4 au păstrat nopțile ocupate acum ca zile închise. -#}
+{% if inchise_camere %}<p class="pa-avertizare">{{ t('admin.local.as.gata_inchise', {camere: inchise_camere}) }} <a href="{{ url.calendar }}">{{ t('admin.nav.calendar') }}</a></p>{% endif %}
+<ul><li><a href="{{ url.camere }}">{{ t('admin.nav.camere_site') }}</a></li><li><a href="{{ url.calendar }}">{{ t('admin.nav.calendar') }}</a></li><li><a href="{{ url.conexiuni }}">{{ t('admin.nav.conexiuni') }}</a></li></ul>
+{% else %}
+<nav class="pa-pasi-nav" aria-label="{{ t('admin.local.as.pasi') }}">
+<progress class="pa-pasi-bara" max="{{ total_pasi }}" value="{{ pas }}" aria-hidden="true">{{ pas }}/{{ total_pasi }}</progress>
+<ol class="pa-pasi">
+{% for p in pasi %}<li class="pa-pas{% if p.facut %} pa-pas-facut{% endif %}"{% if p.curent %} aria-current="step"{% endif %}>{% if p.url and not p.curent %}<a href="{{ p.url }}">{{ t(p.titlu) }}</a>{% else %}{{ t(p.titlu) }}{% endif %}{% if p.facut %} <span class="pa-pas-gata">({{ t('admin.local.as.facut') }})</span>{% endif %}</li>
+{% endfor %}
+</ol>
+</nav>
+<section class="pa-card" aria-labelledby="pa-as-pas"><h2 id="pa-as-pas">{{ t('admin.local.as.pas_din', {n: pas, total: total_pasi, titlu: t(titlu_pas)}) }}</h2>
+{% if pas == 1 %}
+<p>{{ t('admin.local.as.pas1_text') }}</p>
+<div class="pa-tabel"><table><thead><tr><th scope="col">{{ t('admin.local.as.col.camera') }}</th><th scope="col">{{ t('admin.local.as.col.unitati') }}</th><th scope="col">{{ t('admin.local.as.col.noapte') }}</th><th scope="col">{{ t('admin.local.as.col.weekend') }}</th></tr></thead>
+<tbody>{% for x in camere %}<tr><th scope="row" data-eticheta="{{ t('admin.local.as.col.camera') }}">{{ x.titlu }}</th><td data-eticheta="{{ t('admin.local.as.col.unitati') }}">{{ x.unitati }}</td><td data-eticheta="{{ t('admin.local.as.col.noapte') }}">{{ x.pret_noapte }}</td><td data-eticheta="{{ t('admin.local.as.col.weekend') }}">{{ x.pret_weekend }}</td></tr>{% endfor %}</tbody></table></div>
+<p><a href="{{ url.camere }}">{{ t('admin.local.as.schimbati') }}</a></p>
+<form method="post" action="{{ url.actiune }}pas"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="pas" value="1">
+<p><input type="checkbox" id="pa-as-bifa" name="bifa" value="1" required{% if bifat %} checked{% endif %}><label for="pa-as-bifa">{{ t('admin.local.as.pas1_bifa') }}</label></p>
+<button type="submit" class="pa-buton">{{ t('admin.local.as.urmatorul') }}</button></form>
+{% elseif pas == 2 or pas == 3 %}
+<p>{{ t('admin.local.as.pas' ~ pas ~ '_text') }}</p>
+{% if are_unitati %}<p class="pa-ajutor">{{ t('admin.local.as.unitati_nota') }}</p>{% endif %}
+<div class="pa-tabel"><table><thead><tr><th scope="col">{{ t('admin.local.as.col.camera') }}</th><th scope="col">{{ t('admin.local.as.col.link') }}</th></tr></thead>
+<tbody>{% for x in exporturi %}<tr><th scope="row" data-eticheta="{{ t('admin.local.as.col.camera') }}">{{ x.eticheta }}</th><td data-eticheta="{{ t('admin.local.as.col.link') }}"><label class="pa-ascuns" for="pa-as-exp-{{ loop.index }}">{{ t('admin.local.export.adresa', {camera: x.eticheta}) }}</label><input id="pa-as-exp-{{ loop.index }}" class="pa-lat pa-de-copiat" type="text" readonly value="{{ x.url }}">
+<button type="button" class="pa-buton-secundar" hidden data-copiaza="pa-as-exp-{{ loop.index }}" data-copiat="{{ t('admin.local.as.copiat') }}">{{ t('admin.local.as.copiati') }}<span class="pa-ascuns"> {{ x.eticheta }}</span></button></td></tr>{% endfor %}</tbody></table></div>
+<form method="post" action="{{ url.actiune }}pas"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="pas" value="{{ pas }}">
+<fieldset><legend class="pa-ascuns">{{ t('admin.local.as.pas' ~ pas) }}</legend>
+<p><input type="radio" id="pa-as-da" name="bifa" value="adaugat" required{% if optiuni[platforma] is defined and optiuni[platforma] == 'adaugat' %} checked{% endif %}><label for="pa-as-da">{{ t('admin.local.as.pas' ~ pas ~ '_bifa') }}</label></p>
+<p><input type="radio" id="pa-as-nu" name="bifa" value="nu"{% if optiuni[platforma] is defined and optiuni[platforma] == 'nu' %} checked{% endif %}><label for="pa-as-nu">{{ t('admin.local.as.pas' ~ pas ~ '_nu') }}</label></p></fieldset>
+<button type="submit" class="pa-buton">{{ t('admin.local.as.urmatorul') }}</button></form>
+{% elseif pas == 4 %}
+<p>{{ t('admin.local.as.pas4_text') }}</p>
+{% for x in calendare %}
+<form method="post" action="{{ url.actiune }}calendar" class="pa-formular" id="c-{{ x.id }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="camera" value="{{ x.camera }}"><input type="hidden" name="platforma" value="{{ x.platforma }}">
+<p><label for="pa-as-cal-{{ loop.index }}">{{ x.eticheta }}</label>{% if x.gazda %}<span class="pa-ajutor" id="pa-as-cal-{{ loop.index }}-acum">{{ t('admin.local.as.calendar_acum', {adresa: x.gazda}) }}</span>{% endif %}
+<input id="pa-as-cal-{{ loop.index }}" class="pa-lat" name="url" type="url" required autocomplete="off" inputmode="url"{% if x.gazda %} aria-describedby="pa-as-cal-{{ loop.index }}-acum"{% endif %}></p>
+{% if x.stare %}<p class="pa-mesaj" role="status">{{ x.stare }}</p>{% endif %}
+{% if x.eroare %}<p class="pa-eroare" role="alert">{{ x.eroare }}</p>{% endif %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.local.as.citeste') }}<span class="pa-ascuns"> {{ x.eticheta }}</span></button></form>
+{% else %}<p class="pa-gol">{{ t('admin.local.as.pas4_fara') }}</p>
+{% endfor %}
+<form method="post" action="{{ url.actiune }}pas"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="pas" value="4">
+<p><input type="checkbox" id="pa-as-bifa" name="bifa" value="1" required{% if bifat %} checked{% endif %}><label for="pa-as-bifa">{{ t('admin.local.as.pas4_bifa') }}</label></p>
+<button type="submit" class="pa-buton">{{ t('admin.local.as.urmatorul') }}</button></form>
+{% else %}
+<p>{{ t('admin.local.as.pas5_text') }}</p>
+{% if mesaje_rescrise %}<p>{{ t('admin.local.as.mesaje_rescrise') }}</p>{% endif %}
+<form method="post" action="{{ url.actiune }}treci"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><input type="checkbox" id="pa-as-bifa" name="confirm" value="1" required><label for="pa-as-bifa">{{ t('admin.local.as.pas5_bifa') }}</label></p>
+{% include 'admin/_reauth.twig' with {id: 'trecere'} %}
+<button type="submit" class="pa-buton-pericol">{{ t('admin.local.leg.spre_local_buton') }}</button></form>
+{% endif %}
+</section>
+<div class="pa-actiuni">
+{% if url_inapoi %}<a class="pa-buton-secundar" href="{{ url_inapoi }}">{{ t('admin.local.as.inapoi') }}</a>{% endif %}
+<details class="pa-confirma"><summary>{{ t('admin.local.as.renunta') }}</summary><form method="post" action="{{ url.actiune }}renunta"><input type="hidden" name="_csrf" value="{{ csrf }}"><p>{{ t('admin.local.as.renunta_text') }}</p><button type="submit" class="pa-buton-secundar">{{ t('admin.local.as.renunta_da') }}</button></form></details>
+</div>
+{% if url.copiaza and (pas == 2 or pas == 3) %}<script src="{{ url.copiaza }}" defer></script>{% endif %}
+{% endif %}
+{% endblock %}

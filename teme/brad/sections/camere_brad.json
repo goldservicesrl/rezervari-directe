@@ -1,0 +1,1 @@
+{"nume": {"ro": "Camerele, ca fișe", "en": "Rooms as cards"}, "setari": [{"id": "capitol", "tip": "checkbox", "implicit": true}, {"id": "titlu", "tip": "select", "optiuni": ["titlu", "alegeti"], "implicit": "titlu"}]}

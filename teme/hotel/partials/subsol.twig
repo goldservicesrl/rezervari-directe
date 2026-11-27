@@ -1,0 +1,10 @@
+{#- Subsolul temei (bleumarin): numele în alamă, adresa și meniul principal. Contactul și blocul legal sunt ale
+    nucleului și stau dedesubt; legăturile legale le pune tot nucleul. -#}
+{%- set a = proprietate.adresa -%}
+<div class="et-subsol">
+<div class="et-latime et-subsol-interior">
+<p class="et-subsol-nume">{{ site.nume }}</p>
+{% if a.strada or a.localitate %}<p class="et-subsol-adresa">{{ [a.strada, a.localitate]|join(', ')|trim(', ') }}</p>{% endif %}
+{% if meniu.principal|length > 1 %}<nav aria-label="{{ t('subsol.meniu') }}"><ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}">{{ m.titlu }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+</div>

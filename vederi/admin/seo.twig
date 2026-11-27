@@ -1,0 +1,53 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.seo.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<h2>{{ t('admin.seo.titluri_titlu') }}</h2>
+<p>{{ t('admin.seo.titluri_explicatie') }}</p>
+{% for pg in ['acasa', 'camere'] %}
+<section class="pa-card" aria-labelledby="pa-s-{{ pg }}-acum"><h3 id="pa-s-{{ pg }}-acum">{{ t('admin.seo.pagina.' ~ pg) }}</h3>
+<dl class="pa-detalii">
+{% for l, x in seo_acum[pg] ?? {} %}
+<dt>{{ t('admin.seo.titlu_cautare_' ~ l) }}</dt><dd{% if l == 'en' %} lang="en"{% endif %}>{{ x.titlu.text }} <span class="pa-ajutor">{{ t(x.titlu.scris ? 'admin.seo.sursa.scris' : 'admin.seo.sursa.calculat') }}</span></dd>
+<dt>{{ t('admin.seo.descriere_cautare_' ~ l) }}</dt><dd{% if l == 'en' %} lang="en"{% endif %}>{{ x.descriere.text }} <span class="pa-ajutor">{{ t(x.descriere.scris ? 'admin.seo.sursa.scris' : 'admin.seo.sursa.calculat') }}</span></dd>
+{% endfor %}
+</dl>
+</section>
+{% endfor %}
+{% set scrise = false %}{% for pg in ['acasa', 'camere'] %}{% for l in ['ro', 'en'] %}{% if (seo[pg].titlu[l] ?? '') != '' or (seo[pg].descriere[l] ?? '') != '' %}{% set scrise = true %}{% endif %}{% endfor %}{% endfor %}
+<details class="pa-avansat" id="pa-seo-inlocuiti"{% if scrise %} open{% endif %}><summary>{{ t('admin.seo.inlocuiti') }}</summary>
+<p>{{ t('admin.seo.inlocuiti_ajutor') }}</p>
+<form method="post" action="{{ url.baza }}titluri"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% for pg in ['acasa', 'camere'] %}
+<fieldset><legend>{{ t('admin.seo.pagina.' ~ pg) }}</legend>
+{% for l in ['ro', 'en'] %}
+<p><label for="pa-s-{{ pg }}-t-{{ l }}">{{ t('admin.seo.titlu_cautare_' ~ l) }}</label><span class="pa-ajutor" id="pa-s-{{ pg }}-t-{{ l }}-a">{{ t('admin.seo.titlu_ajutor') }}</span><input id="pa-s-{{ pg }}-t-{{ l }}" name="{{ pg }}_titlu_{{ l }}" class="pa-lat"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="70" value="{{ seo[pg].titlu[l] ?? '' }}" aria-describedby="pa-s-{{ pg }}-t-{{ l }}-a"></p>
+<p><label for="pa-s-{{ pg }}-d-{{ l }}">{{ t('admin.seo.descriere_cautare_' ~ l) }}</label><span class="pa-ajutor" id="pa-s-{{ pg }}-d-{{ l }}-a">{{ t('admin.seo.descriere_ajutor') }}</span><input id="pa-s-{{ pg }}-d-{{ l }}" name="{{ pg }}_descriere_{{ l }}" class="pa-lat"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="160" value="{{ seo[pg].descriere[l] ?? '' }}" aria-describedby="pa-s-{{ pg }}-d-{{ l }}-a"></p>
+{% endfor %}
+</fieldset>
+{% endfor %}
+<button type="submit" class="pa-buton">{{ t('admin.seo.salveaza_titluri') }}</button></form>
+</details>
+<h2>{{ t('admin.seo.traduceri_titlu') }}</h2>
+<p>{{ t('admin.seo.traduceri_explicatie') }}</p>
+<ul>{% for x in traduceri %}<li>{{ t('admin.seo.traduceri_rand', {zona: x.zona, traduse: x.traduse, total: x.total}) }}{% if x.lipsa %} {{ t('admin.seo.de_tradus') }} {{ x.lipsa|join(', ') }}{% endif %}</li>{% endfor %}</ul>
+<details class="pa-avansat" id="pa-adrese-vechi"{% if redirectari or camp_gresit %} open{% endif %}><summary>{{ t('admin.seo.redirectari_avansat') }}</summary>
+<p>{{ t('admin.seo.redirectari_explicatie') }}</p>
+{% if redirectari %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.seo.de') }}</th><th scope="col">{{ t('admin.seo.la') }}</th><th scope="col">{{ t('admin.seo.cod') }}</th><th scope="col">{{ t('admin.cereri.col.actiuni') }}</th></tr></thead>
+<tbody>{% for x in redirectari %}<tr><th scope="row"><code>{{ x.de }}</code></th><td data-eticheta="{{ t('admin.seo.la') }}"><code>{{ x.la }}</code></td><td data-eticheta="{{ t('admin.seo.cod') }}">{{ t(x.cod == 302 ? 'admin.seo.cod_302' : 'admin.seo.cod_301') }}</td><td><form method="post" action="{{ url.baza }}sterge-redirectare"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="de" value="{{ x.de }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.sistem.sterge') }}<span class="pa-ascuns"> ({{ x.de }})</span></button></form></td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="pa-gol">{{ t('admin.seo.redirectari_gol') }}</p>
+{% endif %}
+<h2>{{ t('admin.seo.adauga_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}redirectare"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-r-de">{{ t('admin.seo.de') }}</label><span class="pa-ajutor" id="pa-r-de-a">{{ t('admin.seo.de_ajutor') }}</span><input id="pa-r-de" name="de" class="pa-lat" type="text" maxlength="190" required value="{{ formular.de }}" aria-describedby="pa-r-de-a{% if camp_gresit == 'de' %} pa-r-de-eroare{% endif %}"{% if camp_gresit == 'de' %} aria-invalid="true"{% endif %}>
+{% if camp_gresit == 'de' %}<span class="pa-eroare-camp" id="pa-r-de-eroare">{{ t('admin.seo.eroare_de') }}</span>{% endif %}</p>
+<p><label for="pa-r-la">{{ t('admin.seo.la') }}</label><span class="pa-ajutor" id="pa-r-la-a">{{ t('admin.seo.la_ajutor') }}</span><input id="pa-r-la" name="la" class="pa-lat" type="text" maxlength="500" required value="{{ formular.la }}" aria-describedby="pa-r-la-a{% if camp_gresit == 'la' %} pa-r-la-eroare{% endif %}"{% if camp_gresit == 'la' %} aria-invalid="true"{% endif %}>
+{% if camp_gresit == 'la' %}<span class="pa-eroare-camp" id="pa-r-la-eroare">{{ t('admin.seo.eroare_la') }}</span>{% endif %}</p>
+<p><label for="pa-r-cod">{{ t('admin.seo.cod') }}</label><select id="pa-r-cod" name="cod"><option value="301"{% if formular.cod != 302 %} selected{% endif %}>{{ t('admin.seo.cod_301') }}</option><option value="302"{% if formular.cod == 302 %} selected{% endif %}>{{ t('admin.seo.cod_302') }}</option></select></p>
+<button type="submit" class="pa-buton">{{ t('admin.seo.adauga') }}</button></form>
+</details>
+{% endblock %}

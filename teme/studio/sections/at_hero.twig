@@ -1,0 +1,31 @@
+{#- Titlul pe 12 coloane: numele și localitatea (EC), placa cu poza principală, descrierea (titlul, primul paragraf, restul la „Citiți toată descrierea”), reperul principal. -#}
+{% set poza = proprietate.poze|first %}
+{#- Reperele vin din model (repere, ca la celelalte teme); continut.repere rămâne doar pentru temele vechi. -#}
+{% set repere = repere is defined and repere is iterable and repere|length > 0 ? repere|slice(0, 5) : (continut.repere is defined and continut.repere is iterable ? continut.repere|slice(0, 5) : []) %}
+{% set principal = null %}
+{% for r in repere %}{% if principal is null and r.nume|default('') != '' and r.principal|default(false) %}{% set principal = r %}{% endif %}{% endfor %}
+{% if principal is null %}{% for r in repere %}{% if principal is null and r.nume|default('') != '' %}{% set principal = r %}{% endif %}{% endfor %}{% endif %}
+<section class="at-hero" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime at-hero-grila">
+<p class="at-folio" aria-hidden="true"></p>
+<h1 id="{{ sectiune.id }}-t" class="at-hero-titlu"><span>{{ proprietate.nume }}</span>{% if proprietate.adresa.localitate %} <span><em>{{ t('hero.in') }}</em> {{ proprietate.adresa.localitate }}</span>{% endif %}</h1>
+{% if poza %}<figure class="at-placa">{{ img(poza, [480, 960, 1440], true, '(min-width: 48rem) 30rem, 90vw') }}{% include "partials/legenda.twig" with {p: poza} %}</figure>{% endif %}
+<div class="at-hero-text">
+{% set paragrafe = proprietate.descriere ? (proprietate.descriere_paragrafe ?? [proprietate.descriere]) : [] %}
+{% if paragrafe|length > 0 %}<div class="at-descriere at-hero-descriere"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="at-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+<p>{{ paragrafe|first }}</p>
+{% if paragrafe|length > 1 %}<details class="at-descriere-rest"><summary><span class="at-descriere-toata">{{ t('descriere.toata') }}</span><span class="at-descriere-putin">{{ t('descriere.mai_putin') }}</span></summary>
+{% for x in paragrafe|slice(1) %}<p>{{ x }}</p>{% endfor %}
+</details>{% endif %}
+</div>{% endif %}
+{% if principal %}{% set valoare %}{% include "partials/reper_valoare.twig" with {r: principal} %}{% endset %}<p class="at-aproape"><span>{{ t('hero.aproape') }}</span> {{ principal.nume }}{% if valoare|trim %}, {{ valoare|trim }}{% endif %}</p>{% endif %}
+</div>
+{% if proprietate.coordonate %}
+{% set lat = proprietate.coordonate.lat %}{% set lng = proprietate.coordonate.lng %}
+{% set lat_g = lat|abs|round(0, 'floor') %}{% set lat_m = ((lat|abs - lat_g) * 60)|round(0, 'floor') %}
+{% set lng_g = lng|abs|round(0, 'floor') %}{% set lng_m = ((lng|abs - lng_g) * 60)|round(0, 'floor') %}
+<p class="at-cotor" aria-hidden="true">{% if proprietate.adresa.strada %}{{ proprietate.adresa.strada }}, {% endif %}{{ proprietate.adresa.localitate }} · {{ lat_g }}°{{ lat_m < 10 ? '0' : '' }}{{ lat_m }}′ {{ lat < 0 ? 'S' : 'N' }} {{ lng_g }}°{{ lng_m < 10 ? '0' : '' }}{{ lng_m }}′ {{ lng < 0 ? 'W' : 'E' }}</p>
+{% endif %}
+</div>
+</section>

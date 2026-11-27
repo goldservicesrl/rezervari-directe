@@ -1,0 +1,30 @@
+{# Cardul unei teme (pagina Aspect): captura (sau numele, la o temă fără captură), numele, pentru ce se potrivește,
+   previzualizarea și activarea. `x`: tema; `tert`: tema e încărcată de gazdă (autorul, licența, raportul, ștergerea). #}
+<li class="pa-tema{% if x.activa %} pa-tema-activa{% endif %}" data-tema="{{ x.slug }}">
+{% if x.captura %}<img class="pa-tema-imagine" src="{{ x.captura }}" alt="{{ t('admin.teme.captura_alt', {tema: x.nume}) }}" width="{{ captura.latime }}" height="{{ captura.inaltime }}" loading="lazy" decoding="async">{% else %}<div class="pa-tema-imagine pa-tema-fara-imagine" aria-hidden="true"><span>{{ x.nume }}</span></div>{% endif %}
+<div class="pa-tema-corp">
+<h3 class="pa-tema-nume">{{ x.nume }}</h3>
+{% if x.activa %}<p class="pa-tema-acum"><strong>{{ t('admin.teme.e_activa') }}</strong></p>{% endif %}
+{% if x.pentru %}<p class="pa-tema-pentru">{{ t('admin.teme.potrivita', {pentru: x.pentru}) }}</p>{% endif %}
+{% if tert %}<p class="pa-tema-pentru pa-ajutor">{% if x.autor %}{{ t('admin.teme.col.autor') }}: {{ x.autor }}. {% endif %}{% if x.licenta %}{{ t('admin.teme.col.licenta') }}: {{ x.licenta }}. {% endif %}{{ t('admin.teme.col.versiune') }}: {{ x.versiune }}.</p>{% endif %}
+{% if not tert or x.stare == 'instalata' %}
+<div class="pa-tema-actiuni">
+<a class="pa-tema-legatura" href="{{ url.baza }}{{ x.slug }}/previzualizare">{{ t('admin.teme.previzualizare') }}<span class="pa-ascuns">: {{ x.nume }}</span></a>
+{% if not x.activa %}<form method="post" action="{{ url.baza }}{{ x.slug }}/activeaza"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.teme.activeaza') }}<span class="pa-ascuns">: {{ x.nume }}</span></button></form>{% endif %}
+</div>
+{% else %}<p>{{ t('admin.teme.stare.' ~ x.stare) }}</p>{% endif %}
+{% if tert %}
+{% if x.noua %}<div class="pa-tema-noua" data-versiune="{{ x.noua.sha }}"><p>{{ t('admin.teme.noua', {versiune: x.noua.versiune}) }}</p>
+<div class="pa-tema-actiuni"><a class="pa-tema-legatura" href="{{ url.baza }}{{ x.slug }}/previzualizare?versiune={{ x.noua.sha }}">{{ t('admin.teme.previzualizare_noua', {versiune: x.noua.versiune}) }}</a>
+<form method="post" action="{{ url.baza }}{{ x.slug }}/activeaza"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="versiune" value="{{ x.noua.sha }}"><button type="submit" class="pa-buton">{{ t('admin.teme.activeaza_noua', {versiune: x.noua.versiune}) }}</button></form></div>
+<details><summary>{{ t('admin.teme.raport.titlu') }}<span class="pa-ascuns">: {{ x.nume }} {{ x.noua.versiune }}</span></summary>{% include 'admin/_raport_tema.twig' with {raport: x.noua.raport} %}</details></div>{% endif %}
+<details><summary>{{ t('admin.teme.raport.titlu') }}<span class="pa-ascuns">: {{ x.nume }}</span></summary>{% include 'admin/_raport_tema.twig' with {raport: x.raport} %}</details>
+{% if not x.activa %}<details class="pa-tema-sterge"><summary>{{ t('admin.teme.sterge') }}<span class="pa-ascuns">: {{ x.nume }}</span></summary>
+<form method="post" action="{{ url.baza }}{{ x.slug }}/sterge" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p class="pa-ajutor">{{ t('admin.teme.sterge_ajutor') }}</p>
+<p><input type="checkbox" id="pa-st-{{ x.slug }}" name="confirm" value="1" required><label for="pa-st-{{ x.slug }}">{{ t('admin.teme.sterge_confirm', {tema: x.nume}) }}</label></p>
+{% include 'admin/_reauth.twig' with {id: 'sterge-' ~ x.slug} %}
+<button type="submit" class="pa-buton-pericol">{{ t('admin.teme.sterge_definitiv') }}</button></form></details>{% endif %}
+{% endif %}
+</div>
+</li>

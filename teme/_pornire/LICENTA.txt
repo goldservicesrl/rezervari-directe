@@ -1,0 +1,13 @@
+Tema de pornire Cazo (_pornire)
+
+Copyright (C) 2026 GOLDSERVICE SRL
+
+Această temă face parte din Cazo și este sub Licența Cazo (fișierul LICENSE al
+programului, identificatorul LicenseRef-Cazo). O temă pornită de la ea, prin
+copierea și modificarea fișierelor ei, este o temă terță: o puteți publica sub
+orice licență doriți, inclusiv o licență plătită (Licența Cazo, articolul 4).
+
+This theme is part of Cazo and is under the Cazo License (the program's LICENSE
+file, identifier LicenseRef-Cazo). A theme started from it, by copying and changing
+its files, is a third-party theme: you may publish it under any license you choose,
+including a paid one (the Cazo License, section 4).

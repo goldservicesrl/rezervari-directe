@@ -1,0 +1,3 @@
+{"nume": {"ro": "Rezervarea directă, cu tarifele", "en": "Direct booking, with the rates"}, "setari": [
+  {"id": "cu_titlu", "tip": "checkbox", "implicit": true}
+]}

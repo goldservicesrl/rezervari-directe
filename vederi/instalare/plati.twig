@@ -1,0 +1,83 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.plati') }}</h1>
+<p>{{ t('instalare.plati.text') }}</p>
+{% if persoana_fizica %}<p class="pa-mesaj">{{ t('instalare.plati.persoana_fizica') }}</p>{% endif %}
+<form class="pa-formular" method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+{#- fiecare metodă își arată formularul doar cu bifa pusă (foaia de stil, cu :has(), fără scripturi): cheia
+    Stripe sub bifa cardului, contul bancar sub bifa transferului. Bifa și contul se salvează împreună, la „Continuați”. -#}
+<fieldset class="pa-metode"><legend>{{ t('admin.plati.metode_titlu') }}</legend>
+<div class="pa-metoda">
+<p><input type="checkbox" class="pa-metoda-bifa" id="pi-metoda-card" name="metoda_card" value="1"{% if bife.card %} checked{% endif %}><label for="pi-metoda-card">{{ t('admin.plati.metoda.card') }}</label></p>
+<div class="pa-metoda-detalii">
+<h2>{{ t('instalare.plati.stripe') }}</h2>
+{% if stripe.configurata %}<p>{{ t('admin.plati.cheia', {ultimele4: stripe.ultimele4, mod: stripe.mod}) }}</p>{% endif %}
+<p>{{ t('instalare.plati.stripe_text', {mod: mod_ec == 'live' ? 'rk_live_' : 'rk_test_'}) }}</p>
+{#- pașii cheii restricționate și permisiunile ei, aceiași ca în panou (VerificareCheie::PERMISIUNI). -#}
+<p>{{ t('admin.plati.cheie_pasi') }}</p>
+<ol class="pa-pasi-numerotati"><li>{{ t('admin.plati.cheie_pas.1') }}</li><li>{{ t('admin.plati.cheie_pas.2') }}
+<ul>{% for x in permisiuni %}<li>{{ x }}</li>{% endfor %}</ul></li><li>{{ t('admin.plati.cheie_pas.3') }}</li></ol>
+<p>{{ t('admin.plati.cheie_fel') }}</p>
+<p><label for="pi-stripe">{{ t('instalare.plati.cheie') }}</label><span class="pa-ajutor" id="pi-stripe-ajutor">{{ t('instalare.plati.cheie_ajutor') }}</span><input id="pi-stripe" name="cheie" type="password" autocomplete="off" spellcheck="false" aria-describedby="pi-stripe-ajutor"></p>
+<p class="pa-ajutor">{{ t('instalare.plati.live_2fa') }}</p>
+</div>
+</div>
+<div class="pa-metoda">
+<p><input type="checkbox" class="pa-metoda-bifa" id="pi-metoda-cash" name="metoda_cash" value="1"{% if bife.cash %} checked{% endif %}><label for="pi-metoda-cash">{{ t('admin.plati.metoda.cash') }}</label></p>
+</div>
+<div class="pa-metoda">
+<p><input type="checkbox" class="pa-metoda-bifa" id="pi-metoda-transfer" name="metoda_transfer" value="1"{% if bife.transfer %} checked{% endif %}><label for="pi-metoda-transfer">{{ t('admin.plati.metoda.transfer') }}</label></p>
+<div class="pa-metoda-detalii">
+<h2>{{ t('admin.transfer.titlu') }}</h2>
+{% include 'admin/_transfer.twig' with {tr: transfer_setari} only %}
+</div>
+</div>
+</fieldset>
+<p class="pa-ajutor">{{ t('admin.plati.metode_ajutor') }}</p>
+{#- ce primește oaspetele când gazda anulează rezervarea: alegere obligatorie, fără variantă bifată dinainte. -#}
+<fieldset aria-describedby="pi-anulare-gazda-nota"><legend>{{ t('admin.plati.anulare_gazda_titlu') }}</legend>
+{% for v in ['tot', 'despagubire', 'caz'] %}<p><input type="radio" id="pi-anulare-gazda-{{ v }}" name="anulare_gazda" value="{{ v }}"{% if anulare_gazda == v %} checked{% endif %} required><label for="pi-anulare-gazda-{{ v }}">{{ t('admin.plati.anulare_gazda.' ~ v) }}</label></p>
+{% endfor %}</fieldset>
+<p class="pa-ajutor" id="pi-anulare-gazda-nota">{{ t('admin.plati.anulare_gazda_nota') }}</p>
+<p class="pa-ajutor">{{ t('admin.plati.avertizare_cash') }}</p>
+<p class="pa-ajutor">{{ t('admin.plati.avans_zero') }}</p>
+{% if nota_avans_zero %}<p class="pa-info">{{ nota_avans_zero }}</p>{% endif %}
+{% if nota_nerambursabil %}<p class="pa-info">{{ nota_nerambursabil }}</p>{% endif %}
+{% if sursa == 'easycheck' %}
+<h2>{{ t('admin.pret.include_titlu') }}</h2>
+<input type="hidden" name="include_trimis" value="1">
+<p><input type="checkbox" id="pi-inc-taxe" name="include_taxe" value="1"{% if inclus.taxe %} checked{% endif %}><label for="pi-inc-taxe">{{ t('admin.pret.include.taxe') }}</label></p>
+<fieldset><legend>{{ t('admin.pret.include.taxa_locala') }}</legend>
+{% for v in ['online', 'la_sosire', 'afara'] %}<p{% if v == 'online' %} class="pi-taxa-online"{% endif %}><input type="radio" id="pi-taxa-{{ v }}" name="taxa_locala" value="{{ v }}"{% if inclus.taxa == v %} checked{% endif %} required><label for="pi-taxa-{{ v }}">{{ t('admin.pret.taxa.' ~ v) }}</label></p>{% endfor %}
+<p class="pa-ajutor pi-taxa-online-ajutor">{{ t('instalare.plati.taxa_online_card') }}</p>
+</fieldset>
+<p class="pa-ajutor">{{ t('admin.pret.include_nota') }}</p>
+{% endif %}
+{#- expeditorul e-mailurilor e adresa site-ului, fără alegere; asistentul arată ce a găsit pe domeniu (SPF, DKIM). -#}
+<h2>{{ t('instalare.plati.email_titlu') }}</h2>
+{% if adresa_site %}
+<p>{{ adresa_gazda ? t('instalare.plati.email_text', {adresa: adresa_site, gazda: adresa_gazda}) : t('instalare.plati.email_text_simplu', {adresa: adresa_site}) }}</p>
+<p>{{ t('instalare.plati.email_verificare', {domeniu: domeniu}) }}</p>
+<ul class="pa-verificari">
+{% for id in ['spf', 'dkim'] %}
+{% set gasit = livrare[id] == 'gasit' %}
+<li class="pa-verif pa-verif-{{ gasit ? 'ok' : 'recomandat' }}" data-verificare="{{ id }}" data-stare="{{ livrare[id] }}">
+{% include 'instalare/_semn.twig' %}
+<div class="pa-verif-corp"><p class="pa-verif-rand"><strong>{{ t('instalare.plati.' ~ id ~ '.titlu') }}:</strong> <span class="pa-verif-stare">{{ gasit ? t('instalare.verificari.bun') : t('instalare.verificari.recomandat') }}</span></p>
+{% if not gasit %}<p>{{ t('instalare.plati.' ~ id ~ '.' ~ livrare[id], {domeniu: domeniu}) }}</p>{% endif %}
+</div></li>
+{% endfor %}
+</ul>
+{% if livrare.spf != 'gasit' or livrare.dkim != 'gasit' %}
+<p>{{ t('instalare.plati.email_pasi') }}</p>
+<ol class="pa-pasi-cron"><li>{{ t('instalare.plati.email_pas.1') }}</li><li>{{ t('instalare.plati.email_pas.2', {domeniu: domeniu}) }}</li><li>{{ t('instalare.plati.email_pas.3') }}</li></ol>
+<p>{{ t('instalare.plati.email_continuati') }}</p>
+{% endif %}
+{% else %}
+<p>{{ t('instalare.plati.email_proba', {gazda: domeniu}) }}</p>
+{% endif %}
+<p class="pa-ajutor">{{ t('instalare.plati.email_schimbare') }}</p>
+<p><button type="submit" class="pa-buton">{{ t('instalare.continuati') }}</button></p>
+</form>
+{% endblock %}

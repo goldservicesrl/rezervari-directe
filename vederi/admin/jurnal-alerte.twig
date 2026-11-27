@@ -1,0 +1,17 @@
+{#- Setări › Întreținere, „Jurnalul”, alertele trimise gazdei: perioada, apoi lista. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.alerte.jurnal') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% include 'admin/_jurnal_filtru.twig' %}
+<p>{{ tn('admin.alerte.jurnal_explicatie', pastrare) }}{% if proprietar %} <a href="{{ url.gdpr }}">{{ t('admin.alerte.schimba_termenul') }}</a>{% endif %}</p>
+<nav aria-label="{{ t('admin.alerte.perioada') }}"><ul class="pa-legaturi">{% for z in ['30', '90', 'toate'] %}<li>{% if z == zile %}<a href="{{ url.zile[z] }}" aria-current="true"><strong>{{ t('admin.alerte.zile.' ~ z) }}</strong></a>{% else %}<a href="{{ url.zile[z] }}">{{ t('admin.alerte.zile.' ~ z) }}</a>{% endif %}</li>{% endfor %}</ul></nav>
+{% if jurnal %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rez.col.la') }}</th><th scope="col">{{ t('admin.alerte.col.alerta') }}</th><th scope="col">{{ t('admin.rezervari.cod') }}</th><th scope="col">{{ t('admin.alerte.col.email') }}</th></tr></thead>
+<tbody>{% for x in jurnal %}<tr><td data-eticheta="{{ t('admin.rez.col.la') }}">{{ x.la }}</td><td data-eticheta="{{ t('admin.alerte.col.alerta') }}">{{ x.titlu }}</td><td data-eticheta="{{ t('admin.rezervari.cod') }}">{% if x.ref %}<a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a>{% endif %}</td><td data-eticheta="{{ t('admin.alerte.col.email') }}">{{ x.trimis }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="pa-gol">{{ t('admin.alerte.jurnal_gol.' ~ zile) }}</p>
+{% endif %}
+{% endblock %}

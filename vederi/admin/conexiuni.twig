@@ -1,0 +1,86 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.conexiuni.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{#- site-ul de sine stătător (fără cheie EasyCheck) și trecerea dintr-un mod în altul. -#}
+{% if local %}
+{% if anunt_esuat %}<p class="pa-avertizare" role="status">{{ t('admin.local.as.gata_neanuntat') }}</p>{% endif %}
+<section class="pa-card" aria-labelledby="pa-local"><h2 id="pa-local">{{ t('admin.local.leg.local_titlu') }}</h2>
+<p>{{ t('admin.local.leg.local_text') }}</p>
+<ul><li><a href="{{ url_proprietate }}">{{ t('admin.nav.proprietate') }}</a></li><li><a href="{{ url_camere }}">{{ t('admin.nav.camere_site') }}</a></li><li><a href="{{ url_calendar }}">{{ t('admin.nav.calendar') }}</a></li></ul></section>
+<section class="pa-card" aria-labelledby="pa-spre-ec"><h2 id="pa-spre-ec">{{ t('admin.local.leg.spre_ec_titlu') }}</h2>
+<p>{{ t('admin.local.leg.spre_ec_text') }}</p>
+<ul><li>{{ t('admin.local.leg.spre_ec_1') }}</li><li>{{ t('admin.local.leg.spre_ec_2') }}</li><li>{{ t('admin.local.leg.spre_ec_3') }}</li></ul>
+<form method="post" action="{{ url_legatura }}spre-easycheck"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-spre-ec-cheie">{{ t('admin.local.leg.cheie') }}</label><span class="pa-ajutor" id="pa-spre-ec-cheie-ajutor">{{ t(are_cheie_salvata ? 'admin.local.leg.cheie_ajutor_salvata' : 'admin.local.leg.cheie_ajutor') }}</span><input id="pa-spre-ec-cheie" class="pa-lat" name="cheie" type="password" autocomplete="off"{% if not are_cheie_salvata %} required{% endif %} aria-describedby="pa-spre-ec-cheie-ajutor"></p>
+<p><input type="checkbox" id="pa-spre-ec-conf" name="confirm" value="1" required><label for="pa-spre-ec-conf">{{ t('admin.local.leg.spre_ec_bifa') }}</label></p>
+{% include 'admin/_reauth.twig' with {id: 'spre-ec'} %}
+<button type="submit" class="pa-buton">{{ t('admin.local.leg.spre_ec_buton') }}</button></form></section>
+{% else %}
+{% for a in alerte %}<div class="{{ a.clasa }}"{% if a.clasa == 'pa-eroare' %} role="alert"{% endif %}><p>{{ a.text }}</p>
+{% if a.tehnic %}<p><label for="pa-ec-tehnic">{{ t('admin.conexiuni.anunturi_tehnic_eticheta') }}</label><textarea id="pa-ec-tehnic" class="pa-de-copiat" readonly rows="5">{{ a.tehnic }}</textarea></p>{% endif %}</div>
+{% endfor %}
+{% if la_zi %}<ul class="pa-stari"><li class="{{ la_zi.clasa }}"><span>{{ la_zi.text }}</span></li></ul>{% endif %}
+{% if cheie %}
+<dl class="pa-detalii">
+<dt>{{ t('admin.conexiuni.cheia') }}</dt><dd>{{ ultimele4 ? '…' ~ ultimele4 : '' }} ({{ t('admin.conexiuni.mod.' ~ (stare.mod ?? 'live')) }})</dd>
+<dt>{{ t('admin.conexiuni.scop') }}</dt><dd>{{ t('admin.conexiuni.scop.' ~ (stare.scop ?? 'citire')) }}</dd>
+<dt>{{ t('admin.conexiuni.sursa') }}</dt><dd>{{ t('admin.conexiuni.sursa.' ~ (stare.sursa ?? 'easycheck')) }}</dd>
+</dl>
+<p class="pa-ajutor">{{ t('admin.conexiuni.sursa_ajutor') }}</p>
+<div class="pa-actiuni">
+<form method="post" action="{{ url.baza }}sincronizeaza"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.conexiuni.sincronizeaza') }}</button></form>
+{% if anunturi_de_reparat %}<form method="post" action="{{ url.baza }}anunturi"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar" aria-describedby="pa-ec-anunturi-ajutor">{{ t('conexiuni.ec.reporneste') }}</button></form>{% endif %}
+</div>
+{% if anunturi_de_reparat %}<p class="pa-ajutor" id="pa-ec-anunturi-ajutor">{{ t('admin.conexiuni.anunturi_ajutor') }}</p>{% endif %}
+{% else %}
+<p class="pa-avertizare">{{ t('admin.conexiuni.fara_cheie') }}</p>
+{% endif %}
+{% if resurse or (cheie and not anunturi_de_reparat) %}
+<details class="pa-avansat">
+<summary>{{ t('admin.conexiuni.detalii') }}</summary>
+{% if resurse %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.conexiuni.resursa') }}</th><th scope="col">{{ t('admin.conexiuni.verificat') }}</th><th scope="col">{{ t('admin.conexiuni.schimbat') }}</th><th scope="col">{{ t('admin.conexiuni.eroare') }}</th></tr></thead>
+<tbody>{% for x in resurse %}<tr><th scope="row" data-eticheta="{{ t('admin.conexiuni.resursa') }}">{{ x.nume }}</th><td data-eticheta="{{ t('admin.conexiuni.verificat') }}">{{ x.verificat }}</td><td data-eticheta="{{ t('admin.conexiuni.schimbat') }}">{{ x.schimbat }}</td><td data-eticheta="{{ t('admin.conexiuni.eroare') }}">{% if x.eroare %}<code>{{ x.eroare }}</code>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endif %}
+{% if cheie and not anunturi_de_reparat %}
+<p>{{ t('admin.conexiuni.anunturi_ajutor') }}</p>
+<form method="post" action="{{ url.baza }}anunturi"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('conexiuni.ec.reporneste') }}</button></form>
+{% endif %}
+</details>
+{% endif %}
+{% if rotire %}<div class="pa-info"><p>{{ rotire }}</p>
+<form method="post" action="{{ url.baza }}revino"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% include 'admin/_reauth.twig' with {id: 'revino'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.conexiuni.revino') }}</button></form></div>{% endif %}
+<h2>{{ t('admin.conexiuni.cheie_noua_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}cheie"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-ec">{{ t('admin.conexiuni.cheie_noua') }}</label><span class="pa-ajutor" id="pa-ec-ajutor">{{ t('admin.conexiuni.cheie_noua_ajutor') }}</span><input id="pa-ec" class="pa-lat" name="cheie" type="password" autocomplete="off" required aria-describedby="pa-ec-ajutor"></p>
+{% include 'admin/_reauth.twig' with {id: 'ec'} %}
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza_cheia') }}</button></form>
+{% if trecere %}
+<section class="pa-card" aria-labelledby="pa-trecere"><h2 id="pa-trecere">{{ t('admin.local.trecere.titlu') }}</h2>
+<p>{{ t('admin.local.trecere.explicatie') }}</p>
+<div class="pa-tabel"><table><thead><tr><th scope="col">{{ t('admin.cereri.col.ref') }}</th><th scope="col">{{ t('admin.cereri.col.stare') }}</th><th scope="col">{{ t('admin.local.trecere.col.motiv') }}</th></tr></thead>
+<tbody>{% for x in trecere %}<tr><th scope="row" data-eticheta="{{ t('admin.cereri.col.ref') }}">{{ x.ref }}</th><td data-eticheta="{{ t('admin.cereri.col.stare') }}"><span class="pa-stare {{ x.clasa }}">{{ x.stare }}</span></td><td data-eticheta="{{ t('admin.local.trecere.col.motiv') }}">{{ x.motiv }}</td></tr>{% endfor %}</tbody></table></div>
+{% if camere_locale and camere_ec %}<form method="post" action="{{ url_legatura }}camere" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<fieldset><legend>{{ t('admin.local.trecere.mapare_titlu') }}</legend><p class="pa-ajutor">{{ t('admin.local.trecere.mapare_ajutor') }}</p>
+{% for c in camere_locale %}<p><label for="pa-map-{{ loop.index }}">{{ c.titlu }}</label><select id="pa-map-{{ loop.index }}" name="camera[{{ c.id }}]"><option value="">{{ t('admin.local.trecere.mapare_alege') }}</option>{% for e in camere_ec %}<option value="{{ e.id }}"{% if e.id == c.ales %} selected{% endif %}>{{ e.titlu }}</option>{% endfor %}</select></p>{% endfor %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.local.trecere.mapare_salveaza') }}</button></fieldset></form>{% endif %}
+{% if are_esuate %}<form method="post" action="{{ url_legatura }}retrimite"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.local.trecere.retrimite') }}</button></form>{% endif %}
+</section>
+{% endif %}
+<details class="pa-avansat" id="spre-local"{% if asistent %} open{% endif %}><summary>{{ t('admin.local.leg.spre_local_titlu') }}</summary>
+<p>{{ t('admin.local.leg.spre_local_text') }}</p>
+<ul><li>{{ t('admin.local.leg.spre_local_1') }}</li><li>{{ t('admin.local.leg.spre_local_2') }}</li><li>{{ t('admin.local.leg.spre_local_3') }}</li><li>{{ t('admin.local.leg.spre_local_4') }}</li></ul>
+{#- trecerea pe datele din panou trece prin asistent, câte un pas pe ecran (AdminTrecere). -#}
+{% if asistent %}<p><a class="pa-buton" href="{{ url_trecere }}">{{ t('admin.local.as.continua', {pas: asistent.pas}) }}</a></p>
+{% else %}<form method="post" action="{{ url_trecere_incepe }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p class="pa-ajutor">{{ t('admin.local.as.incepe_ajutor') }}</p>
+<button type="submit" class="pa-buton">{{ t('admin.local.as.incepe') }}</button></form>{% endif %}</details>
+{% endif %}
+<h2>{{ t('admin.conexiuni.stripe_titlu') }}</h2>
+<p>{{ t('admin.conexiuni.stripe_ajutor') }} <a href="{{ url.metode }}">{{ t('admin.nav.metode') }}</a></p>
+{% endblock %}

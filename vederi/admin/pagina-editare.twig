@@ -1,0 +1,34 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ pagina_id ? t('admin.pagini.editare') : t('admin.pagini.adauga') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p><a href="{{ url.lista }}">{{ t('admin.pagini.inapoi') }}</a></p>
+<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<fieldset><legend>{{ t('admin.pagini.col.tip') }}</legend>
+<p><input type="radio" id="pa-tip-l" name="tip" value="libera"{% if tip == 'libera' %} checked{% endif %}><label for="pa-tip-l">{{ t('admin.pagini.tip.libera') }}</label></p>
+<p><input type="radio" id="pa-tip-f" name="tip" value="faq"{% if tip == 'faq' %} checked{% endif %}><label for="pa-tip-f">{{ t('admin.pagini.tip.faq') }}</label></p>
+</fieldset>
+<div class="pa-card" id="pa-format"><p>{{ t('admin.pagini.format') }}</p>
+<pre class="pa-previzualizare">{{ t('admin.pagini.format_exemplu_1') }}
+{{ t('admin.pagini.format_exemplu_2') }}
+{{ t('admin.pagini.format_exemplu_3') }}</pre>
+<p class="pa-ajutor">{{ t('admin.pagini.format_faq') }}</p></div>
+{% for l in ['ro', 'en'] %}
+<fieldset><legend>{{ t('admin.pagini.limba.' ~ l) }}</legend>
+<p><label for="pa-pt-{{ l }}">{{ t('admin.pagini.col.titlu') }}</label><input id="pa-pt-{{ l }}" name="titlu_{{ l }}"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="120" value="{{ titlu[l] ?? '' }}"{% if l == 'ro' %} required{% endif %}{% if erori['titlu_' ~ l] is defined %} aria-invalid="true" aria-describedby="pa-pt-{{ l }}-eroare"{% endif %}>
+{% if erori['titlu_' ~ l] is defined %}<span class="pa-eroare-camp" id="pa-pt-{{ l }}-eroare">{{ erori['titlu_' ~ l] }}</span>{% endif %}</p>
+<p><label for="pa-ps-{{ l }}">{{ t('admin.pagini.slug') }}</label><span class="pa-ajutor" id="pa-ps-{{ l }}-a">{{ t('admin.pagini.slug_ajutor') }} {{ adrese[l] }}</span><input id="pa-ps-{{ l }}" name="slug_{{ l }}"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="80" value="{{ slug[l] ?? '' }}" aria-describedby="pa-ps-{{ l }}-a{% if erori['slug_' ~ l] is defined %} pa-ps-{{ l }}-eroare{% endif %}"{% if erori['slug_' ~ l] is defined %} aria-invalid="true"{% endif %}>
+{% if erori['slug_' ~ l] is defined %}<span class="pa-eroare-camp" id="pa-ps-{{ l }}-eroare">{{ erori['slug_' ~ l] }}</span>{% endif %}</p>
+<p><label for="pa-pc-{{ l }}">{{ t('admin.pagini.text') }}</label><textarea id="pa-pc-{{ l }}" name="continut_{{ l }}"{% if l == 'en' %} lang="en"{% endif %} rows="12" maxlength="20000" aria-describedby="pa-format">{{ continut[l] ?? '' }}</textarea></p>
+<p><label for="pa-pst-{{ l }}">{{ t('admin.seo.titlu_cautare') }}</label><span class="pa-ajutor" id="pa-pst-{{ l }}-a">{{ t('admin.pagini.seo_titlu_ajutor') }}</span><input id="pa-pst-{{ l }}" name="seo_titlu_{{ l }}" class="pa-lat"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="70" value="{{ seo_titlu[l] ?? '' }}" aria-describedby="pa-pst-{{ l }}-a"></p>
+<p><label for="pa-psd-{{ l }}">{{ t('admin.seo.descriere_cautare') }}</label><span class="pa-ajutor" id="pa-psd-{{ l }}-a">{{ t('admin.pagini.seo_descriere_ajutor') }}</span><input id="pa-psd-{{ l }}" name="seo_descriere_{{ l }}" class="pa-lat"{% if l == 'en' %} lang="en"{% endif %} type="text" maxlength="160" value="{{ seo_descriere[l] ?? '' }}" aria-describedby="pa-psd-{{ l }}-a"></p>
+</fieldset>
+{% endfor %}
+<p><label for="pa-po">{{ t('admin.pagini.col.ordine') }}</label><span class="pa-ajutor" id="pa-po-a">{{ t('admin.pagini.ordine_ajutor') }}</span><input id="pa-po" name="ordine" type="number" min="-999" max="999" value="{{ ordine }}" aria-describedby="pa-po-a"></p>
+<p><input type="checkbox" id="pa-pp" name="publicata" value="1"{% if publicata %} checked{% endif %}><label for="pa-pp">{{ t('admin.pagini.publica') }}</label></p>
+<button type="submit" class="pa-buton">{{ t('admin.pagini.salveaza') }}</button></form>
+{% if pagina_id %}<details class="pa-confirma"><summary>{{ t('admin.pagini.sterge') }}</summary>
+<form method="post" action="{{ url.baza }}/sterge"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.pagini.sterge_efect', {titlu: titlu_salvat}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.pagini.sterge_da') }}</button></form></details>{% endif %}
+{% endblock %}

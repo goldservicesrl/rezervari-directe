@@ -1,0 +1,264 @@
+LICENȚA CAZO
+Versiunea 1.0, 22 noiembrie 2026
+
+Copyright (C) 2026 GOLDSERVICE SRL
+
+Textul în limba română este cel care produce efecte. Traducerea în limba engleză,
+de după el, este doar informativă.
+
+1. Definiții
+
+„Titularul” este GOLDSERVICE SRL, titulara drepturilor de autor asupra Programului.
+
+„Programul” este softul Cazo, distribuit de Titular sub această licență: codul
+sursă, documentația, temele oficiale și celelalte fișiere care îl însoțesc, în afara
+componentelor terților descrise la articolul 7. Orice versiune modificată a
+Programului și orice lucrare derivată din el sunt, în această licență, tot
+„Programul”.
+
+„Dumneavoastră” este orice persoană fizică sau juridică ce folosește, copiază,
+modifică sau distribuie Programul.
+
+„Pagină publică” este orice pagină web generată de Program și afișată vizitatorilor
+site-ului fără autentificare: prezentarea, camerele, disponibilitatea, rezervarea,
+paginile legale și celelalte pagini ale site-ului, în orice limbă. Nu sunt pagini
+publice panoul de administrare, instalatorul și răspunsurile care nu sunt pagini
+web (fișierele, calendarele, răspunsurile API, e-mailurile).
+
+„Linkul Cazo” este legătura descrisă la articolul 3.
+
+2. Drepturile acordate
+
+Titularul vă acordă, gratuit, pe toată durata drepturilor de autor și pentru
+întreaga lume, dreptul neexclusiv de a folosi, copia, modifica, adapta și
+distribui Programul, în forma primită sau modificată, inclusiv versiunile
+modificate, gratuit sau contra cost, cu condiția de la articolul 3.
+
+Cine primește Programul de la dumneavoastră primește aceleași drepturi direct de
+la Titular, în aceleași condiții. Când distribuiți Programul, îl distribuiți
+împreună cu textul acestei licențe, ca destinatarul să-și cunoască drepturile și
+condiția.
+
+3. Condiția: Linkul Cazo
+
+Singura condiție a acestei licențe este ca fiecare pagină publică să păstreze, la
+vedere, o legătură cu textul exact:
+
+    Software Regim Hotelier - Cazo.ro
+
+spre adresa https://cazo.ro/. Pe paginile în limba engleză, textul legăturii este:
+
+    Vacation Rental Software - Cazo.ro
+
+Adresa poate purta parametri (de exemplu https://cazo.ro/?utm_source=cazo), dar
+trebuie să ducă la https://cazo.ro/. Poziția, mărimea, culoarea și stilul legăturii
+se pot schimba, cât timp legătura rămâne vizibilă, ușor de citit și de urmat.
+Textul și ținta legăturii nu se pot schimba. Legătura poate purta orice valoare a
+atributului „rel” (de exemplu „sponsored”, „nofollow” sau „noopener”) și se poate
+deschide în aceeași fereastră sau într-una nouă.
+
+Condiția se aplică paginilor publice generate cu orice temă, oficială sau terță,
+și paginilor generate de orice versiune modificată a Programului.
+
+4. Temele
+
+Temele oficiale, distribuite de Titular împreună cu Programul, fac parte din
+Program și sunt sub această licență.
+
+O „temă terță” este o temă pe care o creați dumneavoastră, fără să copiați fișiere
+sau părți substanțiale din fișierele temelor oficiale. O temă pornită de la tema de
+pornire „_pornire”, prin copierea și modificarea fișierelor ei, este tot o temă
+terță.
+
+Puteți crea, folosi, copia, modifica, distribui și vinde teme terțe sub orice
+licență doriți, inclusiv sub o licență comercială sau plătită. Fișierele unei teme
+terțe nu sunt considerate lucrare derivată a Programului, iar folosirea interfeței
+documentate a temelor (formatul pachetului, modelul de vizualizare, funcțiile
+pentru șabloane și schema setărilor, descrise în ghidul pentru teme), inclusiv a
+componentelor pe care Programul le adaugă paginii la randare, nu face din tema
+terță o lucrare derivată a Programului.
+
+Paginile publice generate cu o temă terță păstrează Linkul Cazo, după articolul 3.
+
+5. Încetarea
+
+Dacă Linkul Cazo lipsește de pe o pagină publică, Titularul vă poate notifica, în
+scris sau pe e-mail, la adresa de contact a site-ului. Dacă puneți Linkul Cazo la
+loc în cel mult 30 de zile de la primirea notificării, licența continuă ca și cum
+nu ar fi fost întreruptă. Altfel, licența dumneavoastră încetează la împlinirea
+celor 30 de zile, iar de atunci nu mai aveți dreptul să folosiți, să copiați, să
+modificați sau să distribuiți Programul.
+
+Încetarea licenței dumneavoastră nu afectează licențele celor care au primit
+Programul de la dumneavoastră, cât timp ei respectă condiția de la articolul 3.
+
+6. Fără garanție și fără răspundere
+
+Programul este oferit „ca atare”, fără nicio garanție, expresă sau implicită,
+inclusiv fără garanția că este potrivit pentru un anumit scop, că funcționează
+fără erori sau întreruperi ori că nu încalcă drepturile altora. Titularul nu
+oferă suport și nu se obligă să corecteze erori sau să publice versiuni noi.
+
+În măsura maximă permisă de lege, Titularul nu răspunde pentru niciun prejudiciu,
+direct sau indirect, care rezultă din folosirea Programului sau din imposibilitatea
+de a-l folosi, inclusiv pierderea de date, de rezervări, de venituri sau de profit.
+Această limitare nu se aplică prejudiciilor cauzate cu intenție sau din culpă
+gravă, pentru care răspunderea nu poate fi exclusă potrivit legii.
+
+7. Componentele terților
+
+Programul include biblioteci și fișiere scrise de alți autori (de exemplu cele din
+dosarele „vendor/” și „front/vendor/” și fonturile temelor). Ele rămân sub
+licențele lor, păstrate lângă fișierele lor și enumerate în README, iar această
+licență nu se aplică lor.
+
+8. Numele și mărcile
+
+Această licență nu acordă drepturi asupra numelui „Cazo”, a siglei sau a mărcilor
+Titularului, în afara folosirii lor în Linkul Cazo și pentru a spune, cu
+exactitate, de unde provine Programul.
+
+9. Contribuțiile
+
+Dacă trimiteți Titularului o modificare pentru a fi inclusă în Program, sunteți de
+acord ca ea să fie distribuită sub această licență.
+
+10. Legea aplicabilă
+
+Această licență este guvernată de legea română. Orice litigiu privind această
+licență se soluționează de instanțele competente din România.
+
+
+------------------------------------------------------------------------------
+
+THE CAZO LICENSE
+Version 1.0, 22 November 2026
+
+Copyright (C) 2026 GOLDSERVICE SRL
+
+English translation, for information only. The Romanian text above is the one that
+has legal effect.
+
+1. Definitions
+
+"Licensor" means GOLDSERVICE SRL, the copyright holder of the Software.
+
+"Software" means the Cazo software, distributed by the Licensor under this license:
+the source code, the documentation, the official themes and the other files that
+come with it, except the third-party components described in section 7. Any
+modified version of the Software and any work derived from it is, in this license,
+also "the Software".
+
+"You" means any natural or legal person who uses, copies, modifies or distributes
+the Software.
+
+"Public page" means any web page generated by the Software and shown to the site's
+visitors without signing in: the presentation, the rooms, the availability, the
+booking, the legal pages and the other pages of the site, in any language. The
+administration panel, the installer and the responses that are not web pages
+(files, calendars, API responses, emails) are not public pages.
+
+"Cazo Link" means the link described in section 3.
+
+2. Rights granted
+
+The Licensor grants you, free of charge, for the whole duration of the copyright
+and worldwide, the non-exclusive right to use, copy, modify, adapt and distribute
+the Software, as received or modified, including modified versions, free of charge
+or for a fee, under the condition in section 3.
+
+Anyone who receives the Software from you receives the same rights directly from
+the Licensor, under the same terms. When you distribute the Software, you
+distribute it together with the text of this license, so the recipient knows their
+rights and the condition.
+
+3. The condition: the Cazo Link
+
+The only condition of this license is that every public page keeps, in plain
+sight, a link with the exact text:
+
+    Software Regim Hotelier - Cazo.ro
+
+to the address https://cazo.ro/. On pages in English, the text of the link is:
+
+    Vacation Rental Software - Cazo.ro
+
+The address may carry parameters (for example https://cazo.ro/?utm_source=cazo),
+but it must lead to https://cazo.ro/. The position, size, color and style of the
+link may change, as long as the link stays visible, easy to read and easy to
+follow. The text and the target of the link may not change. The link may carry any
+value of the "rel" attribute (for example "sponsored", "nofollow" or "noopener")
+and may open in the same window or in a new one.
+
+The condition applies to the public pages generated with any theme, official or
+third-party, and to the pages generated by any modified version of the Software.
+
+4. Themes
+
+The official themes, distributed by the Licensor with the Software, are part of
+the Software and are under this license.
+
+A "third-party theme" is a theme you create yourself, without copying files or
+substantial parts of files from the official themes. A theme started from the
+starter theme "_pornire", by copying and changing its files, is still a
+third-party theme.
+
+You may create, use, copy, modify, distribute and sell third-party themes under any
+license you choose, including a commercial or paid license. The files of a
+third-party theme are not considered a work derived from the Software, and the use
+of the documented theme interface (the package format, the view model, the
+template functions and the settings schema, described in the theme guide),
+including the components the Software adds to the page at render time, does not
+make a third-party theme a work derived from the Software.
+
+The public pages generated with a third-party theme keep the Cazo Link, under
+section 3.
+
+5. Termination
+
+If the Cazo Link is missing from a public page, the Licensor may notify you, in
+writing or by email, at the site's contact address. If you put the Cazo Link back
+within 30 days of receiving the notice, the license continues as if it had never
+been interrupted. Otherwise, your license ends when the 30 days have passed, and
+from then on you no longer have the right to use, copy, modify or distribute the
+Software.
+
+The termination of your license does not affect the licenses of those who received
+the Software from you, as long as they comply with the condition in section 3.
+
+6. No warranty and no liability
+
+The Software is provided "as is", without any warranty, express or implied,
+including no warranty that it is fit for a particular purpose, that it works
+without errors or interruptions or that it does not infringe the rights of others.
+The Licensor offers no support and has no obligation to fix errors or to publish
+new versions.
+
+To the fullest extent permitted by law, the Licensor is not liable for any damage,
+direct or indirect, resulting from the use of the Software or from the inability to
+use it, including the loss of data, bookings, revenue or profit. This limitation
+does not apply to damage caused intentionally or by gross negligence, for which
+liability cannot be excluded by law.
+
+7. Third-party components
+
+The Software includes libraries and files written by other authors (for example
+those in the "vendor/" and "front/vendor/" folders and the theme fonts). They
+remain under their own licenses, kept next to their files and listed in the README,
+and this license does not apply to them.
+
+8. Name and trademarks
+
+This license grants no rights to the name "Cazo", the logo or the trademarks of the
+Licensor, except their use in the Cazo Link and to state accurately where the
+Software comes from.
+
+9. Contributions
+
+If you send the Licensor a change to be included in the Software, you agree that it
+may be distributed under this license.
+
+10. Governing law
+
+This license is governed by Romanian law. Any dispute about this license is settled
+by the competent courts of Romania.

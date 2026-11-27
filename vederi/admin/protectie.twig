@@ -1,0 +1,20 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.protectie.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<section class="pa-card" aria-labelledby="pa-cod-titlu"><h2 id="pa-cod-titlu">{{ t('admin.cod.titlu') }}</h2>
+<p>{{ t('admin.cod.explicatie') }}</p>
+<p><strong>{{ cod.activ ? t('admin.cod.pornit') : t('admin.cod.oprit') }}</strong>{% if cod.activ and cod.sursa == 'automat' %} {{ t('admin.cod.automat') }}{% endif %}</p>
+<form method="post" action="{{ url.actiune }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="{{ cod.activ ? 'cod_opreste' : 'cod_porneste' }}"><button type="submit" class="{{ cod.activ ? 'pa-buton-secundar' : 'pa-buton' }}">{{ cod.activ ? t('admin.cod.opreste') : t('admin.cod.porneste') }}</button></form>
+<form method="post" action="{{ url.actiune }}#pa-cod-titlu"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="cod_metode">
+<fieldset><legend>{{ t('admin.cod.metode') }}</legend>
+{% for m in ['cash', 'transfer', 'card'] %}<p><input type="checkbox" class="pa-metoda-bifa" id="pa-cod-{{ m }}" name="metoda_{{ m }}" value="1"{% if m in cod.metode %} checked{% endif %}><label for="pa-cod-{{ m }}">{{ t('admin.cod.metoda.' ~ m) }}</label></p>{% endfor %}
+</fieldset>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.cod.metode_salveaza') }}</button></p></form>
+</section>
+<section class="pa-card" aria-labelledby="pa-intr-titlu"><h2 id="pa-intr-titlu">{{ t('admin.intrerupator.titlu') }}</h2>
+{% if intrerupator.pornit %}<p class="pa-avertizare" role="status">{{ intrerupator_text }}</p>
+<form method="post" action="{{ url.actiune }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="reporneste"><button type="submit" class="pa-buton">{{ t('admin.intrerupator.reporneste') }}</button></form>
+{% else %}<p>{{ intrerupator_text }}</p>{% endif %}
+</section>
+{% endblock %}

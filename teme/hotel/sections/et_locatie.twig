@@ -1,0 +1,26 @@
+{#- Locația: harta nucleului (obligatorie pe Acasă, titlul ei la nivelul 3, cu adresa clădirii) și împrejurimile
+    (repere[]: nume, categorie, minute pe jos sau cu mașina, km; cel mult 5), cu atribuirea nucleului când lista are
+    repere din OpenStreetMap. Fără repere, rămân adresa și harta. -#}
+{% set a = proprietate.adresa %}
+{% set lista = (repere ?? [])|slice(0, 5) %}
+{% set categorii = ['transport', 'restaurant', 'parc', 'atractie', 'magazin', 'servicii', 'natura'] %}
+<section class="et-sectiune et-locatie" aria-labelledby="{{ sectiune.id }}-t">
+<div class="et-latime">
+<div class="et-cap">
+{% if a.localitate %}<p class="et-cheie">{{ a.localitate }}</p>{% endif %}
+<h2 id="{{ sectiune.id }}-t" class="et-titlu">{{ t('locatie.titlu') }}</h2>
+</div>
+<div class="et-locatie-grila">
+<div>
+<div class="et-harta">{{ cazo.harta(3) }}</div>
+</div>
+{% if lista|length > 0 %}<div>
+<h3 class="et-subtitlu">{{ t('locatie.imprejurimi') }}</h3>
+<ol class="et-repere">
+{% for r in lista %}{% set km = (r.km ?? null) ? (site.limba == 'ro' ? (r.km ~ '')|replace({'.': ','}) : r.km) : null %}<li><span class="et-repere-nume">{{ r.nume }}{% if (r.categorie ?? '') in categorii %}<small>{{ t('categorie.' ~ r.categorie) }}</small>{% endif %}</span>{% if r.minute ?? null %}<span class="et-repere-dist"><b>{{ t('reper.min', {n: r.minute}) }}</b>{{ t((r.mod ?? '') == 'masina' ? 'reper.cu_masina' : 'reper.pe_jos') }}</span>{% elseif km %}<span class="et-repere-dist"><b>{{ t('reper.km', {n: km}) }}</b>{{ t('reper.distanta') }}</span>{% endif %}</li>{% endfor %}
+</ol>
+<p class="et-nota">{{ t('locatie.nota') }}{% if repere_atribuire ?? '' %} {{ repere_atribuire }}{% endif %}</p>
+</div>{% endif %}
+</div>
+</div>
+</section>

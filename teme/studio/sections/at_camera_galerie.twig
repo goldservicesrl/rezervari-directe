@@ -1,0 +1,8 @@
+{% if camera.poze|length > 1 %}
+<section class="at-camera-galerie at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('galerie.camera') }}</h2></header>
+<ul class="at-toate-grila">{% for p in camera.poze|slice(1, 60) %}<li><figure>{{ img(p, [480, 960, 1440], false, '(min-width: 40rem) 33vw, 50vw', true) }}{% include "partials/legenda.twig" with {p: p} %}</figure></li>{% endfor %}</ul>
+</div>
+</section>
+{% endif %}

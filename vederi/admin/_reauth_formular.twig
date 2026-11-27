@@ -1,0 +1,3 @@
+{% if not reautentificat %}<form class="pa-formular pa-reauth" method="post" action="{{ url.reauth }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="inapoi" value="{{ sectiune }}">
+<p><label for="pa-reauth-sus">{{ t('admin.reauth.parola') }}</label><span class="pa-ajutor" id="pa-reauth-sus-ajutor">{{ t('admin.reauth.ajutor') }}</span><input id="pa-reauth-sus" name="parola_reauth" type="password" autocomplete="current-password" required aria-describedby="pa-reauth-sus-ajutor"></p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.reauth.buton') }}</button></form>{% endif %}

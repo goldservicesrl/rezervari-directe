@@ -1,0 +1,1 @@
+{% set s = "xxxxxxxx" %}{% for a in 1..100 %}{% set s = [s, s]|join %}{% endfor %}{{ s|length }}

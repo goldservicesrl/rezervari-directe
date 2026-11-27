@@ -1,0 +1,31 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t(jurnal_card|default(false) ? 'admin.platile.titlu_ec' : 'admin.platile.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% include 'admin/_rezervari_vederi.twig' with {activa: 'plati'} %}
+<p>{{ t(jurnal_card|default(false) ? 'admin.platile.explicatie_ec' : 'admin.platile.explicatie') }}</p>
+{% if de_rezolvat %}<section class="pa-avertizare" aria-labelledby="pa-p-rezolvat"><h2 id="pa-p-rezolvat">{{ t('admin.platile.de_rezolvat_titlu') }}</h2>
+<p>{{ t('admin.platile.de_rezolvat_text') }}</p>
+<ul>{% for x in de_rezolvat %}<li><a href="{{ url.rezervari }}{{ x.ref }}">{{ t('admin.platile.de_rezolvat_link', {ref: x.ref}) }}</a> ({{ x.stare }})</li>{% endfor %}</ul></section>{% endif %}
+<form class="pa-filtre" method="get" action="{{ url.baza }}" aria-label="{{ t('admin.rezervari.filtre_titlu') }}"><input type="hidden" name="vedere" value="plati">
+<p><label for="pa-p-stare">{{ t('admin.platile.arata') }}</label><select id="pa-p-stare" name="stare"><option value="">{{ t('admin.platile.cu_bani') }}</option><option value="toate"{% if filtre.stare == 'toate' %} selected{% endif %}>{{ t('admin.platile.toate') }}</option><optgroup label="{{ t('admin.platile.o_stare') }}">{% for x in stari %}<option value="{{ x.valoare }}"{% if x.valoare == filtre.stare %} selected{% endif %}>{{ x.text }}</option>{% endfor %}</optgroup></select></p>
+<p><label for="pa-p-de">{{ t('admin.platile.de') }}</label><input id="pa-p-de" name="de" type="date" value="{{ filtre.de }}"></p>
+<p><label for="pa-p-pana">{{ t('admin.platile.pana') }}</label><input id="pa-p-pana" name="pana" type="date" value="{{ filtre.pana }}"></p>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.rezervari.filtreaza') }}</button></p>
+</form>
+{% if filtre.stare == '' and (lista or stripe_legat) %}<p class="pa-ajutor">{{ t('admin.platile.cu_bani_ajutor') }}</p>{% endif %}
+{% if lista %}
+<p role="status">{{ t('admin.rezervari.gasite', {n: total}) }}</p>
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rezervari.cod') }}</th><th scope="col">{{ t('admin.platile.la') }}</th><th scope="col">{{ t('admin.plati.col.sejur') }}</th><th scope="col">{{ t('admin.rez.incasat') }}</th><th scope="col">{{ t('admin.rez.rambursat') }}</th><th scope="col">{{ t('admin.platile.metoda') }}</th><th scope="col">{{ t('admin.platile.stare') }}</th><th scope="col">{{ t('admin.platile.comanda') }}</th></tr></thead>
+<tbody>{% for x in lista %}<tr data-ref="{{ x.ref }}"><th scope="row" class="pa-fix" data-eticheta="{{ t('admin.rezervari.cod') }}"><a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a></th><td data-eticheta="{{ t('admin.platile.la') }}">{{ x.la }}</td><td data-eticheta="{{ t('admin.plati.col.sejur') }}">{{ x.sejur }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rez.incasat') }}">{{ x.incasat }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rez.rambursat') }}">{{ x.rambursat }}</td><td data-eticheta="{{ t('admin.platile.metoda') }}">{{ x.metoda }}</td><td data-eticheta="{{ t('admin.platile.stare') }}"><span class="pa-stare {{ x.stare_clasa }}">{{ x.stare }}</span></td><td data-eticheta="{{ t('admin.platile.comanda') }}"><span class="pa-stare {{ x.comanda_clasa }}">{{ x.comanda }}</span></td></tr>{% endfor %}</tbody>
+</table></div>
+<p>{{ t('admin.platile.sume_pagina', {incasat: suma_incasata, rambursat: suma_rambursata}) }}</p>
+{% if url.inainte or url.dupa %}<div class="pa-actiuni">{% if url.inainte %}<a class="pa-buton-secundar" href="{{ url.inainte }}">{{ t('admin.pagina.inainte') }}</a>{% endif %}{% if url.dupa %}<a class="pa-buton-secundar" href="{{ url.dupa }}">{{ t('admin.pagina.dupa') }}</a>{% endif %}</div>{% endif %}
+{% elseif not stripe_legat and not cu_filtre %}
+<p class="pa-gol" role="status">{{ t('admin.platile.gol_oprita') }}{% if url.metode %} <a href="{{ url.metode }}">{{ t('admin.platile.gol_oprita_link') }}</a>{% endif %}</p>
+{% else %}
+<p class="pa-gol" role="status">{{ t(cu_filtre ? 'admin.platile.gol_filtre' : 'admin.platile.gol') }}</p>
+{% endif %}
+{% include 'admin/_raport.twig' %}
+{% endblock %}

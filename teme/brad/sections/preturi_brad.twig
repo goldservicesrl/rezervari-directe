@@ -1,0 +1,24 @@
+{#- Prețurile pe noapte: calendarul și rezumatul primei camere (prețul pe zi, nopțile ocupate, sejurul minim, tarifele cu
+    anularea și totalul exact), componente ale nucleului; pachetele pe nopți din planurile EasyCheck vin în componenta
+    nucleului `pachete_pe_nopti`. Celelalte camere au calendarul în pagina lor. -#}
+{% if camere %}
+{% set c = camere|first %}
+<section class="br-cap br-preturi" aria-labelledby="{{ sectiune.id }}-t">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: 'capitol.preturi'} %}
+<h2 id="{{ sectiune.id }}-t" class="br-titlu-cap">{{ t('preturi.titlu') }}</h2>
+<p class="br-preturi-camera">{{ t('preturi.pentru') }} <a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></p>
+{{ cazo.componenta('pachete_pe_nopti') }}
+<div class="br-preturi-grila">
+<div class="br-preturi-cutie">{{ cazo.calendar(c) }}</div>
+<div class="br-preturi-cutie">{{ cazo.rezumat(c) }}</div>
+</div>
+{% if camere|length > 1 %}
+<nav class="br-preturi-alte" aria-labelledby="{{ sectiune.id }}-a">
+<p id="{{ sectiune.id }}-a">{{ t('preturi.alte') }}</p>
+<ul>{% for x in camere|slice(1) %}<li><a href="{{ x.url }}"{% if x.titlu_limba != site.limba %} lang="{{ x.titlu_limba }}"{% endif %}>{{ x.titlu }}</a></li>{% endfor %}</ul>
+</nav>
+{% endif %}
+</div>
+</section>
+{% endif %}

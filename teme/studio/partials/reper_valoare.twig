@@ -1,0 +1,2 @@
+{#- Distanța unui reper: km pentru locurile mai îndepărtate, cu virgula zecimală în română, altfel minutele pe jos, cu „aprox.”. Fără km și fără mers pe jos, nimic. -#}
+{% if r.km|default(null) is not null and r.km|default('') != '' %}{{ t('repere.km', {km: site.limba == 'ro' ? ((r.km|round(1)) ~ '')|replace({'.': ','}) : r.km|round(1)}) }}{% elseif r.minute|default(null) is not null and r.mod|default('pe_jos') == 'pe_jos' %}{{ t('repere.pe_jos', {n: r.minute}) }}{% endif -%}

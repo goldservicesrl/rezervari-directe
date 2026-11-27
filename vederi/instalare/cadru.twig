@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="{{ limba }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+{% if refresh %}<meta http-equiv="refresh" content="1; url={{ refresh }}">{% endif %}
+<title>{{ t('instalare.titlu') }}{% if titlu_pas %} | {{ t(titlu_pas) }}{% endif %}</title>
+{% if css %}<link rel="stylesheet" href="{{ css }}">{% endif %}
+</head>
+<body class="pa-corp" data-pg="instalare">
+<header class="pa-antet">
+<p class="pa-titlu">{{ t('instalare.titlu') }}</p>
+<p class="pa-inline"><a href="{{ url_limba.ro }}" lang="ro"{% if limba == 'ro' %} aria-current="true"{% endif %}>Română</a> · <a href="{{ url_limba.en }}" lang="en"{% if limba == 'en' %} aria-current="true"{% endif %}>English</a></p>
+</header>
+{% if titlu_pas %}
+{# Lista pașilor: pe ecran lat, toți pașii, cu cel curent evidențiat și cei făcuți marcați; pe ecran îngust, „Pasul X din N: numele” și bara de progres. Numerele sunt ale listei (<ol>), deci rămân și fără foaia de stil. #}
+<nav class="pa-pasi-nav" aria-label="{{ t('instalare.pasi') }}">
+<p class="pa-pasi-scurt">{{ t('instalare.pas_din', {n: pas, total: total_pasi}) }}: {{ t(titlu_pas) }}</p>
+<progress class="pa-pasi-bara" max="{{ total_pasi }}" value="{{ pas }}" aria-hidden="true">{{ pas }}/{{ total_pasi }}</progress>
+<ol class="pa-pasi">
+{% for p in pasi %}<li class="pa-pas{% if p.facut %} pa-pas-facut{% endif %}"{% if p.curent %} aria-current="step"{% endif %}>{% if p.url and not p.curent %}<a href="{{ p.url }}">{{ t(p.titlu) }}</a>{% else %}{{ t(p.titlu) }}{% endif %}{% if p.facut %} <span class="pa-pas-gata">({{ t('instalare.facut') }})</span>{% endif %}</li>
+{% endfor %}
+</ol>
+</nav>
+{% endif %}
+<main id="continut" class="pa-principal">
+{% if eroare %}<p class="pa-eroare" role="alert">{{ t(eroare, eroare_p) }}</p>{% endif %}
+{% block continut %}{% endblock %}
+{% if url_inapoi %}<p class="pa-inapoi"><a class="pa-buton-secundar" href="{{ url_inapoi }}">{{ t('instalare.inapoi') }}</a></p>{% endif %}
+</main>
+</body>
+</html>

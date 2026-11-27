@@ -1,0 +1,5 @@
+{#- Filtrul jurnalului de pe Setări › Întreținere: alertele trimise sau ce s-a făcut în panou (doar proprietarul). -#}
+{% if url.jurnal_audit %}<nav aria-label="{{ t('admin.jurnal.filtru') }}"><ul class="pa-legaturi">
+<li>{% if jurnal_fel == 'alerte' %}<a href="{{ url.jurnal_alerte }}" aria-current="true"><strong>{{ t('admin.jurnal.alerte') }}</strong></a>{% else %}<a href="{{ url.jurnal_alerte }}">{{ t('admin.jurnal.alerte') }}</a>{% endif %}</li>
+<li>{% if jurnal_fel == 'audit' %}<a href="{{ url.jurnal_audit }}" aria-current="true"><strong>{{ t('admin.jurnal.audit') }}</strong></a>{% else %}<a href="{{ url.jurnal_audit }}">{{ t('admin.jurnal.audit') }}</a>{% endif %}</li>
+</ul></nav>{% endif %}

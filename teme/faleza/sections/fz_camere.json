@@ -1,0 +1,4 @@
+{"nume": {"ro": "Camerele sau spațiile, în carusel", "en": "Rooms or spaces, in a carousel"}, "setari": [
+  {"id": "aranjament", "tip": "select", "optiuni": ["carusel", "grila"], "implicit": "carusel"},
+  {"id": "cu_titlu", "tip": "checkbox", "implicit": true}
+]}

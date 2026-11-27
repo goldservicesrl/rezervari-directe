@@ -1,0 +1,46 @@
+{% extends 'admin/baza.twig' %}
+{#- cu o singură unitate, „Locul pe site” lipsește, iar bifa „rămâne ascuns” apare doar cât unitatea e ascunsă. -#}
+{% block continut %}
+<h1>{{ t('admin.continut.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if din_ec %}
+{#- Cheia EasyCheck și un singur apartament: datele vin din EasyCheck; textele proprii ale site-ului, opționale, mai jos. -#}
+<section class="pa-card" aria-labelledby="pa-din-ec"><h2 id="pa-din-ec">{{ t('admin.continut.din_ec_titlu') }}</h2>
+<dl class="pa-detalii">
+<dt>{{ t('admin.continut.nume') }}</dt><dd>{{ din_ec.nume }}</dd>
+<dt>{{ t('admin.continut.descriere_ro') }}</dt><dd>{{ din_ec.descriere_ro ?: t('admin.continut.din_ec_gol') }}</dd>
+<dt>{{ t('admin.continut.descriere_en') }}</dt><dd lang="en">{{ din_ec.descriere_en ?: t('admin.continut.din_ec_gol') }}</dd>
+</dl>
+<p>{{ t('admin.continut.din_ec_nota') }}</p>
+<p><a class="pa-buton-secundar" href="{{ din_ec.link }}" rel="noopener">{{ t('admin.continut.din_ec_link') }}</a></p>
+</section>
+<details class="pa-card"{% if din_ec.deschis %} open{% endif %}><summary>{{ t('admin.continut.alt_text') }}</summary>
+{% else %}
+<p>{{ t('admin.continut.explicatie') }}</p>
+{% endif %}
+{% for x in camere %}
+{% set i = loop.index %}
+<section class="pa-card" aria-labelledby="pa-cam-{{ i }}" data-camera="{{ x.id }}"><h2 id="pa-cam-{{ i }}">{{ x.nume_ec }}{% if x.ascunsa %} <span class="pa-stare pa-stare-anulata">{{ t('admin.continut.stare_ascunsa') }}</span>{% endif %}{% if x.de_tradus %} <span class="pa-stare pa-stare-asteapta">{{ t('admin.continut.de_tradus') }}</span>{% endif %}</h2>
+<form method="post" action="{{ url.baza }}{{ x.id }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% if not din_ec %}<p>{{ t('admin.continut.pe_site_acum', {titlu: x.titlu_ro ?: x.nume_ec}) }}</p>
+<details class="pa-avansat"{% if x.texte_deschise %} open{% endif %}><summary>{{ t('admin.continut.alt_text') }}</summary>{% endif %}
+<p><label for="pa-c{{ i }}-tro">{{ t('admin.continut.titlu_ro') }}</label><span class="pa-ajutor" id="pa-c{{ i }}-tro-ajutor">{{ t('admin.continut.titlu_ajutor') }}</span><input id="pa-c{{ i }}-tro" class="pa-lat" name="titlu_ro" type="text" maxlength="120" value="{{ x.titlu_ro }}" placeholder="{{ x.nume_ec }}" lang="ro" aria-describedby="pa-c{{ i }}-tro-ajutor{% if x.erori.titlu_ro is defined %} pa-c{{ i }}-tro-eroare{% endif %}"{% if x.erori.titlu_ro is defined %} aria-invalid="true"{% endif %}>
+{% if x.erori.titlu_ro is defined %}<span class="pa-eroare-camp" id="pa-c{{ i }}-tro-eroare">{{ x.erori.titlu_ro }}</span>{% endif %}</p>
+<p><label for="pa-c{{ i }}-ten">{{ t('admin.continut.titlu_en') }}</label><span class="pa-ajutor" id="pa-c{{ i }}-ten-ajutor">{{ t('admin.continut.titlu_ajutor') }}</span><input id="pa-c{{ i }}-ten" class="pa-lat" name="titlu_en" type="text" maxlength="120" value="{{ x.titlu_en }}" lang="en" aria-describedby="pa-c{{ i }}-ten-ajutor{% if x.erori.titlu_en is defined %} pa-c{{ i }}-ten-eroare{% endif %}"{% if x.erori.titlu_en is defined %} aria-invalid="true"{% endif %}>
+{% if x.erori.titlu_en is defined %}<span class="pa-eroare-camp" id="pa-c{{ i }}-ten-eroare">{{ x.erori.titlu_en }}</span>{% endif %}</p>
+<p><label for="pa-c{{ i }}-dro">{{ t('admin.continut.descriere_ro') }}</label><span class="pa-ajutor" id="pa-c{{ i }}-dro-ajutor">{{ t('admin.continut.regula') }} {{ t('admin.continut.descriere_optionala') }}</span><textarea id="pa-c{{ i }}-dro" name="descriere_ro" maxlength="2000" rows="4" lang="ro" aria-describedby="pa-c{{ i }}-dro-ajutor{% if x.erori.descriere_ro is defined %} pa-c{{ i }}-dro-eroare{% endif %}"{% if x.erori.descriere_ro is defined %} aria-invalid="true"{% endif %}>{{ x.descriere_ro }}</textarea>
+{% if x.erori.descriere_ro is defined %}<span class="pa-eroare-camp" id="pa-c{{ i }}-dro-eroare">{{ x.erori.descriere_ro }}</span>{% endif %}</p>
+<p><label for="pa-c{{ i }}-den">{{ t('admin.continut.descriere_en') }}</label><span class="pa-ajutor" id="pa-c{{ i }}-den-ajutor">{{ t('admin.continut.descriere_en_ajutor') }}</span><textarea id="pa-c{{ i }}-den" name="descriere_en" maxlength="2000" rows="4" lang="en" aria-describedby="pa-c{{ i }}-den-ajutor{% if x.erori.descriere_en is defined %} pa-c{{ i }}-den-eroare{% endif %}"{% if x.erori.descriere_en is defined %} aria-invalid="true"{% endif %}>{{ x.descriere_en }}</textarea>
+{% if x.erori.descriere_en is defined %}<span class="pa-eroare-camp" id="pa-c{{ i }}-den-eroare">{{ x.erori.descriere_en }}</span>{% endif %}</p>
+{% if not din_ec %}</details>{% endif %}
+{% if camere|length > 1 %}<p><label for="pa-c{{ i }}-ord">{{ t('admin.continut.ordine') }}</label><span class="pa-ajutor" id="pa-c{{ i }}-ord-ajutor">{{ t('admin.continut.ordine_ajutor') }}</span><input id="pa-c{{ i }}-ord" class="pa-scurt" name="ordine" type="text" inputmode="numeric" value="{{ x.ordine }}" aria-describedby="pa-c{{ i }}-ord-ajutor{% if x.erori.ordine is defined %} pa-c{{ i }}-ord-eroare{% endif %}"{% if x.erori.ordine is defined %} aria-invalid="true"{% endif %}>
+{% if x.erori.ordine is defined %}<span class="pa-eroare-camp" id="pa-c{{ i }}-ord-eroare">{{ x.erori.ordine }}</span>{% endif %}</p>
+{% endif %}
+{% if camere|length > 1 or x.ascunsa %}<p><input type="checkbox" id="pa-c{{ i }}-asc" name="ascunsa" value="1"{% if x.ascunsa %} checked{% endif %}><label for="pa-c{{ i }}-asc">{{ t('admin.continut.ascunsa') }}</label></p>{% endif %}
+<button type="submit" class="pa-buton">{{ t('admin.continut.salveaza', {camera: x.nume_ec}) }}</button></form>
+</section>
+{% else %}
+<p class="pa-gol">{{ t('admin.continut.gol') }}</p>
+{% endfor %}
+{% if din_ec %}</details>{% endif %}
+{% endblock %}

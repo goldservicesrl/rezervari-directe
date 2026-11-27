@@ -1,0 +1,23 @@
+{
+  "slug": "faleza",
+  "nume": {"ro": "Faleză", "en": "Seafront"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Cazo"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=1.0 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "latime_rem": 70,
+  "pentru": "hotel, vilă sau apartament la mare, cu vedere spre mare",
+  "captura": "captura.webp",
+  "componente": ["harta_termica_preturi"],
+  "continut": ["repere"],
+  "fonturi": [
+    {"familie": "Manrope", "fisier": "assets/fonts/manrope-latin.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "DM Serif Display", "fisier": "assets/fonts/dm-serif-display-latin.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Manrope", "fisier": "assets/fonts/manrope-latin-ext.woff2", "licenta": "OFL-1.1"},
+    {"familie": "DM Serif Display", "fisier": "assets/fonts/dm-serif-display-latin-ext.woff2", "licenta": "OFL-1.1"}
+  ],
+  "css": ["assets/css/faleza.css"],
+  "stiluri": [],
+  "buget": {"css_kb_gz": 12, "js_kb_gz": 0}
+}

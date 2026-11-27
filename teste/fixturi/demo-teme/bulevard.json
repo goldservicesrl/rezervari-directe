@@ -1,0 +1,91 @@
+{
+  "fraza": "Un apartament cu două camere în centrul orașului, închiriat întreg.",
+  "ilustratie": "bloc",
+  "proprietate": {
+    "nume": "Apartament Central",
+    "tip": "apartament",
+    "descriere": {
+      "ro": "Apartament cu două camere în centrul Galațiului, la zece minute de mers pe jos de faleza Dunării, cu bucătărie utilată, mașină de spălat și loc de parcare în curte.",
+      "en": "A two-room apartment in the centre of Galați, a ten-minute walk from the Danube promenade, with a fitted kitchen, a washing machine and a parking space in the yard."
+    },
+    "adresa": {
+      "strada": "Strada Domnească 61, ap. 4",
+      "localitate": "Galați",
+      "judet": "Galați"
+    },
+    "coordonate": {
+      "lat": 45.441,
+      "lng": 28.053
+    },
+    "contact": {
+      "email": "rezervari@apartament-central.test",
+      "telefon": "+40 700 000 000"
+    },
+    "operator": {
+      "denumire": "Popa Andrei PFA",
+      "sediu": "Galați, Strada Domnească 61",
+      "forma": "pfa",
+      "capital_social": null,
+      "cui": "12345678",
+      "registrul_comertului": "F17/123/2020",
+      "clasificari": [
+        {
+          "fel": "certificat",
+          "numar": "1234/2026",
+          "tip_structura": "Apartament de închiriat",
+          "tip_structura_en": "Rental apartment",
+          "categorie": 3,
+          "camere": []
+        }
+      ]
+    }
+  },
+  "camere": [
+    {
+      "id": "apartament",
+      "titlu": "Apartament cu două camere",
+      "unitati": 1,
+      "oaspeti_max": 4,
+      "pret": 26000,
+      "weekend": 3000,
+      "sejur_minim": 1,
+      "spatii": "apartament2"
+    }
+  ],
+  "poze": [
+    {"fisier": "bulevard-exterior.jpg", "categorie": "exterior"},
+    {"fisier": "bulevard-living.jpg", "categorie": "living"},
+    {"fisier": "bulevard-dormitor.jpg", "categorie": "dormitor"},
+    {"fisier": "bulevard-bucatarie.jpg", "categorie": "bucatarie"},
+    {"fisier": "bulevard-baie.jpg", "categorie": "baie"},
+    {"fisier": "bulevard-curte.jpg", "categorie": "parcare"}
+  ],
+  "repere": [
+    {
+      "nume": "Faleza Dunării",
+      "categorie": "parc",
+      "minute": 10,
+      "principal": true
+    },
+    {
+      "nume": "Teatrul Muzical „Nae Leonard”",
+      "categorie": "atractie",
+      "minute": 4
+    },
+    {
+      "nume": "Muzeul de Istorie „Paul Păltânea”",
+      "categorie": "atractie",
+      "minute": 6
+    },
+    {
+      "nume": "Grădina Botanică Galați",
+      "categorie": "parc",
+      "km": 2.5
+    },
+    {
+      "nume": "Gara Galați",
+      "categorie": "transport",
+      "km": 3
+    }
+  ]
+}

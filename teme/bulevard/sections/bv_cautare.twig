@@ -1,0 +1,9 @@
+{#- Căutarea: bara nucleului (datele, oaspeții, butonul) și „de la X lei pe noapte” al celei mai ieftine camere,
+    cu textul nucleului (ocuparea și costurile obligatorii le scrie nucleul lângă preț). Fără preț în EasyCheck,
+    rândul de preț lipsește. -#}
+{% set ieftina = null %}
+{% for c in camere %}{% if c.pret_de_la and (ieftina is null or c.pret_de_la.suma < ieftina.pret_de_la.suma) %}{% set ieftina = c %}{% endif %}{% endfor %}
+<section class="bv-cautare" aria-label="{{ t('cautare.eticheta') }}">
+{{ cazo.bara_rezervare() }}
+{% if ieftina %}<p class="bv-cautare-pret">{{ ieftina.pret_de_la.text }}</p>{% endif %}
+</section>

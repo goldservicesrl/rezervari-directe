@@ -1,0 +1,26 @@
+{#- Galeria ca foaie de contact: o poză pe categorie, în ordinea categoriilor, cel mult 5; restul pozelor la „Toate fotografiile”. Prima poză e deja pe placa din deschidere, deci nu se repetă în foaie; cu o singură poză, secțiunea lipsește. -#}
+{% set poze = proprietate.poze %}
+{% if poze|length > 1 %}
+{% set ordine = ['exterior', 'intrare', 'living', 'camera', 'dormitor', 'bucatarie', 'loc_de_masa', 'masa', 'baie', 'spatiu_lucru', 'balcon', 'terasa', 'gradina', 'piscina', 'spatii_comune', 'comun', 'restaurant', 'parcare', 'priveliste', 'vedere', 'imprejurimi'] %}
+{% set cu_categorii = false %}
+{% for p in poze %}{% if p.rol in ordine %}{% set cu_categorii = true %}{% endif %}{% endfor %}
+{% set alese = '' %}{% set numar = 0 %}
+{% if cu_categorii %}
+{% for cat in ordine %}{% if numar < 5 %}{% set gasit = false %}{% for p in poze %}{% if not gasit and loop.index0 > 0 and p.rol == cat %}{% set alese = alese ~ loop.index0 ~ ',' %}{% set numar = numar + 1 %}{% set gasit = true %}{% endif %}{% endfor %}{% endif %}{% endfor %}
+{% endif %}
+{% for p in poze %}{% if numar < 5 and loop.index0 > 0 and (',' ~ loop.index0 ~ ',') not in (',' ~ alese) %}{% set alese = alese ~ loop.index0 ~ ',' %}{% set numar = numar + 1 %}{% endif %}{% endfor %}
+<section class="at-galerie at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('galerie.titlu') }}</h2></header>
+<div class="at-foaie at-foaie-{{ numar }}">
+{% for i in alese|trim(',')|split(',') %}<figure>{{ img(poze[i], [480, 960], false, '(min-width: 48rem) 34rem, 100vw', true) }}{% include "partials/legenda.twig" with {p: poze[i]} %}</figure>{% endfor %}
+</div>
+{% if poze|length > numar + 1 %}
+<details class="at-toate">
+<summary>{{ t('galerie.toate', {n: poze|length}) }}</summary>
+<ul class="at-toate-grila">{% for p in poze %}<li><figure>{{ img(p, [480], false, '(min-width: 48rem) 14rem, 45vw', true) }}{% include "partials/legenda.twig" with {p: p} %}</figure></li>{% endfor %}</ul>
+</details>
+{% endif %}
+</div>
+</section>
+{% endif %}

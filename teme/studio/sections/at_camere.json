@@ -1,0 +1,1 @@
+{"nume": {"ro": "Camerele, câte un card pe tip", "en": "Rooms, one card per type"}, "setari": [{"id": "titlu", "tip": "select", "optiuni": ["titlu", "toate"], "implicit": "titlu"}]}

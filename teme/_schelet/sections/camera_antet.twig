@@ -1,0 +1,8 @@
+<section class="sc-sectiune sc-camera-antet" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime">
+{% if camere|length > 1 %}<p class="sc-firimituri"><a href="{{ url('camere') }}">{{ t('camere.titlu') }}</a></p>{% endif %}
+<h1 id="{{ sectiune.id }}-t"{% if camera.titlu_limba != site.limba %} lang="{{ camera.titlu_limba }}"{% endif %}>{{ camera.titlu }}</h1>
+{% if camera.pret_de_la %}<p class="sc-camera-pret">{{ camera.pret_de_la.text }}</p>{% endif %}
+</div>
+{% if camera.poza_principala %}<div class="sc-latime sc-camera-poza">{{ img(camera.poza_principala, [960, 1440, 2048], true, '(min-width: 72rem) 72rem, 100vw', true) }}</div>{% endif %}
+</section>

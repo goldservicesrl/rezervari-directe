@@ -1,0 +1,13 @@
+<section class="sc-sectiune sc-reguli" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime">
+<h2 id="{{ sectiune.id }}-t" class="sc-titlu-sectiune">{{ t('reguli.titlu') }}</h2>
+<ul class="sc-reguli-lista">
+{% if proprietate.ore.checkin_de_la %}<li>{{ t('reguli.checkin', {ora: proprietate.ore.checkin_de_la}) }}</li>{% endif %}
+{% if proprietate.ore.plecare_pana_la %}<li>{{ t('reguli.plecare', {ora: proprietate.ore.plecare_pana_la}) }}</li>{% endif %}
+{#- „Copiii și bebelușii sunt bineveniți.” pe un singur rând, când amândouă regulile sunt „da”. -#}
+{% set impreuna = proprietate.reguli_casa.copii is defined and proprietate.reguli_casa.copii is same as(true) and proprietate.reguli_casa.bebelusi is defined and proprietate.reguli_casa.bebelusi is same as(true) %}
+{% if impreuna %}<li>{{ t('reguli.copii_bebelusi.da') }}</li>{% endif %}
+{% for r in (impreuna ? ['animale', 'evenimente', 'fumat'] : ['copii', 'bebelusi', 'animale', 'evenimente', 'fumat']) %}{% if proprietate.reguli_casa[r] is defined and proprietate.reguli_casa[r] is not null %}<li>{{ t('reguli.' ~ r ~ (proprietate.reguli_casa[r] ? '.da' : '.nu'), {n: proprietate.reguli_casa.animale_max ?? ''}) }}</li>{% endif %}{% endfor %}
+</ul>
+</div>
+</section>

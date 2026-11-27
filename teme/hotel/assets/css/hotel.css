@@ -1,0 +1,337 @@
+/* Hotel (fostă Etaj): tema de hotel. Bleumarin de cerneală și alamă, Cormorant pentru titluri, Jost pentru text, servite
+   local; colțuri drepte și semnul lucarnei (fereastra din acoperiș) ca marcaj. Fotografiile sunt ale gazdei: textul
+   stă pe panouri pline, niciodată direct pe poză. Fără animații decorative: doar tranziții de culoare, de cel mult
+   150 ms, oprite la prefers-reduced-motion. Culorile --pg-* vin din jetoanele gazdei; cele fixe ale temei sunt mai jos. */
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/jost-400-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(../fonts/jost-400-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../fonts/jost-500-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Jost";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../fonts/jost-500-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Cormorant";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/cormorant-500-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Cormorant";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/cormorant-500-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Cormorant";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/cormorant-600-italic-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Cormorant";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/cormorant-600-italic-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+.et-corp {
+  --et-noapte: #0b1430;
+  --et-noapte-text: #e8ebf3;
+  --et-noapte-slab: #b4bcd0;
+  --et-alama: #d9b068;
+  --et-alama-deschis: #e6c07e;
+  --et-text-slab: #4a5368;
+  --et-durata: 0.15s;
+  font-family: var(--pg-font-text);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+h1, h2, h3, .et-titlu { font-family: var(--pg-font-titlu); font-weight: 500; line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+a { color: inherit; text-underline-offset: 4px; transition: color var(--et-durata), background-color var(--et-durata), border-color var(--et-durata); }
+:focus-visible { outline: 3px solid var(--pg-culoare-accent); outline-offset: 3px; }
+.et-latime, .sc-latime { max-width: 74rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px), 4vw); padding-right: max(16px, env(safe-area-inset-right, 0px), 4vw); }
+.et-salt { position: absolute; left: -100vw; top: 0; padding: 0.75rem 1rem; background: var(--pg-culoare-accent); color: var(--pg-culoare-accent-contrast); }
+.et-salt:focus { left: 16px; z-index: 30; }
+.et-ascuns { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+figure { margin: 0; }
+
+/* butoanele: colțuri drepte, cel puțin 48 px pe înălțime (44 px în antet) */
+.et-buton { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 48px; padding: 0.7rem 1.35rem; border: 1px solid transparent; border-radius: var(--pg-raza); font: 500 0.9375rem/1.2 var(--pg-font-text); letter-spacing: 0.03em; text-decoration: none; cursor: pointer; }
+.et-buton-plin { background: var(--pg-culoare-accent); color: var(--pg-culoare-accent-contrast); }
+.et-buton-plin:hover { background: var(--pg-culoare-text); }
+.et-buton-alama { background: var(--et-alama); color: var(--et-noapte); }
+.et-buton-alama:hover { background: var(--et-alama-deschis); }
+.et-legatura { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 500; color: var(--pg-culoare-accent); text-decoration: underline; }
+.et-legatura:hover { color: var(--pg-culoare-text); }
+
+/* semnul lucarnei: o fereastră rotunjită sus, ca ochiul din acoperiș */
+.et-cheie { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--pg-culoare-accent); }
+.et-cheie::before { content: ""; flex: none; width: 24px; height: 12px; border-radius: 12px 12px 0 0; background: currentColor; }
+.et-lucarna { flex: none; position: relative; width: 32px; height: 20px; border: 2px solid var(--et-alama); border-bottom: 0; border-radius: 16px 16px 0 0; }
+.et-lucarna::after { content: ""; position: absolute; left: 13px; top: 4px; width: 2px; height: 14px; background: var(--et-alama); }
+
+/* antetul */
+.et-antet { background: var(--et-noapte); color: var(--et-noapte-text); }
+.et-antet :focus-visible { outline-color: var(--et-alama); }
+.et-antet-interior { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.et-marca { flex: 1 1 0; display: inline-flex; align-items: center; gap: 0.6rem; min-height: 44px; min-width: 0; color: var(--et-noapte-text); text-decoration: none; }
+.et-marca-nume { font-family: var(--pg-font-titlu); font-size: clamp(1.25rem, 1rem + 1.2vw, 1.5rem); line-height: 1.1; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.et-antet-dreapta { flex: none; display: flex; align-items: center; gap: 0.25rem; }
+.et-antet .et-buton { min-height: 44px; padding: 0.5rem 0.875rem; }
+.et-meniu { order: 3; flex: 1 0 100%; overflow-x: auto; }
+.et-meniu ul { display: flex; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
+.et-meniu a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.8rem 0 0; color: var(--et-noapte-slab); font-size: 0.9375rem; text-decoration: none; white-space: nowrap; }
+.et-meniu a:hover, .et-meniu a[aria-current] { color: var(--et-noapte-text); text-decoration: underline; }
+.et-limbi ul { display: flex; list-style: none; margin: 0; padding: 0; }
+.et-limbi a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: var(--et-noapte-slab); font-size: 0.875rem; letter-spacing: 0.08em; text-decoration: none; }
+.et-limbi a:hover, .et-limbi a[aria-current="true"] { color: var(--et-noapte-text); }
+.et-limbi a[aria-current="true"] { text-decoration: underline; }
+
+/* deschiderea: fotografia gazdei și panoul plin */
+.et-erou { background: var(--et-noapte); }
+.et-erou-foto { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #1c2645; }
+.et-erou-foto picture, .et-erou-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.et-erou-panou { position: relative; display: grid; gap: 1rem; min-width: 0; margin-top: -2.5rem; padding: 1.5rem 1.25rem 2rem; background: var(--et-noapte); color: var(--et-noapte-text); }
+.et-erou-fara-poza .et-erou-panou { margin-top: 0; }
+.et-erou :focus-visible { outline-color: var(--et-alama); }
+.et-erou-tip { margin: 0; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--et-noapte-slab); }
+.et-erou-titlu { font-size: clamp(3rem, 1.6rem + 6.5vw, 6.5rem); line-height: 0.92; letter-spacing: -0.025em; color: var(--et-alama); overflow-wrap: anywhere; }
+.et-erou-zona { margin: 0; font-family: var(--pg-font-titlu); font-size: 1.375rem; font-style: italic; font-weight: 600; line-height: 1.25; }
+.et-erou-text { margin: 0; max-width: 36rem; }
+/* descrierea din EasyCheck, cu restul la „Citiți toată descrierea” */
+.et-descriere-titlu { margin-bottom: 0.375em; font-family: var(--pg-font-titlu); font-size: 1.25rem; font-weight: 600; color: var(--et-alama-deschis); }
+.et-descriere p { margin: 0 0 0.75em; }
+.et-descriere > p:last-child, .et-descriere-rest p:last-child { margin-bottom: 0; }
+.et-descriere-rest summary { display: inline-flex; align-items: center; gap: 0.5em; min-height: 44px; cursor: pointer; list-style: none; color: var(--et-alama); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 1px solid currentColor; }
+.et-descriere-rest summary::-webkit-details-marker { display: none; }
+.et-descriere-rest summary::after { content: "+" / ""; }
+.et-descriere-rest[open] summary::after { content: "\2212" / ""; }
+.et-descriere-rest[open] .et-descriere-toata, .et-descriere-rest:not([open]) .et-descriere-putin { display: none; }
+.et-insigne { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+.et-insigne li { padding: 0.3rem 0.8rem; border: 1px solid #3a4a78; border-radius: 999px; font-size: 0.875rem; }
+.et-erou-reper { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.6rem; margin: 0; color: var(--et-noapte-slab); font-size: 0.9375rem; }
+.et-erou-reper b { font-family: var(--pg-font-titlu); font-size: 1.5rem; font-weight: 500; color: var(--et-alama); }
+
+/* rezervarea: bara nucleului pe un panou alb, cu marginea de sus în culoarea accentului */
+.et-rezervare { position: relative; z-index: 3; padding-top: 1rem; }
+.et-rezervare-simpla { padding-top: 0; }
+.et-bara { padding: 1.5rem clamp(1rem, 3vw, 2rem) 1.25rem; border: 1px solid var(--pg-culoare-linie); border-top: 3px solid var(--pg-culoare-accent); background: var(--pg-culoare-suprafata); box-shadow: 0 24px 48px -30px rgba(11, 20, 48, 0.5); }
+.et-bara-titlu { font-size: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem); margin-bottom: 1rem; }
+.et-bara .pg-bara-formular { gap: 1rem 0.75rem; }
+.et-bara .pg-camp { flex: 1 1 9.5rem; }
+.et-bara .pg-camp-mic { flex: 1 1 8.5rem; }
+.et-bara .pg-camp label { font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+.et-bara .pg-camp input, .et-bara .pg-camp select { min-height: 48px; border-color: var(--pg-culoare-linie); font-size: 1rem; }
+.et-bara .pg-bara-formular .pg-buton { flex: 1 1 100%; min-height: 52px; font-weight: 500; letter-spacing: 0.03em; }
+.et-pas { white-space: nowrap; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); }
+.et-pas select { width: calc(100% - 88px); min-height: 46px; border: 0; text-align: center; text-align-last: center; appearance: none; vertical-align: middle; }
+.et-pas-buton { width: 44px; min-height: 46px; border: 0; font: 400 1.375rem/1 var(--pg-font-text); vertical-align: middle; cursor: pointer; }
+.et-pas-buton:disabled { cursor: default; font-weight: 300; }
+.et-bara-jos { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; margin: 1rem 0 0; font-size: 0.875rem; color: var(--et-text-slab); }
+.et-tarife { margin-top: 1.25rem; }
+.et-tarife-titlu { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.et-tarife ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--pg-culoare-text); }
+.et-tarif { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--pg-culoare-linie); font-size: 0.9375rem; }
+.et-tarif-nume { font-weight: 500; }
+.et-tarif-masa { padding: 0.125rem 0.625rem; border: 1px solid var(--pg-culoare-accent); color: var(--pg-culoare-accent); font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; }
+.et-tarif-anulare { flex: 1 1 16rem; color: var(--et-text-slab); }
+/* banda fixă de jos, pe telefon, doar cât butonul fix al nucleului e pe ecran (formularul e în afara lui) */
+.et-bara-fixa { display: none; position: fixed; z-index: 10; left: 0; right: 0; bottom: 0; background: var(--et-noapte); color: var(--et-noapte-text); box-shadow: 0 -10px 30px -12px rgba(11, 20, 48, 0.5); }
+.et-bara-fixa p { max-width: calc(100% - 13rem); margin: 0; padding: 0.6rem 0 max(0.6rem, env(safe-area-inset-bottom, 0px)); color: var(--et-noapte-slab); font-size: 0.875rem; line-height: 1.3; }
+.et-bara-fixa b { display: block; font-family: var(--pg-font-titlu); font-size: 1.1875rem; font-weight: 500; color: var(--et-noapte-text); }
+
+/* secțiunile */
+.et-sectiune { padding-top: clamp(4rem, 3rem + 5vw, 7rem); }
+.et-cap { display: grid; gap: 0.85rem; max-width: 40rem; margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem); }
+.et-titlu { font-size: clamp(2.5rem, 1.9rem + 2.6vw, 4rem); }
+.et-subtitlu { font-size: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem); margin-bottom: 1rem; }
+.et-nota { margin: 0.85rem 0 0; font-size: 0.8125rem; color: var(--et-text-slab); }
+
+/* camerele */
+.et-camere { display: grid; gap: 3rem; list-style: none; margin: 0; padding: 0; }
+.et-camera { position: relative; display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 1rem; min-width: 0; border: 1px solid var(--pg-culoare-linie); background: var(--pg-culoare-suprafata); }
+.et-camera > * { min-width: 0; }
+.et-camera-poza { aspect-ratio: 4 / 3; overflow: hidden; background: #d5dae3; }
+.et-camera-poza picture, .et-camera-poza img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.et-fara-poza { display: block; height: 100%; background: repeating-linear-gradient(135deg, #d5dae3 0 14px, #e3e6ec 14px 15px); }
+.et-camera-cap, .et-camera-text, .et-card-fisa, .et-camera-jos { margin-left: 1.25rem; margin-right: 1.25rem; }
+.et-camera-cap { display: grid; gap: 0.35rem; }
+.et-camera-unitati { margin: 0; font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pg-culoare-accent); }
+.et-camera-titlu { font-size: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem); }
+.et-camera-titlu a { text-decoration: none; }
+.et-camera-titlu a:hover { text-decoration: underline; }
+.et-camera-text { margin-top: 0; margin-bottom: 0; color: var(--et-text-slab); font-size: 0.9375rem; }
+.et-card-fisa { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1rem; align-self: start; margin-top: 0; margin-bottom: 0; padding: 1rem 0; border-top: 1px solid var(--pg-culoare-linie); border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-card-fisa div { min-width: 0; }
+.et-card-fisa .et-card-fisa-lat { grid-column: 1 / -1; }
+.et-card-fisa dt { font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--et-text-slab); }
+.et-card-fisa dd { margin: 0; }
+.et-camera-jos { display: grid; gap: 1rem; padding-bottom: 1.25rem; }
+.et-pret { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.4rem; margin: 0; }
+.et-pret b { font-family: var(--pg-font-titlu); font-size: 2.25rem; font-weight: 500; line-height: 1; }
+.et-pret small { flex-basis: 100%; margin-top: 0.25rem; font-size: 0.8125rem; color: var(--et-text-slab); }
+.et-actiuni { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin: 0; }
+.et-actiuni .et-buton { flex: 1 1 9rem; }
+
+/* galeria: toate pozele decupate la 4:3 (grilă uniformă, fără goluri) */
+.et-galerie { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+.et-galerie li { position: relative; min-width: 0; aspect-ratio: 4 / 3; overflow: hidden; background: #d5dae3; }
+.et-galerie li:first-child, .et-galerie-1 li, .et-galerie-2 li { grid-column: 1 / -1; }
+.et-galerie figure, .et-galerie a, .et-galerie picture, .et-toate-lista a, .et-toate-lista picture { display: block; height: 100%; }
+.et-galerie img, .et-toate-lista img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.et-galerie figcaption { position: absolute; left: 0.5rem; bottom: 0.5rem; padding: 0.25rem 0.6rem; background: var(--et-noapte); color: #fff; font-size: 0.8125rem; letter-spacing: 0.04em; }
+.et-toate { margin-top: 1.5rem; }
+.et-toate summary { display: inline-flex; align-items: center; min-height: 48px; padding: 0 1.35rem; border: 1px solid var(--pg-culoare-text); font-weight: 500; cursor: pointer; }
+.et-toate summary:hover { background: var(--pg-culoare-text); color: var(--pg-culoare-fundal); }
+.et-toate h3 { font-size: 1.5rem; margin: 1.5rem 0 0.5rem; }
+.et-toate-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 0.5rem; list-style: none; margin: 0.75rem 0 0; padding: 0; }
+.et-toate-lista li { aspect-ratio: 4 / 3; overflow: hidden; }
+
+/* locația */
+.et-locatie-grila { display: grid; gap: clamp(2.5rem, 2rem + 3vw, 4rem); }
+.et-locatie-grila > * { min-width: 0; }
+.et-locatie-grila > :only-child { grid-column: 1 / -1; }
+/* Titlul hărții are mărimea fixată de nucleu (1,25rem); „Împrejurimi” de alături are aceeași mărime, ca perechea să se citească la fel. */
+.et-locatie-grila .et-subtitlu { font-size: 1.25rem; margin: 0 0 0.75rem; }
+.et-harta .pg-harta-adresa { font-family: var(--pg-font-titlu); font-size: clamp(1.75rem, 1.45rem + 1.2vw, 2.25rem); font-weight: 500; line-height: 1.15; }
+.et-repere { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--pg-culoare-text); }
+.et-repere li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-repere-nume { font-weight: 500; min-width: 0; }
+.et-repere-nume small { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--et-text-slab); }
+.et-repere-dist { text-align: right; font-size: 0.8125rem; line-height: 1.2; color: var(--et-text-slab); }
+.et-repere-dist b { display: block; font-family: var(--pg-font-titlu); font-size: 1.75rem; font-weight: 500; color: var(--pg-culoare-text); }
+
+/* regulile casei */
+.et-ore { display: grid; grid-template-columns: 1fr 1fr; margin: 0; border-top: 1px solid var(--pg-culoare-text); border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-ore div { min-width: 0; padding: 1.25rem 1rem 1.25rem 0; }
+.et-ore div + div { padding-left: 1rem; border-left: 1px solid var(--pg-culoare-linie); }
+.et-ore dt { font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--et-text-slab); }
+.et-ore dd { margin: 0; }
+.et-ore b { display: block; margin: 0.35rem 0 0.25rem; font-family: var(--pg-font-titlu); font-size: clamp(2.75rem, 2rem + 4vw, 4rem); font-weight: 500; line-height: 1; }
+.et-ore small { font-size: 0.875rem; color: var(--et-text-slab); }
+.et-reguli { list-style: none; margin: 1.5rem 0 0; padding: 0; border-top: 1px solid var(--pg-culoare-linie); }
+.et-reguli li { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 0.75rem; padding: 0.9rem 0; border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-reguli li::before { content: ""; width: 18px; height: 9px; margin-top: 0.55rem; border-radius: 9px 9px 0 0; background: var(--pg-culoare-accent); }
+
+/* pagina camerei și paginile nucleului (_schelet) */
+.sc-sectiune { padding: clamp(2rem, 1.5rem + 2vw, 3rem) 0; }
+.sc-camera-antet h1, .sc-camere-antet h1 { font-size: clamp(2.5rem, 1.9rem + 2.6vw, 4rem); margin: 0 0 0.5rem; }
+.sc-firimituri { margin: 0 0 0.5rem; font-size: 0.875rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.sc-camera-pret { font-family: var(--pg-font-titlu); font-size: 1.75rem; }
+.sc-camera-poza { margin-top: 1.25rem; }
+.sc-camera-poza img { display: block; width: 100%; max-height: 32rem; object-fit: cover; }
+.sc-rezervare-grila { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
+.sc-titlu-sectiune { font-size: 2.25rem; margin: 0 0 1rem; }
+.sc-galerie-grila { display: grid; gap: 0.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+.sc-galerie-grila li { min-width: 0; aspect-ratio: 4 / 3; overflow: hidden; }
+.sc-galerie-grila :is(a, picture) { display: block; height: 100%; }
+.sc-galerie-grila img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sc-galerie-grila li:nth-child(2n+1):last-child { grid-column: 1 / -1; aspect-ratio: 8 / 3; }
+.et-fisa { padding-top: clamp(2rem, 1.5rem + 2vw, 3rem); }
+.et-fisa .et-titlu { margin-bottom: 1rem; font-size: clamp(2rem, 1.6rem + 1.6vw, 2.75rem); }
+.et-fisa h3 { font-size: 1.5rem; margin: 1.5rem 0 0.5rem; }
+.et-fisa-text { max-width: 62ch; }
+.et-spatii, .et-dotari { list-style: none; margin: 0 0 1rem; padding: 0; }
+.et-spatii li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.625rem; padding: 0.5rem 0; border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-dotari { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+.et-dotari li { padding: 0.2rem 0.6rem; border: 1px solid var(--pg-culoare-linie); font-size: 0.875rem; }
+.et-fisa-date { margin: 0; }
+.et-fisa-date div { display: grid; gap: 0.125rem 0.75rem; padding: 0.7rem 0; border-bottom: 1px solid var(--pg-culoare-linie); }
+.et-fisa-date dt { font-size: 0.8125rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--et-text-slab); }
+.et-fisa-date dd { margin: 0; }
+
+/* subsolul temei; contactul și blocul legal sunt ale nucleului, dedesubt */
+.et-subsol { margin-top: clamp(4rem, 3rem + 5vw, 7rem); background: var(--et-noapte); color: var(--et-noapte-text); }
+.et-subsol-interior { display: grid; gap: 1.25rem; padding-top: 3rem; padding-bottom: 3rem; }
+.et-subsol :focus-visible { outline-color: var(--et-alama); }
+.et-subsol-nume { margin: 0; font-family: var(--pg-font-titlu); font-size: clamp(2.75rem, 2rem + 4vw, 4.5rem); line-height: 0.95; color: var(--et-alama); overflow-wrap: anywhere; }
+.et-subsol-adresa { margin: 0; color: var(--et-noapte-slab); }
+.et-subsol ul { display: flex; flex-wrap: wrap; gap: 0 1.25rem; list-style: none; margin: 0; padding: 0; }
+.et-subsol nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.et-subsol nav a:hover { text-decoration: underline; }
+
+@media (min-width: 40rem) {
+  .sc-galerie-grila { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sc-galerie-grila li:nth-child(2n+1):last-child { grid-column: auto; aspect-ratio: 4 / 3; }
+  .et-fisa-date div { grid-template-columns: 10rem 1fr; }
+}
+@media (max-width: 40rem) {
+  .et-rezervare:has(.pg-bara-lipicios:not([hidden])) .et-bara-fixa { display: block; }
+  .et-rezervare .pg-bara-lipicios { left: auto; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)); }
+}
+@media (min-width: 48rem) {
+  .et-camere { grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr)); column-gap: clamp(1rem, 2vw, 1.75rem); }
+  @supports (grid-template-rows: subgrid) {
+    .et-camere { grid-template-rows: repeat(5, auto); }
+    .et-camera { grid-row: span 5; grid-template-rows: subgrid; row-gap: 1rem; }
+  }
+  .et-galerie { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .et-galerie li:first-child { grid-column: 1 / span 2; grid-row: span 2; aspect-ratio: auto; }
+  .et-galerie-1 li:first-child, .et-galerie-2 li { grid-column: auto; grid-row: auto; aspect-ratio: 4 / 3; }
+  .et-galerie-1 { grid-template-columns: minmax(0, 1fr); }
+  .et-galerie-1 li:first-child { aspect-ratio: 16 / 9; }
+  .et-galerie-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 54rem) {
+  .et-meniu { order: 1; flex: 0 1 auto; margin-left: auto; overflow: visible; }
+  .et-marca { flex: 0 1 auto; }
+  .et-antet-dreapta { order: 2; }
+  .et-meniu a { padding: 0 0.8rem; }
+  .et-erou { display: grid; }
+  .et-erou > * { grid-area: 1 / 1; }
+  .et-erou-foto { aspect-ratio: auto; height: min(74vh, 46rem); min-height: 28rem; }
+  .et-erou-loc { position: relative; align-self: end; padding-top: 4rem; }
+  .et-erou-fara-poza .et-erou-loc { padding-top: 0; }
+  .et-erou-panou { max-width: 34rem; margin: 0 0 6.5rem; padding: 2.25rem 2.5rem 2.5rem; }
+  .et-erou-fara-poza .et-erou-panou { margin: 0; padding-left: 0; }
+  .et-rezervare { margin-top: -4.5rem; padding-top: 0; }
+  .et-erou-fara-poza + .et-rezervare { margin-top: 0; padding-top: 2rem; }
+  .et-bara { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 2.5rem; align-items: end; }
+  .et-bara-titlu { max-width: 7ch; margin: 0 0 0.4rem; line-height: 0.95; }
+  .et-bara-formular { grid-column: 2; }
+  .et-bara-jos { grid-column: 1 / -1; }
+  .et-bara .pg-camp { flex: 1 1 7.5rem; }
+  .et-bara .pg-camp-mic { flex: 1 1 7rem; }
+  .et-bara .pg-bara-formular .pg-buton { flex: 0 0 auto; }
+  .et-locatie-grila { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .et-reguli-grila { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4rem; align-items: start; }
+  .et-reguli { margin-top: 0; border-top-color: var(--pg-culoare-text); }
+  .et-subsol-interior { grid-template-columns: auto 1fr auto; align-items: end; column-gap: 3rem; }
+  .sc-rezervare-grila { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  a, .et-buton { transition: none; }
+}

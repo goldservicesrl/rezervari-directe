@@ -1,0 +1,14 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.cod.titlu') }}</h1>
+<p>{{ t('instalare.cod.bun_venit') }}</p>
+<p>{{ t('instalare.cod.text', {fisier: fisier}) }}</p>
+<form class="pa-formular" method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+<p><label for="pi-cod">{{ t('instalare.cod.eticheta') }}</label><input id="pi-cod" name="cod" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12" required></p>
+<p><input type="checkbox" class="pa-metoda-bifa" id="pi-licenta" name="licenta" value="1" required><label for="pi-licenta">{{ t('instalare.cod.licenta') }}</label></p>
+<p class="pa-ajutor">{{ t('instalare.cod.licenta_ajutor') }}</p>
+<p><button type="submit" class="pa-buton">{{ t('instalare.cod.buton') }}</button></p>
+</form>
+<p class="pa-ajutor">{{ t('instalare.cod.durata') }}</p>
+{% endblock %}

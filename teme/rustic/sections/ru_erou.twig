@@ -1,0 +1,37 @@
+{#- Deschiderea: textul pe fundalul paginii (tipul și localitatea, titlul, textul scurt al gazdei sau descrierea din
+    EasyCheck, cu titlul, primul paragraf întreg și restul la „Citiți toată descrierea”, insignele la formele A și B, „de la” cel mai mic dintre camere cu mențiunea nucleului și cele
+    două îndemnuri) și fotografia principală a gazdei alături, decupată cu object-fit. Textul nu stă pe poză, deci
+    contrastul nu depinde de ea. Fără poză, textul rămâne singur. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set poza = galerie.principala ?? (proprietate.poze|length > 0 ? proprietate.poze|first : null) %}
+{% set titlu = prezentare.titlu ?? proprietate.nume %}
+{% set text = prezentare.text ?? '' %}
+{% set paragrafe = (prezentare.text ?? null) is null and proprietate.descriere ? (proprietate.descriere_paragrafe ?? [proprietate.descriere]) : [] %}
+{% set insigne = prezentare.insigne ?? (g ? g.dotari|slice(0, 4) : []) %}
+{% set tip = proprietate.tip in ['hotel', 'pensiune', 'vila', 'cabana', 'casa', 'apartament', 'camere', 'hostel', 'motel'] ? t('tip.' ~ proprietate.tip) : '' %}
+{% set a = proprietate.adresa %}
+{% set loc = a.localitate ~ (a.localitate and a.judet and a.judet != a.localitate ? ', ' ~ a.judet : '') %}
+{% set de_la = null %}
+{% for c in camere %}{% if c.pret_de_la and (de_la is null or c.pret_de_la.suma < de_la.suma) %}{% set de_la = c.pret_de_la %}{% endif %}{% endfor %}
+<section class="ru-erou{% if not poza %} ru-erou-fara-poza{% endif %}" aria-labelledby="{{ sectiune.id }}-t">
+<div class="ru-latime ru-erou-grila">
+<div class="ru-erou-text">
+{% if tip or loc %}<p class="ru-semn">{{ tip }}{% if tip and loc %} · {% endif %}{{ loc }}</p>{% endif %}
+<h1 id="{{ sectiune.id }}-t" class="ru-erou-titlu">{{ titlu }}</h1>
+{% if text %}<p class="ru-erou-descriere">{{ text }}</p>
+{% else %}{% if paragrafe|length > 0 %}<div class="ru-descriere ru-erou-descriere"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="ru-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+<p>{{ paragrafe|first }}</p>
+{% if paragrafe|length > 1 %}<details class="ru-descriere-rest"><summary><span class="ru-descriere-toata">{{ t('descriere.toata') }}</span><span class="ru-descriere-putin">{{ t('descriere.mai_putin') }}</span></summary>
+{% for x in paragrafe|slice(1) %}<p>{{ x }}</p>{% endfor %}
+</details>{% endif %}
+</div>{% endif %}{% endif %}
+{% if insigne|length > 0 %}<ul class="ru-insigne" aria-label="{{ t('dotari.eticheta') }}">{% for d in insigne %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+{% if de_la %}<p class="ru-pret-erou">{{ t('pret.de_la') }} <strong>{{ de_la.suma|lei }}</strong> {{ t('pret.pe_noapte') }}{% if de_la.mentiune ?? '' %}<small>{{ de_la.mentiune }}</small>{% endif %}</p>{% endif %}
+<p class="ru-erou-actiuni"><a class="ru-buton" href="#ru-rezervare">{{ t('erou.datele') }}</a>{% if camere|length > 0 %}<a class="ru-buton ru-buton-contur" href="{{ url('camere') }}">{{ t('erou.camerele') }}</a>{% endif %}</p>
+</div>
+{% if poza %}<figure class="ru-erou-foto">{{ img(poza, [960, 1440, 2048], true, '(min-width: 62rem) 40rem, 100vw') }}</figure>{% endif %}
+</div>
+</section>
+{% include "partials/brau.twig" %}

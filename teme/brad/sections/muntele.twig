@@ -1,0 +1,78 @@
+{#- „Vremea și împrejurimile” (un nume general, potrivit pentru orice loc): vremea și lumina zilei (componenta vremii a nucleului), apoi împrejurimile: reperele gazdei
+    (0-5), adresa și harta la clic, cu titlul la nivelul plăcilor (h3). Fără date de vreme, plăcile lor lipsesc, iar capitolul rămâne „Împrejurimi”.
+    Sursa vremii și atribuirea locurilor le scrie nucleul, în componentele lui. -#}
+{% set cu_vreme = vreme is not null and vreme is iterable and vreme.zile is defined and vreme.zile|length > 0 %}
+{% set cu_soare = cu_vreme and vreme.rasarit is defined and vreme.rasarit and vreme.apus is defined and vreme.apus %}
+{% set cu_repere = repere is defined and repere is iterable and repere|length > 0 %}
+{% set foto = null %}
+{% for p in proprietate.poze %}{% if foto is null and p.categorie is defined and p.categorie == 'imprejurimi' %}{% set foto = p %}{% endif %}{% endfor %}
+<section class="br-cap br-muntele{% if cu_vreme %} br-muntele--vreme{% endif %}" aria-labelledby="{{ sectiune.id }}-t">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: cu_vreme ? 'capitol.muntele' : 'capitol.imprejurimi'} %}
+<h2 id="{{ sectiune.id }}-t" class="br-titlu-cap">{{ t(cu_vreme ? 'muntele.titlu' : 'imprejurimi.titlu') }}</h2>
+<div class="br-placi">
+{% if cu_vreme %}
+{#- Panorama vremii: cerul în culoarea stării de acum, temperatura mare, cele 3 zile cu bara dintre minimă și maximă (pe aceeași
+    scară), arcul zilei între răsărit și apus, creasta muntelui jos. Fără animații; sursa cerută de licență rămâne lângă date. -#}
+{% set stare_implicita = 'noros' %}
+{% set stare_acum = vreme.stare|default(stare_implicita) %}
+{% set jos = null %}{% set sus = null %}
+{% for z in vreme.zile %}
+{% set zmin = z.min is defined ? z.min : (z.temp_min is defined ? z.temp_min : 0) %}
+{% set zmax = z.max is defined ? z.max : (z.temp_max is defined ? z.temp_max : 0) %}
+{% set jos = jos is null ? zmin : min(jos, zmin) %}{% set sus = sus is null ? zmax : max(sus, zmax) %}
+{% endfor %}
+{% set ampl = max(1, sus - jos) %}
+<div class="br-placa br-placa--vreme br-cer br-cer--{{ stare_acum }}">
+<div class="br-cer-acum">
+<h3 class="br-placa-titlu">{{ t('muntele.vremea') }}</h3>
+{% if vreme.temperatura is defined %}<p class="br-cer-grade"><span class="br-cer-numar">{{ vreme.temperatura }}</span><span class="br-cer-unitate">°C</span></p>{% endif %}
+{% if vreme.text is defined and vreme.text %}<p class="br-cer-stare">{% include "partials/vreme-semn.twig" with {stare: stare_acum} only %}<span>{{ vreme.text }}</span></p>{% endif %}
+</div>
+<ol class="br-cer-zile">
+{% for z in vreme.zile|slice(0, 3) %}
+{% set zmin = z.min is defined ? z.min : (z.temp_min is defined ? z.temp_min : 0) %}
+{% set zmax = z.max is defined ? z.max : (z.temp_max is defined ? z.temp_max : 0) %}
+{% set zstare = z.stare|default(stare_implicita) %}
+{% set parti = (z.eticheta|default(z.zi is defined ? z.zi|data : ''))|split(' ') %}
+<li class="br-zi">
+<span class="br-zi-nume">{% if loop.first %}{{ t('muntele.azi') }}{% elseif loop.index == 2 %}{{ t('muntele.maine') }}{% else %}{{ parti|slice(0, 2)|join(' ') }}{% endif %}</span>
+{% include "partials/vreme-semn.twig" with {stare: zstare} only %}
+<span class="br-ascuns">{{ z.text|default('') }}</span>
+<span class="br-zi-temp"><b>{{ zmax }}°</b><span class="br-zi-min">{{ zmin }}°</span></span>
+<svg class="br-zi-bara" viewBox="0 0 100 6" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect class="br-zi-sina" x="0" y="1" width="100" height="4" rx="2"/><rect class="br-zi-interval" x="{{ ((zmin - jos) * 100 / ampl)|round }}" y="1" width="{{ max(6, ((zmax - zmin) * 100 / ampl)|round) }}" height="4" rx="2"/></svg>
+</li>
+{% endfor %}
+</ol>
+{% if cu_soare %}
+{% set r = vreme.rasarit|split(':') %}{% set a = vreme.apus|split(':') %}
+{% set durata = (a[0] * 60 + a[1]) - (r[0] * 60 + r[1]) %}
+<div class="br-placa--soare br-lumina">
+<h3 class="br-placa-titlu">{{ t('muntele.lumina') }}</h3>
+<svg class="br-lumina-arc" viewBox="0 0 200 64" aria-hidden="true" focusable="false"><path class="br-lumina-cale" d="M 8 60 Q 100 -28 192 60"/><line class="br-lumina-orizont" x1="0" y1="60" x2="200" y2="60"/><circle class="br-lumina-soare" cx="100" cy="16" r="7"/></svg>
+<dl class="br-lumina-ore">
+<div><dt>{{ t('muntele.rasarit') }}</dt><dd>{{ vreme.rasarit }}</dd></div>
+<div><dt>{{ t('muntele.apus') }}</dt><dd>{{ vreme.apus }}</dd></div>
+</dl>
+{% if durata > 0 %}<p class="br-lumina-durata">{{ t('muntele.durata', {ore: (durata / 60)|round(0, 'floor'), minute: durata % 60}) }}</p>{% endif %}
+</div>
+{% endif %}
+<svg class="br-cer-creasta" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="br-creasta-departe" d="M 0 120V70l90-34 70 22 110-50 90 44 80-20 120 52 90-36 110 30 120-58 100 46 90-18 130 40v74z"/><path class="br-creasta-aproape" d="M 0 120V96l120-30 90 22 130-40 110 36 100-14 140 30 120-34 110 20 130-26 150 34v36z"/></svg>
+{% if vreme.sursa is defined and vreme.sursa %}<p class="br-cer-sursa"><a href="{{ vreme.sursa_url }}" rel="noopener noreferrer">{{ vreme.sursa }}</a></p>{% endif %}
+</div>
+{% endif %}
+<div class="br-placa br-placa--jur{% if foto %} br-placa--cu-poza{% endif %}">
+{% if foto %}<figure class="br-placa-poza">{{ img(foto, [480, 960], false, '(min-width: 60rem) 26rem, 100vw') }}{% if foto.legenda is defined and foto.legenda %}<figcaption class="br-legenda br-legenda--pe">{{ foto.legenda }}</figcaption>{% endif %}</figure>{% endif %}
+<div class="br-placa-text">
+{% if cu_repere %}
+<h3 class="br-placa-titlu">{{ t('imprejurimi.repere') }}</h3>
+<ul class="br-lista br-repere">
+{% for r in repere|slice(0, 5) %}{% if r.nume is defined and r.nume %}<li><span>{{ r.nume }}{% set cc = 'reper_categorie.' ~ (r.categorie ?? '') %}{% if t(cc) != cc %}<small class="br-reper-cat">{{ t(cc) }}</small>{% endif %}</span>{% if r.km is defined and r.km %}<b>{{ t('repere.km', {n: r.km}) }}</b>{% elseif r.minute is defined and r.minute %}<b>{{ t('repere.pe_jos', {n: r.minute}) }}</b>{% endif %}</li>{% endif %}{% endfor %}
+</ul>
+{% endif %}
+{{ cazo.harta(3) }}
+</div>
+</div>
+</div>
+</div>
+</section>

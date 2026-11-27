@@ -1,0 +1,15 @@
+# Sfârșitul de rând: LF peste tot, și în checkouturile de pe Windows.
+* text=auto eol=lf
+
+# Leaflet se păstrează octet cu octet: are CRLF în fișierele lui, iar front/vendor/VENDOR.lock îi ține amprentele.
+front/vendor/leaflet/** -text
+
+# Binarele
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.ico binary
+*.woff2 binary

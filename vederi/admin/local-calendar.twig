@@ -1,0 +1,59 @@
+{#- Calendarul, în modul fără cheie EasyCheck. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.local.cal.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.local.cal.explicatie') }}</p>
+{% if not camere %}<p class="pa-gol">{{ t('admin.local.cal.fara_camere') }} <a href="{{ url.camere }}">{{ t('admin.nav.camere_site') }}</a></p>{% endif %}
+<section class="pa-bloc" id="calendare" aria-labelledby="pk-surse"><h2 id="pk-surse">{{ t('admin.local.ical.titlu') }}</h2>
+<p>{{ t('admin.local.ical.explicatie') }}</p>
+{% for cam in camere %}
+<h3>{{ cam.titlu }}</h3>
+{% if cam.surse %}<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.local.ical.col.nume') }}</th><th scope="col">{{ t('admin.local.ical.col.adresa') }}</th><th scope="col">{{ t('admin.local.ical.col.citit') }}</th><th scope="col">{{ t('admin.local.ical.col.nopti') }}</th><th scope="col">{{ t('admin.cereri.col.actiuni') }}</th></tr></thead>
+<tbody>{% for s in cam.surse %}<tr><th scope="row" data-eticheta="{{ t('admin.local.ical.col.nume') }}">{{ s.nume }}</th><td data-eticheta="{{ t('admin.local.ical.col.adresa') }}">{% if s.fel == 'preluare' %}{{ t('admin.local.ical.preluate_ajutor') }}{% else %}<code>{{ s.gazda }}</code>{% endif %}</td>
+<td data-eticheta="{{ t('admin.local.ical.col.citit') }}">{{ s.citita }}{% if s.eroare_text %} <span class="pa-stare pa-stare-problema">{{ s.eroare_text }}</span>{% endif %}</td><td data-eticheta="{{ t('admin.local.ical.col.nopti') }}">{{ s.evenimente }}</td>
+<td class="pa-celula-actiuni">{% if s.fel != 'preluare' %}<form method="post" action="{{ url.baza }}citeste" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="sursa" value="{{ s.id }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.local.ical.citeste') }}<span class="pa-ascuns"> {{ s.nume }}</span></button></form>{% endif %}
+<details class="pa-confirma"><summary>{{ t('admin.local.ical.sterge') }}<span class="pa-ascuns"> {{ s.nume }}</span></summary><form method="post" action="{{ url.baza }}sterge"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="sursa" value="{{ s.id }}"><p>{{ t('admin.local.ical.sterge_confirmare') }}</p><button type="submit" class="pa-buton-pericol">{{ t('admin.local.ical.sterge_da') }}<span class="pa-ascuns"> {{ s.nume }}</span></button></form></details></td></tr>{% endfor %}</tbody>
+</table></div>{% else %}<p class="pa-gol">{{ t('admin.local.ical.gol') }}</p>{% endif %}
+{% endfor %}
+{% if camere %}
+<form method="post" action="{{ url.baza }}adauga" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<fieldset><legend>{{ t('admin.local.ical.adauga_titlu') }}</legend>
+<p><label for="pk-cam">{{ t('admin.local.ical.camera') }}</label><select id="pk-cam" name="camera">{% for cam in camere %}<option value="{{ cam.id }}">{{ cam.titlu }}</option>{% endfor %}</select></p>
+<p><label for="pk-plat">{{ t('admin.local.ical.platforma') }}</label><select id="pk-plat" name="platforma">{% for k, n in platforme %}<option value="{{ k }}">{{ n ?? t('admin.local.ical.alta') }}</option>{% endfor %}</select></p>
+<p><label for="pk-nume">{{ t('admin.local.ical.nume_alta') }}</label><span class="pa-ajutor" id="pk-nume-ajutor">{{ t('admin.local.ical.nume_alta_ajutor') }}</span><input id="pk-nume" class="pa-lat" name="nume" type="text" maxlength="80" aria-describedby="pk-nume-ajutor"></p>
+<p><label for="pk-url">{{ t('admin.local.ical.adresa') }}</label><span class="pa-ajutor" id="pk-url-ajutor">{{ t('admin.local.ical.adresa_ajutor') }}</span><input id="pk-url" class="pa-lat" name="url" type="url" required autocomplete="off" aria-describedby="pk-url-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.local.ical.adauga') }}</button></fieldset></form>
+<form method="post" action="{{ url.baza }}interval" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pk-int">{{ t('admin.local.ical.interval') }}</label><select id="pk-int" name="minute">{% for m in intervale %}<option value="{{ m }}"{% if m == interval %} selected{% endif %}>{{ t('admin.local.ical.minute', {n: m}) }}</option>{% endfor %}</select></p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.local.ical.interval_salveaza') }}</button></form>
+{% endif %}
+<details class="pa-avansat" id="easycheck-ical"><summary>{{ t('admin.local.ec.titlu') }}</summary>
+<p>{{ t('admin.local.ec.explicatie') }}</p>
+<ol class="pa-pasi-numerotati"><li>{{ t('admin.local.ec.pas1') }}</li><li>{{ t('admin.local.ec.pas2') }}</li><li>{{ t('admin.local.ec.pas3') }}</li><li>{{ t('admin.local.ec.pas4') }}</li></ol>
+<p class="pa-ajutor">{{ t('admin.local.ec.start') }}</p></details>
+</section>
+{% if camere %}
+<section class="pa-bloc" id="export" aria-labelledby="pk-export"><h2 id="pk-export">{{ t('admin.local.export.titlu') }}</h2>
+<p>{{ t('admin.local.export.explicatie') }}</p>
+{#- câte o adresă pe unitate la camerele cu mai multe unități; adresa pe cameră rămâne valabilă, nearătată. -#}
+{% if are_unitati %}<p class="pa-ajutor">{{ t('admin.local.as.unitati_nota') }}</p>{% endif %}
+{% for x in exporturi %}<p><label for="pk-exp-{{ loop.index }}">{{ t('admin.local.export.adresa', {camera: x.eticheta}) }}</label><input id="pk-exp-{{ loop.index }}" class="pa-lat pa-de-copiat" type="text" readonly value="{{ x.url }}"></p>{% endfor %}
+<details class="pa-confirma"><summary>{{ t('admin.local.export.schimba') }}</summary><form method="post" action="{{ url.baza }}jeton"><input type="hidden" name="_csrf" value="{{ csrf }}"><p>{{ t('admin.local.export.schimba_confirmare') }}</p>
+<p><input type="checkbox" id="pk-jeton" name="confirm" value="1" required><label for="pk-jeton">{{ t('admin.local.export.schimba_bifa') }}</label></p><button type="submit" class="pa-buton-pericol">{{ t('admin.local.export.schimba_da') }}</button></form></details>
+</section>
+<section class="pa-bloc" id="inchise" aria-labelledby="pk-inchise"><h2 id="pk-inchise">{{ t('admin.local.inchise.titlu') }}</h2>
+<p>{{ t('admin.local.inchise.explicatie') }}</p>
+<form method="post" action="{{ url.baza }}inchide" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pk-ic">{{ t('admin.local.ical.camera') }}</label><select id="pk-ic" name="camera"><option value="*">{{ t('admin.local.inchise.toate') }}</option>{% for cam in camere %}<option value="{{ cam.id }}">{{ cam.titlu }}</option>{% endfor %}</select></p>
+<p><label for="pk-de">{{ t('admin.local.inchise.de') }}</label><input id="pk-de" class="pa-scurt" name="de" type="date" min="{{ azi }}" required></p>
+<p><label for="pk-pana">{{ t('admin.local.inchise.pana') }}</label><span class="pa-ajutor" id="pk-pana-ajutor">{{ t('admin.local.inchise.pana_ajutor') }}</span><input id="pk-pana" class="pa-scurt" name="pana" type="date" min="{{ azi }}" aria-describedby="pk-pana-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.local.inchise.inchide') }}</button></form>
+{% if inchise %}<div class="pa-tabel"><table><thead><tr><th scope="col">{{ t('admin.local.ical.camera') }}</th><th scope="col">{{ t('admin.local.inchise.perioada') }}</th><th scope="col">{{ t('admin.cereri.col.actiuni') }}</th></tr></thead>
+<tbody>{% for x in inchise %}<tr><th scope="row" data-eticheta="{{ t('admin.local.ical.camera') }}">{{ x.camera_titlu }}</th><td data-eticheta="{{ t('admin.local.inchise.perioada') }}">{{ x.perioada }}</td>
+<td class="pa-celula-actiuni"><form method="post" action="{{ url.baza }}deschide" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="camera" value="{{ x.camera }}"><input type="hidden" name="de" value="{{ x.de }}"><input type="hidden" name="pana" value="{{ x.pana }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.local.inchise.deschide') }}<span class="pa-ascuns"> {{ x.camera_titlu }} {{ x.perioada }}</span></button></form></td></tr>{% endfor %}</tbody></table></div>
+{% else %}<p class="pa-gol">{{ t('admin.local.inchise.gol') }}</p>{% endif %}
+</section>
+{% endif %}
+{% endblock %}

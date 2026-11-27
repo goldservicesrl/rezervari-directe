@@ -1,0 +1,23 @@
+{
+  "slug": "bulevard",
+  "nume": {"ro": "Bulevard", "en": "Boulevard"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Cazo"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=1.0 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "pentru": "apartament sau garsonieră în oraș, șederi scurte și lungi",
+  "latime_rem": 54.25,
+  "captura": "captura.webp",
+  "componente": [],
+  "continut": ["repere"],
+  "fonturi": [
+    {"familie": "Inter", "fisier": "assets/fonts/inter-latin.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Inter", "fisier": "assets/fonts/inter-latin-ext.woff2", "licenta": "OFL-1.1", "preincarcat": true},
+    {"familie": "Space Grotesk", "fisier": "assets/fonts/space-grotesk-latin.woff2", "licenta": "OFL-1.1"},
+    {"familie": "Space Grotesk", "fisier": "assets/fonts/space-grotesk-latin-ext.woff2", "licenta": "OFL-1.1"}
+  ],
+  "css": ["assets/css/bulevard.css"],
+  "stiluri": [],
+  "buget": {"css_kb_gz": 12, "js_kb_gz": 0}
+}

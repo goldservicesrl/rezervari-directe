@@ -1,0 +1,49 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.legal') }}</h1>
+<p>{{ t('instalare.legal.text') }}</p>
+<form class="pa-formular" method="post" action="{{ actiune }}">
+{% include 'instalare/formular.twig' %}
+<h2>{{ t('instalare.legal.operator') }}</h2>
+{% for c in campuri %}
+{% if c.api is not null %}
+<p><strong>{{ t('instalare.legal.camp.' ~ c.camp) }}:</strong> {{ c.api }} <span class="pa-ajutor pa-ajutor-inline">({{ t('instalare.legal.din_easycheck') }})</span></p>
+{% elseif c.camp == 'sediu_tip' %}
+<p><label for="pi-legal-sediu_tip">{{ t('instalare.legal.camp.sediu_tip') }}</label><select id="pi-legal-sediu_tip" name="legal_sediu_tip"><option value=""></option>{% for v in ['social', 'profesional'] %}<option value="{{ v }}"{% if c.valoare == v %} selected{% endif %}>{{ t('instalare.legal.sediu.' ~ v) }}</option>{% endfor %}</select></p>
+{% else %}
+<p><label for="pi-legal-{{ c.camp }}">{{ t('instalare.legal.camp.' ~ c.camp) }}{% if c.obligatoriu %} <span class="pi-cerut{% if c.doar_firma %} pi-cerut-firma{% endif %}"{% if c.ascuns %} hidden{% endif %}>{{ t('instalare.legal.cerut') }}</span>{% endif %}</label><input id="pi-legal-{{ c.camp }}" name="legal_{{ c.camp }}" value="{{ c.valoare }}" maxlength="500"></p>
+{% endif %}
+{% endfor %}
+<p class="pa-ajutor">{{ t('instalare.legal.lipsa') }}</p>
+{#- forma de organizare vine din EasyCheck sau e dedusă din denumire; gazda e întrebată doar când nu reiese. Cea
+    dedusă se poate schimba, din spatele unei legături (fără scripturi, cu <details>). -#}
+{% set alege_forma %}<select id="pi-forma" name="forma" required{% if 'forma' in erori %} aria-invalid="true"{% endif %}><option value="">{{ t('instalare.legal.alegeti') }}</option>{% for f in forme %}<option value="{{ f }}"{% if forma == f %} selected{% endif %}>{{ t('instalare.legal.forma.' ~ f) }}</option>{% endfor %}</select>{% endset %}
+{% if forma_sursa == 'easycheck' %}
+<p data-forma="easycheck"><strong>{{ t('instalare.legal.forma') }}:</strong> {{ t('instalare.legal.forma.' ~ forma) }} <span class="pa-ajutor pa-ajutor-inline">({{ t('instalare.legal.din_easycheck') }})</span></p>
+{% elseif forma_sursa == 'dedus' %}
+<p data-forma="dedus"><strong>{{ t('instalare.legal.forma') }}:</strong> {{ t('instalare.legal.forma.' ~ forma) }} <span class="pa-ajutor pa-ajutor-inline">({{ t('instalare.legal.forma_dedusa') }})</span></p>
+<details class="pa-alta-cheie pi-alta-forma"{% if 'forma' in erori %} open{% endif %}><summary>{{ t('instalare.legal.forma_schimbati') }}</summary>
+<p><label for="pi-forma">{{ t('instalare.legal.forma') }}</label>{{ alege_forma }}</p>
+</details>
+{% else %}
+<p><label for="pi-forma">{{ t('instalare.legal.forma') }}</label>{{ alege_forma }}</p>
+{% endif %}
+{% if not forma_sursa or forma == 'persoana_fizica' %}<p class="pa-ajutor">{{ t('instalare.legal.persoana_fizica') }}</p>{% endif %}
+<fieldset><legend>{{ t('instalare.legal.micro.intrebare') }}</legend>
+<p class="pa-ajutor">{{ t('instalare.legal.micro.ajutor') }}</p>
+{% for v in ['da', 'nu'] %}<p><input type="radio" id="pi-micro-{{ v }}" name="micro" value="{{ v }}"{% if micro == v %} checked{% endif %} required{% if 'micro' in erori %} aria-invalid="true"{% endif %}><label for="pi-micro-{{ v }}">{{ t('instalare.legal.micro.' ~ v) }}</label></p>{% endfor %}
+</fieldset>
+{% if 'micro' in erori %}<p class="pa-eroare">{{ t('instalare.legal.eroare_micro') }}</p>{% endif %}
+<h2>{{ t('instalare.pastrare.titlu') }}</h2>
+<p>{{ t('instalare.pastrare.text') }}</p>
+{#- fiecare termen e un număr în unitatea lui (zile, ore, luni), între praguri, completat cu valoarea recomandată. -#}
+{% for p in pastrare %}
+<p><label for="pi-{{ p.camp }}">{{ t('admin.gdpr.termen.' ~ p.cheie) }}</label><span class="pa-ajutor" id="pi-{{ p.camp }}-ajutor">{{ t('admin.gdpr.termen_ajutor.' ~ p.cheie) }} {{ t('admin.gdpr.interval.' ~ p.unitate, {min: p.min, max: p.max, propus: p.propus, durata: p.durata_propus}) }}</span>
+<input id="pi-{{ p.camp }}" name="{{ p.camp }}" class="pa-durata" type="number" inputmode="numeric" min="{{ p.min }}" max="{{ p.max }}" step="1" value="{{ p.valoare }}" required aria-describedby="pi-{{ p.camp }}-ajutor{% if p.camp in erori %} pi-{{ p.camp }}-eroare{% endif %}"{% if p.camp in erori %} aria-invalid="true"{% endif %}>
+{% if p.camp in erori %}<span class="pa-eroare pa-eroare-camp" id="pi-{{ p.camp }}-eroare">{{ t('admin.gdpr.eroare_camp', {min: p.min, max: p.max}) }}</span>{% endif %}</p>
+{% endfor %}
+<p class="pa-ajutor">{{ t('admin.gdpr.termene_jurist') }}</p>
+{% if 'forma' in erori %}<p class="pa-eroare">{{ t('instalare.legal.eroare_forma') }}</p>{% endif %}
+<p><button type="submit" class="pa-buton">{{ t('instalare.continuati') }}</button></p>
+</form>
+{% endblock %}

@@ -1,0 +1,11 @@
+{%- set sg = site.sigla ?? null -%}
+<header class="br-antet">
+<div class="br-latime br-antet-interior">
+<a class="br-sigla" href="{{ site.url_baza }}">{% if sg %}<img class="pg-sigla-img" src="{{ sg.url }}" alt="{{ sg.cu_nume ? '' : site.nume }}" width="{{ sg.latime }}" height="{{ sg.inaltime }}">{% else %}<span class="br-sigla-semn" aria-hidden="true"></span>{% endif %}{% if not sg or sg.cu_nume %}<span class="br-sigla-text">{{ site.nume }}{% if proprietate.adresa.localitate %}<small>{{ proprietate.adresa.localitate }}</small>{% endif %}</span>{% endif %}</a>
+<nav class="br-meniu" aria-label="{{ t('meniu.principal') }}">
+<ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}"{% if m.activ %} aria-current="page"{% endif %}>{{ m.titlu }}</a></li>{% endfor %}</ul>
+</nav>
+<a class="br-buton br-antet-rezerva" href="{{ url('disponibil') }}">{{ t('antet.rezervati') }}</a>
+{% if site.limbi|length > 1 %}<nav class="br-limbi" aria-label="{{ t('meniu.limba') }}"><ul>{% for l in site.limbi %}<li><a href="{{ l.url }}" hreflang="{{ l.cod }}" lang="{{ l.cod }}" title="{{ l.nume }}"{% if l.activa %} aria-current="true"{% endif %}>{{ l.cod|upper }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+</header>

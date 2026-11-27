@@ -1,0 +1,110 @@
+{
+  "fraza": "Șase apartamente în regim hotelier în același bloc din centrul Galațiului, în două tipuri: studio și apartament cu două camere.",
+  "ilustratie": "bloc",
+  "sigla": {
+    "desen": "dunarii",
+    "culoare": [
+      44,
+      62,
+      80
+    ]
+  },
+  "proprietate": {
+    "nume": "Apartamentele Dunării",
+    "tip": "apartament",
+    "descriere": {
+      "ro": "Șase apartamente în regim hotelier în același bloc din centrul Galațiului, la câteva minute de faleza Dunării: patru studiouri și două apartamente cu două camere, fiecare cu bucătărie proprie, intrare pe cod și curățenie inclusă.",
+      "en": "Six serviced apartments in the same building in the centre of Galați, a few minutes from the Danube promenade: four studios and two two-room apartments, each with its own kitchen, keypad entry and cleaning included."
+    },
+    "adresa": {
+      "strada": "Strada Brăilei 45",
+      "localitate": "Galați",
+      "judet": "Galați"
+    },
+    "coordonate": {
+      "lat": 45.4372,
+      "lng": 28.0478
+    },
+    "contact": {
+      "email": "rezervari@apartamentele-dunarii.test",
+      "telefon": "+40 700 000 000"
+    },
+    "operator": {
+      "denumire": "Dunării Rezidențial SRL",
+      "sediu": "Galați, Strada Brăilei 45",
+      "forma": "srl",
+      "capital_social": "200 lei",
+      "cui": "RO12345678",
+      "registrul_comertului": "J17/123/2020",
+      "clasificari": [
+        {
+          "fel": "certificat",
+          "numar": "1234/2026",
+          "tip_structura": "Apartament de închiriat",
+          "tip_structura_en": "Rental apartment",
+          "categorie": 3,
+          "camere": []
+        }
+      ]
+    }
+  },
+  "camere": [
+    {
+      "id": "dubla",
+      "titlu": "Studio",
+      "unitati": 4,
+      "oaspeti_max": 2,
+      "pret": 22000,
+      "weekend": 3000,
+      "sejur_minim": 1,
+      "spatii": "studio"
+    },
+    {
+      "id": "apartament",
+      "titlu": "Apartament cu două camere",
+      "unitati": 2,
+      "oaspeti_max": 4,
+      "pret": 32000,
+      "weekend": 4000,
+      "sejur_minim": 2,
+      "spatii": "apartament2"
+    }
+  ],
+  "poze": [
+    {"fisier": "studio-exterior.jpg", "categorie": "exterior"},
+    {"fisier": "studio-studio.jpg", "categorie": "camera"},
+    {"fisier": "studio-living.jpg", "categorie": "living"},
+    {"fisier": "studio-chicineta.jpg", "categorie": "bucatarie"},
+    {"fisier": "studio-dormitor.jpg", "categorie": "dormitor"},
+    {"fisier": "studio-baie.jpg", "categorie": "baie"},
+    {"fisier": "studio-faleza.jpg", "categorie": "imprejurimi"}
+  ],
+  "repere": [
+    {
+      "nume": "Faleza Dunării",
+      "categorie": "parc",
+      "minute": 8,
+      "principal": true
+    },
+    {
+      "nume": "Teatrul Dramatic „Fani Tardini”",
+      "categorie": "atractie",
+      "minute": 5
+    },
+    {
+      "nume": "Grădina Publică",
+      "categorie": "parc",
+      "minute": 6
+    },
+    {
+      "nume": "Catedrala Arhiepiscopală „Sfântul Andrei”",
+      "categorie": "atractie",
+      "minute": 7
+    },
+    {
+      "nume": "Gara Galați",
+      "categorie": "transport",
+      "km": 2.5
+    }
+  ]
+}

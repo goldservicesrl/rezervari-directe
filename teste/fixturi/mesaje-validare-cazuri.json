@@ -1,0 +1,1613 @@
+{
+ "_format": "Cazurile comune ale validării șabloanelor, aceleași în EasyCheck (scripts/fixturi/) și în Cazo (teste/fixturi/). Fiecare caz: mesaj (cheia din catalog), limba, subiect, corp (\\n între rânduri; corp_repeta = {text, ori}: corpul e textul repetat de atâtea ori), domenii (domeniile site-ului), asteptat = {valid, garzi: gărzile, sortate, fără repetări}. Nu se schimbă un rezultat fără schimbarea contractului.",
+ "versiune": 1,
+ "cazuri": [
+  {
+   "nume": "valid: confirmarea plății",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: câmpurile toate",
+   "mesaj": "cerere_primita",
+   "limba": "ro",
+   "subiect": "Cererea {ref}",
+   "corp": "{oaspete} {proprietate} {ref} {sosire} {plecare} {perioada} {nopti} {total} {platit} {rest} {termen} {contact_gazda} {link_rezervare}\n{bloc_rezervare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: rândurile CRLF",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Bună ziua, {oaspete},\r\n\r\nVă mulțumim pentru plată.\r\n{bloc_plata}\r\n\r\n{bloc_contract}\r\n\r\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: blocul cu spații în jur pe rândul lui",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Text\n  {bloc_plata}  \n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: blocul permis nefolosit",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Am refuzat cererea pentru {perioada}.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "lungime: subiectul gol",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   }
+  },
+  {
+   "nume": "lungime: subiectul de 151 de caractere",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "ăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăă",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   }
+  },
+  {
+   "nume": "lungime: subiectul de 150 de caractere e bun",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "ăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăăă",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "lungime: subiectul pe două rânduri",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea\n{ref}",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   }
+  },
+  {
+   "nume": "lungime: corpul gol",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   }
+  },
+  {
+   "nume": "lungime: corpul doar spații",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "   \n  ",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   }
+  },
+  {
+   "nume": "lungime: corpul de 8.001 caractere",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "lungime"
+    ]
+   },
+   "corp_repeta": {
+    "text": "ș",
+    "ori": 8001
+   }
+  },
+  {
+   "nume": "lungime: corpul de 8.000 de caractere e bun",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   },
+   "corp_repeta": {
+    "text": "ș",
+    "ori": 8000
+   }
+  },
+  {
+   "nume": "text_simplu: etichetă HTML",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vă <b>mulțumim</b>",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: etichetă de închidere",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text </p>",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: comentariu HTML",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text <!-- x -->",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: etichetă în subiect",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "<script>{ref}",
+   "corp": "Text",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: tab",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text\tcu tab",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: caracter de control",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text\u0001",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "text_simplu: caracter de control C1",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "valid: < urmat de spațiu sau cifră",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Prețul e < 300 lei și vă iubim <3",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "acolade: câmp necunoscut",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Bună ziua, {nume}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "acolade: câmp cu majusculă",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Bună ziua, {Oaspete}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "acolade: acoladă singură",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Zâmbiți { mereu",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "acolade: acoladă de închidere singură",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Gata }",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "acolade: acolade goale",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Gol {}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "acolade: câmp necunoscut în subiect",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {nume}",
+   "corp": "Text",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "acolade"
+    ]
+   }
+  },
+  {
+   "nume": "camp_nepermis: {suma} în confirmare",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}\n\nAți plătit {suma}.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "camp_nepermis"
+    ]
+   }
+  },
+  {
+   "nume": "camp_nepermis: {termen} în subiectul confirmării",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Până la {termen}",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "camp_nepermis"
+    ]
+   }
+  },
+  {
+   "nume": "camp_nepermis: {bloc_transfer} în cererea primită",
+   "mesaj": "cerere_primita",
+   "limba": "ro",
+   "subiect": "Cererea {ref}",
+   "corp": "Text\n{bloc_rezervare}\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "camp_nepermis"
+    ]
+   }
+  },
+  {
+   "nume": "camp_nepermis: {bloc_contract} în cererea refuzată",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Text\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "camp_nepermis"
+    ]
+   }
+  },
+  {
+   "nume": "valid: {suma} și {termen} la transfer",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transferați {suma} până la {termen}",
+   "corp": "Transferați {suma} până la {termen}.\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: confirmarea fără {bloc_contract}",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Mulțumim.\n{bloc_plata}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_lipsa: rambursarea fără {suma}",
+   "mesaj": "rambursare_gazda",
+   "limba": "ro",
+   "subiect": "Bani înapoi {ref}",
+   "corp": "V-am returnat banii.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: {suma} obligatorie doar în subiect",
+   "mesaj": "rambursare_gazda",
+   "limba": "ro",
+   "subiect": "V-am returnat {suma}",
+   "corp": "V-am returnat banii.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: restituirea prin transfer fără {suma}",
+   "mesaj": "restituire_transfer",
+   "limba": "ro",
+   "subiect": "Bani înapoi {ref}",
+   "corp": "V-am returnat banii prin transfer.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: cerere_primita cu blocurile obligatorii",
+   "mesaj": "cerere_primita",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_rezervare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: cerere_primita fără {bloc_rezervare}",
+   "mesaj": "cerere_primita",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: cerere_acceptata cu blocurile obligatorii",
+   "mesaj": "cerere_acceptata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: cerere_acceptata fără {bloc_contract}",
+   "mesaj": "cerere_acceptata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: cerere_indisponibila cu blocurile obligatorii",
+   "mesaj": "cerere_indisponibila",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_motiv}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: cerere_indisponibila fără {bloc_motiv}",
+   "mesaj": "cerere_indisponibila",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: cerere_respinsa cu blocurile obligatorii",
+   "mesaj": "cerere_respinsa",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_motiv}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: cerere_respinsa fără {bloc_motiv}",
+   "mesaj": "cerere_respinsa",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: plata_confirmata cu blocurile obligatorii",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_plata}\n\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: plata_confirmata fără {bloc_plata}",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_lipsa: plata_confirmata fără {bloc_contract}",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_plata}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: plata_rambursata cu blocurile obligatorii",
+   "mesaj": "plata_rambursata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_motiv}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: plata_rambursata fără {bloc_motiv}",
+   "mesaj": "plata_rambursata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: plata_inchisa cu blocurile obligatorii",
+   "mesaj": "plata_inchisa",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_motiv}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: plata_inchisa fără {bloc_motiv}",
+   "mesaj": "plata_inchisa",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: transfer_asteptat cu blocurile obligatorii",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: transfer_asteptat fără {bloc_transfer}",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: transfer_reamintire cu blocurile obligatorii",
+   "mesaj": "transfer_reamintire",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: transfer_reamintire fără {bloc_transfer}",
+   "mesaj": "transfer_reamintire",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: transfer_prelungit cu blocurile obligatorii",
+   "mesaj": "transfer_prelungit",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: transfer_prelungit fără {bloc_transfer}",
+   "mesaj": "transfer_prelungit",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: transfer_anulat cu blocurile obligatorii",
+   "mesaj": "transfer_anulat",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_restituire}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: transfer_anulat fără {bloc_restituire}",
+   "mesaj": "transfer_anulat",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: transfer_anulat_gazda cu blocurile obligatorii",
+   "mesaj": "transfer_anulat_gazda",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_restituire}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: transfer_anulat_gazda fără {bloc_restituire}",
+   "mesaj": "transfer_anulat_gazda",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: anulare_oaspete cu blocurile obligatorii",
+   "mesaj": "anulare_oaspete",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_restituire}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: anulare_oaspete fără {bloc_restituire}",
+   "mesaj": "anulare_oaspete",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: anulare_gazda cu blocurile obligatorii",
+   "mesaj": "anulare_gazda",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_restituire}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: anulare_gazda fără {bloc_restituire}",
+   "mesaj": "anulare_gazda",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: anulare_renuntata_gratuita cu blocurile obligatorii",
+   "mesaj": "anulare_renuntata_gratuita",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_anulare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: anulare_renuntata_gratuita fără {bloc_anulare}",
+   "mesaj": "anulare_renuntata_gratuita",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: rezervare_anulata cu blocurile obligatorii",
+   "mesaj": "rezervare_anulata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_motiv}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: rezervare_anulata fără {bloc_motiv}",
+   "mesaj": "rezervare_anulata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: schimbare_facuta cu blocurile obligatorii",
+   "mesaj": "schimbare_facuta",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_schimbare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: schimbare_facuta fără {bloc_schimbare}",
+   "mesaj": "schimbare_facuta",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "valid: schimbare_esuata cu blocurile obligatorii",
+   "mesaj": "schimbare_esuata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},\n\n{bloc_schimbare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "bloc_lipsa: schimbare_esuata fără {bloc_schimbare}",
+   "mesaj": "schimbare_esuata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref}",
+   "corp": "Bună ziua, {oaspete},",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_rand: blocul lângă text",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "Mulțumim. {bloc_plata}\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_rand"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_rand: blocul de două ori",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "{bloc_plata}\n{bloc_contract}\n\n{bloc_plata}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_rand"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_rand: blocul în subiect",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "{bloc_plata}",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n{bloc_contract}\n\nCu drag, {proprietate}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_rand"
+    ]
+   }
+  },
+  {
+   "nume": "bloc_rand: două blocuri pe același rând",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "Rezervarea {ref} e confirmată",
+   "corp": "{bloc_plata} {bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_rand"
+    ]
+   }
+  },
+  {
+   "nume": "iban: lipit",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transfer {ref}",
+   "corp": "Plătiți în RO49AAAA1B31007593840000.\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: cu spații",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transfer {ref}",
+   "corp": "Contul nou: RO49 AAAA 1B31 0075 9384 0000\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: cu litere mici",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transfer {ref}",
+   "corp": "Contul: ro49aaaa1b31007593840000\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: în subiect",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Plătiți în RO49AAAA1B31007593840000",
+   "corp": "Text",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: cu spații care nu se rup",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transfer {ref}",
+   "corp": "Cont: RO49 AAAA 1B31 0075 9384 0000\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: cu caractere invizibile",
+   "mesaj": "transfer_asteptat",
+   "limba": "ro",
+   "subiect": "Transfer {ref}",
+   "corp": "Cont: RO49​AAAA1B31007593840000\n{bloc_transfer}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "iban: alt cont european",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "DE89 3704 0044 0532 0130 00",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  },
+  {
+   "nume": "valid: o dată cu cifre nu e IBAN",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vă așteptăm pe 12 martie cu drag, camera 2, etajul 1.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: un cod scurt nu e IBAN",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Codul ușii: AB12 3456",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "link: alt domeniu cu https",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://evil.com/plata",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "link: alt domeniu cu http",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți http://evil.ro",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "link: www. al altui domeniu",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți www.evil.ro",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "link: domeniu fără schemă",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Plătiți pe plata-rapida.com",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "link: domeniul site-ului ca subdomeniu al altuia",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://site.ro.evil.com",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "link: în subiect",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Vedeți evil.com",
+   "corp": "Text",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "valid: adresa site-ului",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://site.ro/oferte și www.site.ro",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: subdomeniul site-ului",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://rezervari.site.ro/x și blog.site.ro",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: domeniul declarat cu www.",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://site.ro",
+   "domenii": [
+    "www.site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: adresele de e-mail",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Scrieți-ne la contact@altceva.com sau la rezervari@site.ro.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: {link_rezervare}",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Rezervarea: {link_rezervare}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "link: fără niciun domeniu știut",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Vedeți https://site.ro",
+   "domenii": [],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "link"
+    ]
+   }
+  },
+  {
+   "nume": "valid: fără domeniu, doar e-mail",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Scrieți la contact@site.ro",
+   "domenii": [],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: prescurtări și ore",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Str. Lungă nr. 5, sosirea la ora 14.30, etc. Mulțumim.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "mai multe gărzi deodată",
+   "mesaj": "plata_confirmata",
+   "limba": "ro",
+   "subiect": "",
+   "corp": "Bună ziua, {oaspete},\n\nVă mulțumim pentru plată.\n{bloc_plata}\n\n\n\nCu drag, {proprietate}\n<b>x</b>",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "bloc_lipsa",
+     "lungime",
+     "text_simplu"
+    ]
+   }
+  },
+  {
+   "nume": "en: valid",
+   "mesaj": "plata_confirmata",
+   "limba": "en",
+   "subiect": "Booking {ref} is confirmed",
+   "corp": "Hello {oaspete},\n\nThank you.\n{bloc_plata}\n\n{bloc_contract}",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: codul fiscal urmat de cuvinte",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Pensiunea Exemplu SRL, CUI RO12345678 din Brașov, vă mulțumește.",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "valid: codul fiscal la capăt de rând, apoi alt rând",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "CUI RO00000000\nAdresa: Str. Exemplu 1",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": true,
+    "garzi": []
+   }
+  },
+  {
+   "nume": "iban: grupat neregulat, cu litere mari",
+   "mesaj": "cerere_refuzata",
+   "limba": "ro",
+   "subiect": "Răspuns {ref}",
+   "corp": "Cont: RO49 AAA A1B 3100 759 38400 00",
+   "domenii": [
+    "site.ro"
+   ],
+   "asteptat": {
+    "valid": false,
+    "garzi": [
+     "iban"
+    ]
+   }
+  }
+ ],
+ "_iban": "Garda iban, precizată: după scoaterea caracterelor invizibile (\\p{Cf}), textul are (?<![A-Za-z0-9])(?:[A-Za-z]{2}[0-9]{2}[A-Za-z0-9]{11,30}|[A-Z]{2}[0-9]{2}(?:\\h?[A-Z0-9]){11,30}) cu /u: un șir lipit (litere mari sau mici) sau unul doar cu litere mari și cifre, cu câte un spațiu orizontal între ele (și cel care nu se rupe), fără rândul nou."
+}

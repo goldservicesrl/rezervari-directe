@@ -1,0 +1,396 @@
+/* Panoul și instalatorul: stil simplu, lizibil, cu ținte de 44 px; fără scripturi, în afară de harta de pe „Proprietatea”. */
+*, *::before, *::after { box-sizing: border-box; }
+body.pa-corp { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.5; color: #1a1a1a; background: #f6f6f4; }
+a { color: #0b5cad; }
+:focus-visible { outline: 3px solid #0b5cad; outline-offset: 2px; }
+code { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.pa-ascuns { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.pa-salt { position: absolute; left: -9999px; top: 0; padding: 0.75rem 1rem; background: #ffffff; color: #0b5cad; font-weight: 700; z-index: 10; }
+.pa-salt:focus { left: 1rem; }
+
+/* Antetul: numele site-ului, alertele cu contorul lor, Contul meu și ieșirea. Antetul, meniul și conținutul încep pe
+   aceeași verticală: marginile laterale cresc odată cu ecranul, cât să țină totul în 72rem. */
+.pa-antet { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; padding: 0.5rem max(1rem, calc((100% - 72rem) / 2 + 1rem)); background: #ffffff; border-bottom: 1px solid #c8c8c4; }
+.pa-titlu { margin: 0; font-weight: 700; }
+.pa-antet-dreapta { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: center; }
+.pa-antet-dreapta a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.25rem; text-decoration: none; }
+.pa-antet-dreapta a:hover { text-decoration: underline; }
+.pa-antet-dreapta a[aria-current="page"] { color: #1a1a1a; font-weight: 700; }
+.pa-contor { display: inline-block; min-width: 1.5rem; margin-left: 0.35rem; padding: 0 0.4rem; color: #ffffff; background: #4a4a4a; border-radius: 999px; font-size: 0.875rem; font-weight: 700; text-align: center; }
+.pa-contor-grav { background: #a1261f; }
+.pa-utilizator { color: #4a4a4a; overflow-wrap: anywhere; }
+.pa-iesire { display: flex; gap: 0.5rem; align-items: center; margin: 0; }
+
+/* Meniul: șase grupuri; dedesubt, paginile grupului deschis. */
+.pa-meniu, .pa-submeniu { padding: 0 max(0.75rem, calc((100% - 72rem) / 2 + 0.75rem)); border-bottom: 1px solid #c8c8c4; }
+.pa-meniu { background: #ffffff; }
+.pa-submeniu { background: #ecece8; }
+.pa-meniu ul, .pa-submeniu ul { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin: 0; padding: 0; list-style: none; }
+.pa-meniu a, .pa-submeniu a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.25rem; color: #0b5cad; text-decoration: none; border-bottom: 3px solid transparent; }
+.pa-meniu a { font-weight: 600; }
+.pa-meniu a:hover, .pa-submeniu a:hover { text-decoration: underline; }
+.pa-meniu a[aria-current], .pa-submeniu a[aria-current="page"] { color: #1a1a1a; font-weight: 700; border-bottom-color: #0b5cad; }
+
+/* Conținutul și ierarhia titlurilor. */
+.pa-principal { max-width: 72rem; margin: 0 auto; padding: 1rem; }
+.pa-principal:focus { outline: none; }
+.pa-principal h1 { margin: 0.5rem 0 1rem; font-size: 1.75rem; line-height: 1.2; }
+.pa-principal h2 { margin: 2rem 0 0.75rem; padding-top: 1.25rem; font-size: 1.3rem; line-height: 1.25; border-top: 1px solid #c8c8c4; }
+.pa-principal h3 { margin: 1.5rem 0 0.5rem; font-size: 1.1rem; }
+.pa-principal h1 + h2, .pa-principal .pa-card > h2:first-child, .pa-principal section > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+/* Blocurile paginilor compuse: fiecare bloc începe cu titlul lui, despărțit de cel dinainte; primul stă lipit de titlul paginii. */
+.pa-principal .pa-bloc { scroll-margin-top: 1rem; }
+.pa-principal section.pa-bloc > h2:first-child { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid #c8c8c4; }
+.pa-principal h1 + section.pa-bloc > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.pa-principal details.pa-bloc { margin-top: 2rem; }
+.pa-principal h4 { margin: 1.25rem 0 0.5rem; font-size: 1rem; }
+.pa-principal p { margin: 0 0 0.75rem; }
+.pa-subsol { max-width: 72rem; margin: 0 auto; padding: 1rem; color: #4a4a4a; font-size: 0.9rem; }
+/* Explicația steluței apare doar pe paginile care au câmpuri obligatorii (ca și steluța, ține de :has()). */
+.pa-subsol-obligatoriu { display: none; }
+body:has(.pa-principal :required) .pa-subsol-obligatoriu { display: inline; }
+
+/* Formularele: eticheta deasupra câmpului, ajutorul și eroarea sub el, lățimi după felul câmpului. */
+.pa-principal form { margin: 0 0 1.25rem; }
+.pa-principal form p { margin: 0 0 1rem; }
+.pa-principal form p:has(> label:first-child) { display: flex; flex-direction: column; align-items: flex-start; }
+.pa-principal form p:has(> label:first-child) > .pa-ajutor { order: 3; margin-top: 0.25rem; }
+.pa-principal form p:has(> label:first-child) > .pa-eroare-camp, .pa-principal form p:has(> label:first-child) > .pa-avertizare { order: 4; }
+.pa-principal label, .pa-eticheta { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+.pa-principal form p:has(> :required) > label:first-child::after { content: " *"; color: #a1261f; }
+/* Lățimea unui câmp vine din --pa-latime (implicit 24rem), ca regulile scurte de mai jos să câștige oricare ar fi
+   greutatea selectorului de bază; pe un ecran mai îngust decât lățimea aleasă, câmpul ia tot rândul. */
+.pa-principal input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="hidden"]), .pa-principal select, .pa-principal textarea {
+  min-height: 44px; width: var(--pa-camp, 100%); max-width: var(--pa-latime, 24rem); padding: 0.5rem; font: inherit; color: #1a1a1a; background: #ffffff; border: 1px solid #6b6b6b; border-radius: 4px; }
+.pa-principal textarea { --pa-latime: 44rem; min-height: 7rem; }
+.pa-principal input[type="number"], .pa-principal input[type="date"], .pa-principal input[type="month"], .pa-principal input[type="time"], .pa-principal input.pa-scurt { --pa-latime: 11rem; }
+.pa-principal input[type="url"], .pa-principal input.pa-lat { --pa-latime: 36rem; }
+.pa-principal input[type="color"] { width: 4rem; height: 44px; padding: 0; border: 1px solid #6b6b6b; border-radius: 4px; }
+.pa-principal input[type="file"] { max-width: 100%; min-height: 44px; font: inherit; }
+.pa-principal input[type="checkbox"], .pa-principal input[type="radio"] { width: 24px; height: 24px; margin: 0 0.5rem 0 0; vertical-align: middle; }
+.pa-principal input[type="checkbox"] + label, .pa-principal input[type="radio"] + label { display: inline; margin: 0; font-weight: 400; }
+.pa-principal input[type="checkbox"] + label + .pa-ajutor, .pa-principal input[type="radio"] + label + .pa-ajutor { margin: 0.15rem 0 0 calc(24px + 0.5rem); }
+.pa-principal [aria-invalid="true"] { border-color: #a1261f; border-width: 2px; }
+.pa-principal input:disabled, .pa-principal input:disabled + label { color: #6b6b6b; }
+.pa-principal fieldset { max-width: 44rem; margin: 0 0 1rem; padding: 0.75rem 1rem; border: 1px solid #c8c8c4; border-radius: 4px; }
+.pa-principal legend { padding: 0 0.25rem; font-weight: 600; }
+.pa-ajutor { display: block; color: #4a4a4a; font-size: 0.95rem; }
+.pa-eroare-camp { display: block; margin-top: 0.35rem; color: #8a1f19; font-weight: 600; background: none; border: 0; padding: 0; }
+.pa-filtre { display: flex; flex-wrap: wrap; gap: 0 1rem; align-items: flex-end; }
+.pa-filtre p { margin-bottom: 0.75rem; }
+.pa-filtre input:not([type="checkbox"]):not([type="radio"]), .pa-filtre select { --pa-camp: auto; --pa-latime: 100%; }
+.pa-reauth { max-width: 44rem; padding: 0.75rem 1rem; background: #ffffff; border: 1px solid #c8c8c4; border-radius: 4px; }
+.pa-camp { margin: 0 0 1rem; }
+
+/* Butoanele: unul primar pe formular (cel care salvează), secundar pentru rest, roșu pentru ce șterge sau nu se întoarce. */
+.pa-buton, .pa-buton-secundar, .pa-buton-pericol { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin: 0 0.5rem 0.5rem 0; padding: 0.5rem 1rem; font: inherit; font-weight: 700; line-height: 1.2; text-decoration: none; border-radius: 4px; cursor: pointer; }
+.pa-buton { color: #ffffff; background: #0b5cad; border: 2px solid #0b5cad; }
+.pa-buton:hover { background: #094a8c; border-color: #094a8c; }
+.pa-buton-secundar { color: #1a1a1a; background: #ffffff; border: 1px solid #6b6b6b; }
+.pa-buton-secundar:hover { background: #ecece8; }
+.pa-buton-pericol { color: #ffffff; background: #a1261f; border: 2px solid #a1261f; }
+.pa-buton-pericol:hover { background: #7f1d18; border-color: #7f1d18; }
+.pa-inline { display: inline-block; margin: 0 0.25rem 0.25rem 0; vertical-align: top; }
+.pa-principal form.pa-inline { margin-bottom: 0.25rem; }
+.pa-actiuni { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0 0 1rem; }
+.pa-actiuni > *, .pa-actiuni form { margin: 0; }
+.pa-legaturi { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.pa-legaturi a { display: inline-flex; align-items: center; min-height: 44px; }
+
+/* Stările: reușită, informație, avertizare, eroare. */
+.pa-mesaj, .pa-info, .pa-avertizare, .pa-eroare { margin: 0 0 1rem; padding: 0.75rem 1rem; border-left: 4px solid; border-radius: 0 4px 4px 0; }
+.pa-mesaj { background: #e7f3ea; border-color: #1e7a3a; }
+.pa-info { background: #eaf2fb; border-color: #0b5cad; }
+.pa-avertizare { background: #fff8e1; border-color: #8a6100; }
+.pa-eroare { background: #fbeaea; border-color: #a1261f; }
+.pa-mesaj > :last-child, .pa-info > :last-child, .pa-avertizare > :last-child, .pa-eroare > :last-child { margin-bottom: 0; }
+.pa-mesaj-langa { margin-top: 0.75rem; }
+.pa-principal .pa-mesaj h2, .pa-principal .pa-info h2, .pa-principal .pa-avertizare h2, .pa-principal .pa-eroare h2 { margin: 0 0 0.5rem; padding: 0; font-size: 1.1rem; border: 0; }
+span.pa-eroare-camp.pa-eroare, span.pa-avertizare { display: block; margin: 0.35rem 0 0; }
+.pa-nota { padding: 0.75rem; background: #fff7e0; border-left: 4px solid #b7791f; }
+/* Starea unei rezervări sau a unei plăți, ca etichetă colorată (și cu text, nu doar culoare). */
+.pa-stare { display: inline-block; padding: 0.1rem 0.5rem; font-size: 0.9rem; font-weight: 600; border: 1px solid; border-radius: 999px; }
+.pa-stare-asteapta { color: #5c4000; background: #fff8e1; border-color: #8a6100; }
+.pa-stare-confirmata { color: #14532d; background: #e7f3ea; border-color: #1e7a3a; }
+.pa-stare-refuzata, .pa-stare-anulata { color: #4a4a4a; background: #ecece8; border-color: #6b6b6b; }
+.pa-stare-problema { color: #7f1d1d; background: #fbeaea; border-color: #a1261f; }
+/* Lista de stări cu semn („merge” / „de văzut”), pentru Starea site-ului și pașii până la publicare. */
+.pa-stari { max-width: 48rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.pa-stari li { display: flex; gap: 0.75rem; align-items: baseline; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem; background: #ffffff; border: 1px solid #dcdcd8; border-left: 4px solid #6b6b6b; border-radius: 0 4px 4px 0; }
+.pa-stari .pa-ok { border-left-color: #1e7a3a; }
+.pa-stari .pa-ok::before { content: "\2713"; color: #1e7a3a; font-weight: 700; }
+.pa-stari .pa-atentie { border-left-color: #a1261f; }
+.pa-stari .pa-atentie::before { content: "!"; color: #a1261f; font-weight: 700; }
+.pa-stari .pa-de-facut { border-left-color: #8a6100; }
+.pa-stari .pa-de-facut::before { content: "\2192"; color: #8a6100; font-weight: 700; }
+
+/* Cardurile și grilele. */
+.pa-card, .pa-camera { padding: 1rem; margin: 0 0 1rem; background: #ffffff; border: 1px solid #dcdcd8; border-radius: 6px; }
+.pa-card > :last-child, .pa-camera > :last-child { margin-bottom: 0; }
+.pa-grila { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.pa-grila > .pa-card { margin: 0; }
+.pa-grila-doua { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
+/* Zonele închise: „Avansat”, „Detalii”, pasul de confirmare al unei acțiuni care nu se poate întoarce. */
+.pa-avansat, .pa-confirma { margin: 0 0 1rem; }
+.pa-avansat { padding: 0 1rem; background: #ffffff; border: 1px solid #c8c8c4; border-radius: 6px; }
+.pa-avansat[open] { padding-bottom: 1rem; }
+.pa-avansat > summary { display: flex; align-items: center; min-height: 44px; font-weight: 700; cursor: pointer; }
+/* Semnul de deschidere al zonelor închise (rândul flex al titlului îl pierde pe cel al browserului). */
+.pa-avansat > summary::before, .pa-intrare summary::before { content: "\25B8"; flex: none; width: 1.25rem; }
+.pa-avansat[open] > summary::before, .pa-intrare details[open] > summary::before { content: "\25BE"; }
+.pa-avansat > summary::-webkit-details-marker, .pa-intrare summary::-webkit-details-marker { display: none; }
+.pa-confirma { display: inline-block; vertical-align: top; }
+.pa-confirma > summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0.5rem 1rem; color: #8a1f19; font-weight: 700; background: #ffffff; border: 1px solid #a1261f; border-radius: 4px; cursor: pointer; list-style: none; }
+.pa-confirma > summary::-webkit-details-marker { display: none; }
+.pa-confirma[open] { display: block; max-width: 44rem; padding: 0.75rem 1rem; background: #fbeaea; border: 1px solid #a1261f; border-radius: 4px; }
+.pa-confirma[open] > summary { padding: 0; min-height: 0; margin-bottom: 0.5rem; background: none; border: 0; }
+
+/* Tabelele; pe telefon, fiecare rând devine un card, cu eticheta coloanei înaintea valorii (data-eticheta). */
+.pa-tabel { overflow-x: auto; margin: 0 0 1rem; }
+.pa-tabel table { width: 100%; border-collapse: collapse; background: #ffffff; }
+.pa-tabel th, .pa-tabel td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #dcdcd8; text-align: left; vertical-align: top; }
+.pa-tabel thead th { background: #ecece8; font-size: 0.95rem; }
+/* Codul unei rezervări rămâne pe un rând; coloana acțiunilor are lățimea ei, cu butoanele unul sub altul. */
+.pa-tabel tbody th a { white-space: nowrap; }
+.pa-tabel td.pa-celula-actiuni { width: 15rem; }
+.pa-tabel td.pa-celula-actiuni > form, .pa-tabel td.pa-celula-actiuni > details { display: block; margin: 0 0 0.5rem; }
+.pa-tabel td.pa-celula-actiuni .pa-buton, .pa-tabel td.pa-celula-actiuni .pa-buton-pericol, .pa-tabel td.pa-celula-actiuni .pa-buton-secundar { margin: 0; }
+.pa-tabel td.pa-celula-actiuni > .pa-confirma:not([open]) > summary { display: inline-flex; }
+.pa-detalii { display: grid; grid-template-columns: minmax(10rem, max-content) 1fr; gap: 0.35rem 1rem; margin: 0 0 1rem; }
+.pa-detalii dt { font-weight: 600; }
+.pa-detalii dd { margin: 0; overflow-wrap: anywhere; }
+.pa-gol { padding: 1rem; color: #4a4a4a; background: #ffffff; border: 1px dashed #c8c8c4; border-radius: 6px; }
+
+/* Piese mărunte. */
+.pa-coduri { padding: 1rem; margin-bottom: 1rem; background: #fff8e1; border: 2px solid #8a6100; }
+.pa-coduri-titlu { margin: 0 0 0.5rem; font-size: 1.3rem; font-weight: 700; line-height: 1.25; }
+.pa-lista-coduri { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.5rem; padding: 0; list-style: none; font-size: 1.1rem; }
+.pa-alerte { padding: 0; list-style: none; }
+.pa-alerte li { margin-bottom: 0.5rem; }
+/* Nota pe care gazda o poate ascunde: butonul „Am înțeles” stă pe rândul lui, sub text. Butoanele de probă ale
+   transferului de pe pagina rezervării stau în caseta de informare, fără marginea de jos a rândului de acțiuni. */
+.pa-nota-ascunde { margin: 0.5rem 0 0; }
+.pa-nota-ascunde .pa-buton-secundar { margin: 0; }
+.pa-rez-proba .pa-actiuni { margin-bottom: 0; }
+.pa-rez-proba .pa-actiuni .pa-buton, .pa-rez-proba .pa-confirma { margin: 0; }
+.pa-jurnal { padding-left: 1rem; font-size: 0.9rem; overflow-wrap: anywhere; }
+.pa-intamplari { max-width: 48rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.pa-intamplari li { padding: 0.5rem 0; border-bottom: 1px solid #dcdcd8; }
+.pa-intamplari time, .pa-cand { color: #4a4a4a; font-size: 0.95rem; }
+.pa-miniatura { display: block; max-width: 100%; height: auto; border: 1px solid #dcdcd8; }
+.pa-previzualizare { white-space: pre-wrap; overflow-wrap: anywhere; padding: 0.75rem; background: #ffffff; border: 1px solid #dcdcd8; max-width: 48rem; }
+.pa-de-copiat, textarea.pa-de-copiat { font-family: ui-monospace, monospace; font-size: 0.9375rem; background: #f4f4f1; }
+.pa-qr { margin: 0 0 1rem; }
+.pa-qr svg { display: block; width: 14rem; max-width: 100%; height: auto; background: #ffffff; border: 1px solid #dcdcd8; }
+.pa-cheie-text { font-family: ui-monospace, monospace; font-size: 1.1rem; letter-spacing: 0.05em; overflow-wrap: anywhere; }
+.pa-pasi-numerotati { max-width: 44rem; padding-left: 1.5rem; }
+.pa-pasi-numerotati li { margin-bottom: 0.5rem; }
+.pa-gdpr-stergere { max-width: 44rem; padding: 0.75rem 1rem; background: #fbeaea; border: 1px solid #a1261f; border-radius: 4px; }
+.pa-cere { color: #8a1f19; font-weight: 600; }
+.pa-dif-semn { display: inline-block; width: 1.25em; font-weight: 700; }
+.pa-intrare { max-width: 28rem; margin: 2rem auto; padding: 1.5rem; background: #ffffff; border: 1px solid #dcdcd8; border-radius: 6px; }
+.pa-intrare details { margin: 0 0 1rem; }
+.pa-intrare summary { display: flex; align-items: center; min-height: 44px; color: #0b5cad; cursor: pointer; }
+
+@media (max-width: 40rem) {
+  /* Pe telefon (obs. 15.2026): antetul pe un singur rând, grupurile într-o bară fixă jos (4 ținte de 56 px, ca o
+     bară de aplicație), iar paginile grupului pe un singur rând care se derulează orizontal, cu cea deschisă la vedere. */
+  .pa-antet { flex-wrap: nowrap; gap: 0.5rem; padding: 0.25rem 0.75rem; }
+  .pa-titlu { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.95rem; }
+  .pa-antet-dreapta { flex: 0 0 auto; flex-wrap: nowrap; gap: 0.5rem; }
+  .pa-utilizator, .pa-titlu-panou { display: none; }
+  .pa-iesire .pa-buton-secundar { padding: 0 0.75rem; }
+  .pa-corp:has(.pa-meniu) { padding-bottom: calc(3.5rem + env(safe-area-inset-bottom)); }
+  html:has(.pa-meniu) { scroll-padding-bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+  .pa-meniu { position: fixed; z-index: 20; right: 0; bottom: 0; left: 0; padding: 0 0 env(safe-area-inset-bottom); border-top: 1px solid #c8c8c4; border-bottom: 0; box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08); }
+  .pa-meniu ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 0; }
+  .pa-meniu a { position: relative; width: 100%; min-height: 3.5rem; justify-content: center; padding: 0.25rem 0.25rem; border-top: 3px solid transparent; border-bottom: 0; font-size: 0.8125rem; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+  .pa-meniu a[aria-current] { border-top-color: #0b5cad; background: #eef4fb; }
+  .pa-meniu .pa-contor { position: absolute; top: 0.2rem; right: 0.35rem; margin: 0; min-width: 1.25rem; font-size: 0.75rem; }
+  .pa-submeniu { position: sticky; z-index: 10; top: 0; padding: 0; }
+  .pa-submeniu ul { flex-wrap: nowrap; overflow-x: auto; gap: 0; padding: 0 0.5rem; scrollbar-width: none; scroll-snap-type: x proximity; mask-image: linear-gradient(to right, transparent 0, #000 0.5rem, #000 calc(100% - 1.5rem), transparent 100%); }
+  .pa-submeniu ul::-webkit-scrollbar { display: none; }
+  .pa-submeniu li { flex: 0 0 auto; scroll-snap-align: start; }
+  .pa-submeniu a { white-space: nowrap; padding: 0 0.75rem; }
+  .pa-principal, .pa-subsol { padding: 0.75rem; }
+  .pa-principal h1 { font-size: 1.45rem; }
+  .pa-detalii { grid-template-columns: 1fr; gap: 0; }
+  .pa-detalii dd { margin-bottom: 0.6rem; }
+  .pa-tabel { overflow-x: visible; }
+  .pa-tabel table, .pa-tabel tbody { display: block; background: none; }
+  .pa-tabel thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .pa-tabel tr { display: block; margin: 0 0 0.75rem; padding: 0.5rem 0.75rem; background: #ffffff; border: 1px solid #dcdcd8; border-radius: 6px; }
+  .pa-tabel td, .pa-tabel tbody th { display: block; padding: 0.2rem 0; border: 0; }
+  .pa-tabel td[data-eticheta]::before, .pa-tabel tbody th[data-eticheta]::before { content: attr(data-eticheta) ": "; font-weight: 600; }
+  .pa-tabel td:empty { display: none; }
+  .pa-tabel td.pa-celula-actiuni { width: auto; padding-top: 0.5rem; }
+  .pa-buton, .pa-buton-secundar, .pa-buton-pericol { margin-right: 0.35rem; }
+}
+/* Instalatorul: pașii, verificările, textele de copiat (câmpurile, doar în paginile instalatorului). */
+/* Lista pașilor. Pe ecran îngust: „Pasul X din N: numele” și bara de progres. De la 60rem: toți pașii, fiecare în
+   caseta lui, cu numărul listei înăuntrul casetei (list-style-position: inside), pasul curent plin, pașii făcuți cu bifă. */
+.pa-pasi-nav { padding: 0.75rem 1rem; background: #ffffff; border-bottom: 1px solid #dcdcd8; }
+.pa-pasi-scurt { margin: 0 0 0.5rem; font-weight: 700; }
+.pa-pasi-bara { display: block; width: 100%; max-width: none; height: 0.5rem; }
+.pa-pasi { display: none; margin: 0; padding: 0; }
+.pa-pas-gata { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (min-width: 60rem) {
+  .pa-pasi-scurt, .pa-pasi-bara { display: none; }
+  .pa-pasi { display: flex; flex-wrap: wrap; gap: 0.5rem; max-width: 70rem; margin: 0 auto; list-style-position: inside; font-size: 0.9375rem; }
+  .pa-pasi .pa-pas { padding: 0.25rem 0.75rem; white-space: nowrap; color: #4a4a4a; background: #f4f4f1; border: 1px solid #c8c8c4; border-radius: 999px; }
+  .pa-pasi .pa-pas-facut { color: #14532d; background: #e7f3ea; border-color: #1e7a3a; }
+  .pa-pasi .pa-pas-facut::after { content: " \2713"; font-weight: 700; }
+  .pa-pasi .pa-pas-facut a { color: inherit; }
+  .pa-pasi .pa-pas[aria-current="step"] { font-weight: 700; color: #ffffff; background: #0b5cad; border-color: #0b5cad; }
+}
+.pa-pasi-cron { max-width: 48rem; padding-left: 1.5rem; }
+.pa-pasi-cron li { margin-bottom: 0.5rem; }
+[data-pg="instalare"] .pa-principal input.pa-de-copiat { font-family: ui-monospace, monospace; font-size: 0.9375rem; background: #f4f4f1; }
+.pa-rezumat { max-width: 48rem; margin: 0 0 1rem; }
+.pa-rezumat > div { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0.5rem 0; border-bottom: 1px solid #dcdcd8; }
+.pa-rezumat dt { flex: 0 0 14rem; font-weight: 700; }
+.pa-rezumat dd { flex: 1 1 16rem; margin: 0; }
+.pa-rezumat dd a { margin-left: 0.5rem; white-space: nowrap; }
+/* Rândurile verificate (pasul verificărilor și SPF/DKIM din pasul plăților): fiecare cu semnul lui într-un cerc
+   colorat (bifă verde „în regulă”, semn galben „recomandat”, semn roșu „de rezolvat”) și cu starea scrisă în cuvinte. */
+.pa-verificari { max-width: 48rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.pa-verif { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem; background: #ffffff; border: 1px solid #dcdcd8; border-radius: 6px; }
+.pa-verif-semn { flex: 0 0 1.5rem; width: 1.5rem; height: 1.5rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #ffffff; font-size: 0.9375rem; font-weight: 700; line-height: 1; }
+.pa-verif-ok .pa-verif-semn { background: #1e7a3a; }
+.pa-verif-ok .pa-verif-semn::before { content: "\2713"; }
+.pa-verif-recomandat { border-color: #d9b44a; background: #fffbea; }
+.pa-verif-recomandat .pa-verif-semn { background: #f2c230; color: #3d2c00; }
+.pa-verif-recomandat .pa-verif-semn::before { content: "!"; }
+.pa-verif-rezolvat { border-color: #d59a96; background: #fdf1f0; }
+.pa-verif-rezolvat .pa-verif-semn { background: #a1261f; }
+.pa-verif-rezolvat .pa-verif-semn::before { content: "\2715"; }
+.pa-verif-corp { flex: 1; min-width: 0; }
+.pa-principal .pa-verif-corp p { margin: 0 0 0.5rem; }
+.pa-principal .pa-verif-corp > :last-child { margin-bottom: 0; }
+.pa-verif-ok .pa-verif-stare { color: #14532d; font-weight: 600; }
+.pa-verif-recomandat .pa-verif-stare { color: #6b4a00; font-weight: 600; }
+.pa-verif-rezolvat .pa-verif-stare { color: #8a1f19; font-weight: 600; }
+.pa-ajutor-inline { display: inline; }
+/* Câmpurile termenelor de păstrare, în instalator și în panou: scurte, cât numărul lor. */
+.pa-principal input.pa-durata, [data-pg="instalare"] .pa-principal input.pa-durata { --pa-latime: 10rem; }
+/* Forma de organizare dedusă: lista stă în spatele legăturii „Alegeți altă formă”, lipită de rândul formei. */
+.pa-alta-cheie.pi-alta-forma { margin: -0.5rem 0 1rem; }
+.pa-principal .pa-verif-corp .pa-verif-rand { overflow-wrap: anywhere; }
+/* Pasul bazei de date: datele MySQL apar doar când e aleasă MySQL, fără scripturi. Un browser fără :has() le
+   arată mereu, iar la SQLite serverul le lasă deoparte. */
+form.pi-baza:not(:has(#pi-mysql:checked)) .pi-baza-mysql { display: none; }
+/* Metodele de plată (pasul plăților și pagina din panou): ce cere o metodă (cheia Stripe, contul bancar)
+   apare sub bifa ei, doar cât bifa e pusă, fără scripturi. Un browser fără :has() le arată mereu. */
+.pa-metoda:not(:has(> p > .pa-metoda-bifa:checked)) > .pa-metoda-detalii { display: none; }
+.pa-metoda-detalii { margin: 0 0 1rem calc(12px - 1.5px); padding: 0.25rem 0 0.25rem 1.25rem; border-left: 3px solid #0b5cad; }
+.pa-principal .pa-metoda-detalii h2, .pa-principal .pa-metoda-detalii h3 { margin: 0 0 0.5rem; padding: 0; font-size: 1.1rem; border: 0; }
+.pa-principal fieldset.pa-metode > .pa-metoda:last-child > p:last-child, .pa-principal fieldset.pa-metode > .pa-metoda:last-child > .pa-metoda-detalii { margin-bottom: 0; }
+/* Propunerea formei cu majuscule a titularului și a băncii. */
+.pa-principal form.pa-propunere { max-width: 48rem; }
+.pa-rezumat dd form.pa-propunere { margin: 0.5rem 0 0; padding: 0.75rem 1rem; background: #eaf2fb; border-left: 4px solid #0b5cad; border-radius: 0 4px 4px 0; }
+.pa-principal form.pa-propunere p { margin-bottom: 0.5rem; }
+[data-pg="instalare"] .pa-principal textarea, [data-pg="instalare"] .pa-principal select, [data-pg="instalare"] .pa-principal input[readonly] { --pa-latime: 48rem; }
+progress { width: 100%; max-width: 24rem; height: 1.25rem; }
+/* Diferențele față de modelul paginilor legale: rândurile scoase și adăugate, marcate și cu „−” și „+”. */
+.pa-diferente { white-space: pre-wrap; overflow-wrap: anywhere; padding: 0.75rem; background: #ffffff; border: 1px solid #dcdcd8; max-width: 48rem; font-family: ui-monospace, monospace; font-size: 0.875rem; }
+.pa-dif { display: block; text-decoration: none; min-height: 1.25em; }
+.pa-dif-adaugat { background: #e3f4e1; color: #14532d; }
+.pa-dif-scos { background: #fbe4e2; color: #7f1d1d; }
+/* Pasul 7 al instalatorului: marcajul „cerut” al datelor de firmă urmează forma aleasă, înainte de trimitere. */
+form:has(#pi-forma option[value="persoana_fizica"]:checked) .pi-cerut-firma { display: none; }
+form:has(#pi-forma option:not([value="persoana_fizica"]):not([value=""]):checked) .pi-cerut-firma[hidden] { display: inline; }
+/* Pasul 6 al instalatorului, după legare: câmpul altei chei stă în spatele unei legături discrete, fără scripturi. */
+.pa-alta-cheie { margin-top: 1.5rem; }
+/* „Înapoi”, sub conținutul pasului. */
+.pa-inapoi { margin-top: 1.5rem; }
+.pa-alta-cheie summary { min-height: 44px; display: flex; align-items: center; width: fit-content; color: #0b5cad; text-decoration: underline; cursor: pointer; }
+/* === Termene și taxa (ajutor) === */
+/* Eroarea și avertizarea unui câmp stau sub el, pe rândul lor. */
+/* Pasul plăților din instalator: încasarea online a taxei locale apare doar cu bifa cardului pusă, fără scripturi;
+   cât bifa lipsește, în locul variantei stă explicația. Un browser fără :has() le arată pe amândouă, iar serverul
+   primește „online” fără card ca „arătată în preț, încasată la sosire”. */
+form:has(#pi-metoda-card:not(:checked)):has(#pi-metoda-transfer:not(:checked)) .pi-taxa-online { display: none; }
+form:has(#pi-metoda-card:checked) .pi-taxa-online-ajutor, form:has(#pi-metoda-transfer:checked) .pi-taxa-online-ajutor { display: none; }
+/* === sfârșit === */
+/* === Temele (carduri) === */
+/* Pagina Aspect și pasul „Tema” din instalator: grila de carduri (o coloană pe telefon), captura la raportul 4:3. */
+.pa-teme { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1rem; margin: 1rem 0; padding: 0; list-style: none; }
+.pa-tema { display: flex; flex-direction: column; min-width: 0; background: #ffffff; border: 1px solid #c8c8c4; border-radius: 8px; overflow: hidden; }
+.pa-tema-activa { border-color: #1e7a3a; box-shadow: 0 0 0 2px #1e7a3a; }
+/* Captura temei: prima pagină pe un ecran de telefon, 600 x 750, ca textul să se citească în card. O captură cu
+   alt raport (o temă încărcată de gazdă) se vede întreagă, lipită de marginea de sus. */
+.pa-tema-imagine { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: contain; object-position: top; background: #ecece8; border-bottom: 1px solid #dcdcd8; }
+.pa-tema-fara-imagine { display: flex; align-items: center; justify-content: center; padding: 1rem; color: #4a4a4a; font-size: 1.25rem; font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+.pa-tema-corp { display: flex; flex: 1; flex-direction: column; gap: 0.5rem; padding: 0.75rem 1rem 1rem; }
+.pa-tema-corp > * { margin: 0; }
+.pa-tema-nume { font-size: 1.125rem; }
+.pa-tema-acum strong { display: inline-block; padding: 0.125rem 0.5rem; color: #14532d; background: #e7f3ea; border: 1px solid #1e7a3a; border-radius: 4px; font-size: 0.9375rem; }
+.pa-tema-pentru { color: #4a4a4a; font-size: 0.95rem; }
+.pa-tema-actiuni { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 0.5rem; }
+.pa-tema-actiuni form { margin: 0; }
+.pa-tema-legatura { display: inline-flex; align-items: center; min-height: 44px; color: #0b5cad; }
+.pa-tema details > summary { padding: 0.625rem 0; color: #0b5cad; cursor: pointer; }
+.pa-tema details .pa-formular > * { margin-top: 0; }
+.pa-tema .pa-buton-pericol { min-height: 44px; }
+.pa-tema-noua { padding: 0.5rem 0.75rem; background: #fff8e1; border: 1px solid #8a6100; border-radius: 4px; }
+/* Zona „Avansat” (temele încărcate, încărcarea unei arhive, copia setărilor): închisă până când gazda o deschide. */
+.pa-teme-avansat { margin: 1.5rem 0; padding: 0 1rem; background: #ffffff; border: 1px solid #c8c8c4; border-radius: 8px; }
+.pa-teme-avansat > summary { padding: 0.625rem 0; font-weight: 700; cursor: pointer; }
+.pa-teme-avansat[open] { padding-bottom: 1rem; }
+.pa-teme-avansat .pa-tema { background: #f6f6f4; }
+/* === sfârșit teme === */
+/* === Rezervări === */
+/* Mesajul oaspetelui de pe pagina rezervării: rândurile scrise de el rămân rânduri. */
+.pa-rez-nota { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Cele trei liste de pe pagina rezervării (sejurul, oaspetele, sumele) au aceeași coloană a etichetelor. */
+@media (min-width: 40.01rem) { .pa-rez-date .pa-detalii { grid-template-columns: 17rem 1fr; } }
+/* Codul rezervării și sumele din tabele rămân pe un singur rând. */
+.pa-fix { white-space: nowrap; }
+/* === sfârșit Rezervări === */
+
+/* === Setări și Camere === */
+/* Bifa „Poate face rambursări” stă sub rolul Personal, de care ține. */
+.pa-principal form p.pa-sub-optiune { margin-left: 2rem; }
+/* Rândul de sub adresa contului (numele și limba), în capul de rând al tabelului. */
+.pa-tabel tbody th .pa-ajutor { font-weight: 400; }
+/* Lățimile `pa-scurt` și `pa-lat` pe câmpurile de text: regula generală a câmpurilor e mai specifică decât ele. */
+.pa-principal input.pa-scurt:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="hidden"]) { max-width: 11rem; }
+.pa-principal input.pa-lat:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="hidden"]) { max-width: 36rem; }
+/* === sfârșit Setări și Camere === */
+/* === Poze === */
+/* Grila pozelor: miniatura umple cardul, la raportul 4:3; setările fiecărei poze stau sub un rând care se deschide. */
+.pa-poza h3 { margin-top: 0; }
+.pa-poza .pa-miniatura { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin: 0 0 0.5rem; border-radius: 4px; }
+.pa-poza > details { margin-top: 0.25rem; }
+.pa-poza > details:not(.pa-confirma) > summary { display: flex; align-items: center; min-height: 44px; color: #0b5cad; cursor: pointer; }
+.pa-poze { align-items: start; }
+/* === sfârșit Poze === */
+/* === Sigla site-ului === */
+.pa-sigla-mostre { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.5rem; }
+.pa-sigla-mostra { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 0.375rem; }
+.pa-sigla-mostra img { box-sizing: content-box; max-width: 100%; height: auto; padding: 0.5rem; background: repeating-conic-gradient(#eceae6 0 25%, #ffffff 0 50%) 0 0 / 16px 16px; border: 1px solid #d6d3ce; border-radius: 4px; }
+.pa-sigla-mostra > span { font-size: 0.875rem; color: #4a4a4a; }
+/* === sfârșit Sigla === */
+
+/* Harta de pe „Proprietatea” (front/js/admin/harta.js): dalele alunecă sub acul fix din mijloc; fără JavaScript,
+   locul ei rămâne ascuns și rămân câmpurile coordonatelor. */
+.pa-harta { margin: 0 0 1rem; }
+/* Îndrumarea fără hartă (căutarea sau coordonatele scrise de mână) stă imediat după locul hărții: se vede doar cât harta e ascunsă. */
+.pa-harta:not([hidden]) + .pa-harta-fara { display: none; }
+.pa-harta-cutie { position: relative; width: 100%; height: 420px; margin-top: 0.5rem; overflow: hidden; border: 1px solid #c8c8c4; border-radius: 8px;
+  background: #e8ece6; cursor: grab; touch-action: none; user-select: none; }
+@media (max-width: 40rem) { .pa-harta-cutie { height: 340px; } }
+.pa-harta-cutie.pa-harta-trage { cursor: grabbing; }
+.pa-harta-strat { position: absolute; inset: 0; will-change: transform; }
+.pa-harta-dala { position: absolute; width: 256px; height: 256px; max-width: none; pointer-events: none; }
+.pa-harta-ac { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -31px 0 0 -13px; pointer-events: none;
+  background: #a1261f; border: 3px solid #ffffff; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: -1px 2px 4px rgba(0, 0, 0, 0.4); }
+.pa-harta-ac::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; background: #ffffff; border-radius: 50%; }
+.pa-harta-zoom { position: absolute; top: 10px; right: 10px; z-index: 2; display: grid; gap: 4px; }
+.pa-harta-zoom button { width: 44px; height: 44px; margin: 0; padding: 0; font-size: 1.4rem; line-height: 1; color: #1a1a1a; background: #ffffff;
+  border: 1px solid #6b6b6b; border-radius: 6px; cursor: pointer; }
+.pa-harta-zoom button:hover { background: #ecece8; }
+.pa-harta-atribuire { position: absolute; right: 0; bottom: 0; z-index: 2; padding: 0 0.35rem; font-size: 0.8rem; color: #1a1a1a; background: rgba(255, 255, 255, 0.85); }
+.pa-harta-aviz { position: absolute; left: 10px; right: 64px; top: 10px; z-index: 2; margin: 0; padding: 0.5rem 0.75rem; color: #5c3b00; background: #fff4d6;
+  border: 1px solid #c99a2e; border-radius: 6px; pointer-events: none; }

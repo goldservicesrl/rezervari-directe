@@ -1,0 +1,18 @@
+{% extends 'instalare/cadru.twig' %}
+{# Ecranul locului datelor: doar la varianta B, după verificările trecute; ține de pasul verificărilor. #}
+{% block continut %}
+<h1>{{ t('instalare.loc.titlu') }}</h1>
+<p>{{ t('instalare.loc.b', {dosar: dosar}) }}</p>
+{% if mutat %}<p>{{ t('instalare.loc.mutat_' ~ mutat) }}</p>{% endif %}
+<p>{{ t('instalare.loc.sonda') }}</p>
+{% if sonda and not sonda.ok %}
+<div class="pa-eroare" role="alert">
+<p>{{ t('instalare.loc.sonda_esuata') }}</p>
+<ul>{% for r in sonda.rezultate %}<li>{{ r.fisier }}: {{ r.status ?? t('instalare.loc.fara_raspuns') }}{% if r.ok %} ({{ t('instalare.verificari.bun') }}){% endif %}</li>{% endfor %}</ul>
+<p>{{ t('instalare.loc.pasi') }}</p>
+<p><label for="pi-sonda-gazduire">{{ t('instalare.verificari.text_gazduire') }}</label>
+<textarea id="pi-sonda-gazduire" rows="5" readonly>{{ t('instalare.loc.gazduire', {dosar: dosar}) }}</textarea></p>
+</div>
+{% endif %}
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="loc"><button type="submit" class="pa-buton">{{ t('instalare.loc.verificati') }}</button></form>
+{% endblock %}

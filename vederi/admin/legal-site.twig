@@ -1,0 +1,17 @@
+{#- Setări › Legal și datele oaspeților, contactul de pe site, pagina Accesibilitate și linkul Cazo
+    din subsol (cerut de licență, fără comutator), sub paginile legale. Datele vin din controlerul paginii „Datele firmei” (AdminGdpr::legal). -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+{% include 'admin/_stare.twig' %}
+<h2>{{ t('admin.legal.contact_titlu') }}</h2>
+<p>{{ t(email_ec ? 'admin.legal.contact_text' : 'admin.legal.contact_text_fara_email', {email: email_ec}) }}</p>
+{% if telefon_ec %}<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="sectiune" value="telefon">
+<p><input type="checkbox" id="pa-l-telefon" name="telefon" value="1"{% if telefon_pe_site %} checked{% endif %} aria-describedby="pa-l-telefon-ajutor"><label for="pa-l-telefon">{{ t('admin.legal.telefon_camp') }}</label><span class="pa-ajutor" id="pa-l-telefon-ajutor">{{ t('admin.legal.telefon_ajutor', {telefon: telefon_ec}) }}</span></p>
+<button type="submit" class="pa-buton">{{ t('admin.legal.telefon_salveaza') }}</button></form>
+{% else %}<p class="pa-ajutor">{{ t('admin.legal.telefon_lipsa') }}</p>{% endif %}
+<h2>{{ t('admin.legal.accesibilitate_titlu') }}</h2>
+<p>{{ t(accesibilitate ? 'admin.legal.accesibilitate_activa' : 'admin.legal.accesibilitate_ascunsa') }}</p>
+<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="sectiune" value="accesibilitate">
+<p><input type="checkbox" id="pa-l-accesibilitate" name="accesibilitate" value="1"{% if accesibilitate %} checked{% endif %} aria-describedby="pa-l-accesibilitate-ajutor"><label for="pa-l-accesibilitate">{{ t('admin.legal.accesibilitate_camp') }}</label><span class="pa-ajutor" id="pa-l-accesibilitate-ajutor">{{ t('admin.legal.accesibilitate_ajutor') }}</span></p>
+<button type="submit" class="pa-buton">{{ t('admin.legal.accesibilitate_salveaza') }}</button></form>
+{% endblock %}

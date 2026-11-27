@@ -1,0 +1,133 @@
+/* Tema de pornire: doar jetoanele nucleului (--pg-*), fără !important și fără resurse externe.
+   Nucleul pune acest fișier în @layer tema; componentele nucleului poartă clasele pg-* și data-pg. */
+
+.po-corp {
+  margin: 0;
+  background: var(--pg-culoare-fundal);
+  color: var(--pg-culoare-text);
+  font-family: var(--pg-font-text);
+  line-height: 1.6;
+}
+
+.po-latime {
+  box-sizing: border-box;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--pg-spatiu-4);
+}
+
+h1, h2, h3 {
+  font-family: var(--pg-font-titlu);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--pg-culoare-accent);
+}
+
+.po-salt {
+  position: absolute;
+  left: -100vw;
+}
+
+.po-salt:focus {
+  left: var(--pg-spatiu-2);
+  top: var(--pg-spatiu-2);
+  padding: var(--pg-spatiu-2);
+  background: var(--pg-culoare-fundal);
+}
+
+.po-antet {
+  border-bottom: 1px solid var(--pg-culoare-linie);
+}
+
+.po-antet-interior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pg-spatiu-3) var(--pg-spatiu-6);
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--pg-spatiu-3);
+}
+
+.po-sigla {
+  font-family: var(--pg-font-titlu);
+  font-size: 1.25rem;
+  color: var(--pg-culoare-text);
+  text-decoration: none;
+}
+
+.po-meniu ul {
+  display: flex;
+  gap: var(--pg-spatiu-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.po-sectiune {
+  padding-block: var(--pg-spatiu-7);
+}
+
+.po-bun-venit-poza img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: cover;
+}
+
+.po-subtitlu {
+  font-size: 1.125rem;
+}
+
+.po-subsol {
+  margin-top: var(--pg-spatiu-8);
+  padding-block: var(--pg-spatiu-6);
+  background: var(--pg-culoare-suprafata);
+  border-top: 1px solid var(--pg-culoare-linie);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a {
+    transition: color 0.15s ease-in-out;
+  }
+}
+
+/* comutatorul de limbă, separat de meniu, în dreapta antetului: pastila „RO | EN”, cu limba curentă
+   evidențiată; pe telefon rămâne la vedere, aliniat la dreapta când antetul trece pe al doilea rând. */
+.po-limbi { order: 2; flex: 0 0 auto; margin-left: auto; }
+.po-limbi ul { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 2px; border: 1px solid currentColor; border-radius: 999px; }
+.po-limbi li { margin: 0; padding: 0; }
+.po-antet .po-limbi a { display: flex; align-items: center; justify-content: center; min-width: 2.25rem; min-height: 2rem; padding: 0 0.5rem; border-radius: 999px; color: inherit; font-size: 0.8125rem; font-weight: 600; text-decoration: none; }
+.po-antet .po-limbi a[aria-current="true"] { background: color-mix(in srgb, currentColor 22%, transparent); font-weight: 800; }
+.po-antet .po-limbi a:hover { text-decoration: underline; }
+
+/* Secțiunile din biblioteca _schelet (camerele, galeria, rezervarea, fișa) cu stilul lor de bază, ca o temă pornită
+   de aici să arate la fel de îngrijit ca restul temelor: lățimea, grila camerelor și galeria uniformă. */
+.sc-latime { max-width: 72rem; margin: 0 auto; padding: 0 var(--pg-spatiu-4); }
+.sc-sectiune { padding: var(--pg-spatiu-6) 0; }
+.sc-grila { display: grid; gap: var(--pg-spatiu-5); grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); list-style: none; padding: 0; margin: 0; }
+.sc-card-titlu { margin: var(--pg-spatiu-3) 0 var(--pg-spatiu-1); }
+.sc-card-pret, .sc-camera-pret { font-weight: 700; }
+.sc-galerie-grila { display: grid; gap: 4px; grid-template-columns: repeat(6, minmax(0, 1fr)); list-style: none; padding: 0; margin: 0; }
+.sc-galerie-grila > li { grid-column: span 3; min-width: 0; margin: 0; }
+.sc-galerie-grila :is(a, picture) { display: block; }
+.sc-galerie-grila img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.sc-galerie-grila > li:nth-child(2n+1):last-child { grid-column: span 6; }
+.sc-galerie-grila > li:nth-child(2n+1):last-child img { aspect-ratio: 8 / 3; }
+@media (min-width: 40rem) {
+  .sc-galerie-grila > li { grid-column: span 2; }
+  .sc-galerie-grila > li img { aspect-ratio: 4 / 3; }
+  .sc-galerie-grila > li:nth-child(3n+1):last-child { grid-column: span 6; }
+  .sc-galerie-grila > li:nth-child(3n+1):last-child img { aspect-ratio: 4 / 1; }
+  .sc-galerie-grila > li:nth-child(3n+1):nth-last-child(2), .sc-galerie-grila > li:nth-child(3n+2):last-child { grid-column: span 3; }
+  .sc-galerie-grila > li:nth-child(3n+1):nth-last-child(2) img, .sc-galerie-grila > li:nth-child(3n+2):last-child img { aspect-ratio: 2 / 1; }
+}
+.sc-galerie-grila > li:only-child img { aspect-ratio: 2 / 1; }
+.sc-rezervare-grila { display: grid; gap: var(--pg-spatiu-6); grid-template-columns: minmax(0, 1fr); }
+.sc-fisa-date div { display: flex; gap: var(--pg-spatiu-3); }
+.sc-fisa-date dt { font-weight: 700; min-width: 10rem; }
+.sc-fisa-date dd { margin: 0; }
+/* Sigla gazdei: imaginea lângă nume; înălțimea o dă nucleul (.pg-sigla-img). */
+.po-sigla--imagine { display: inline-flex; align-items: center; gap: 0.625rem; }

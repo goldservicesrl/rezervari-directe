@@ -1,0 +1,129 @@
+{#- Comanda (cazo.comanda()): rezumatul, datele oaspetelui, nota, informarea precontractuală, acordul,
+    căsuța nebifată pentru noutăți, ALTCHA în fundal, butonul final. Conținutul nucleului, protejat ca blocul legal. -#}
+<section class="pg-comanda" data-pg="comanda" aria-labelledby="pg-comanda-titlu">
+<h1 id="pg-comanda-titlu" class="pg-titlu-pagina">{{ t('comanda.titlu') }}</h1>
+{% if mesaj %}<p class="pg-comanda-mesaj" role="alert">{{ mesaj }}</p>{% endif %}
+{% if not activa %}
+{% if oprite ?? false %}<p class="pg-oprite" role="status" data-pg="oprite">{{ t('rezervari.oprite') }}</p>{% endif %}
+<p class="pg-comanda-contact">{% if contact.telefon or contact.email %}{{ t('comanda.contact') }}{% if contact.telefon %} <a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a>{% endif %}{% if contact.email %} <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}{% else %}{{ t('comanda.contact_fara_contact') }}{% endif %}</p>
+{% elseif not sejur %}
+<p class="pg-comanda-mesaj">{{ t('comanda.sejur_gresit') }}</p>
+{% elseif not total_ok %}
+{% if restrictie %}<p class="pg-comanda-mesaj" role="alert">{{ restrictie }}</p>{% endif %}
+<p><a class="pg-buton" href="{{ cautare }}">{{ t('bara.cauta') }}</a></p>
+{% else %}
+{% if erori %}
+<div class="pg-comanda-erori" role="alert" aria-labelledby="pg-erori-titlu" tabindex="-1">
+<p id="pg-erori-titlu" class="pg-comanda-erori-titlu">{{ t('comanda.erori_titlu') }}</p>
+<ul>{% for e in erori %}<li><a href="#pg-f-{{ e.camp }}">{{ e.text }}</a></li>{% endfor %}</ul>
+</div>
+{% endif %}
+<div class="pg-comanda-grila">
+<section class="pg-comanda-rezumat" aria-labelledby="pg-rezumat-titlu">
+<h2 id="pg-rezumat-titlu">{{ t('comanda.rezumat') }}</h2>
+{% include 'componente/rezumat-comanda.twig' with {r: rezumat, erori: erori_rezumat|default({})} only %}
+{% if erori_rezumat.plan is defined and not planuri %}<p class="pg-eroare" id="pg-f-plan">{{ erori_rezumat.plan }}</p>{% endif %}
+{% if planuri %}
+<form class="pg-comanda-tarif" method="get" action="{{ schimba.actiune }}">
+{% for a in schimba.ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+{% for a in sejur_campuri %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+<fieldset id="pg-f-plan"{% if erori_rezumat.plan is defined %} aria-describedby="pg-f-plan-eroare"{% endif %}><legend>{{ t('comanda.schimba_tariful') }}</legend>
+{% if erori_rezumat.plan is defined %}<span class="pg-eroare" id="pg-f-plan-eroare">{{ erori_rezumat.plan }}</span>{% endif %}
+{% for p in planuri %}<div class="pg-plan"><input type="radio" id="pg-cplan-{{ p.id }}" name="plan" value="{{ p.id }}"{% if p.ales %} checked{% endif %} aria-describedby="pg-cplan-{{ p.id }}-p"><label for="pg-cplan-{{ p.id }}">{{ p.titlu }}{% if p.masa ?? '' %}<span class="pg-masa">{{ p.masa }}</span>{% endif %}</label><span class="pg-plan-politica" id="pg-cplan-{{ p.id }}-p">{{ p.politica }}</span></div>{% endfor %}
+</fieldset>
+<button class="pg-buton-secundar" type="submit">{{ t('comanda.actualizeaza') }}</button>
+</form>
+{% endif %}
+</section>
+<form class="pg-comanda-formular" method="post" action="{{ formular.actiune }}" novalidate>
+{% for a in formular.ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+{% for a in ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+<input type="hidden" name="_csrf" value="{{ csrf }}">
+<h2>{{ t('comanda.date_oaspete') }}</h2>
+{% set campuri = [
+  {id: 'nume', tip: 'text', ac: 'name', im: ''},
+  {id: 'email', tip: 'email', ac: 'email', im: 'email'},
+  {id: 'telefon', tip: 'tel', ac: 'tel', im: 'tel'}
+] %}
+{% for f in campuri %}
+<div class="pg-camp pg-camp-lat">
+<label for="pg-f-{{ f.id }}">{{ t('comanda.camp.' ~ f.id) }} <span class="pg-obligatoriu">({{ t('comanda.obligatoriu') }})</span></label>
+{% if f.id == 'email' %}<span class="pg-ajutor" id="pg-f-email-ajutor">{{ t('comanda.camp.email_ajutor') }}</span>{% endif %}
+{% if erori_camp[f.id] is defined %}<span class="pg-eroare" id="pg-f-{{ f.id }}-eroare">{{ erori_camp[f.id] }}</span>{% endif %}
+<input id="pg-f-{{ f.id }}" name="{{ f.id }}" type="{{ f.tip }}" value="{{ valori[f.id] }}" autocomplete="{{ f.ac }}"{% if f.im %} inputmode="{{ f.im }}"{% endif %} required
+ {%- if erori_camp[f.id] is defined %} aria-invalid="true" aria-describedby="pg-f-{{ f.id }}-eroare{% if f.id == 'email' %} pg-f-email-ajutor{% endif %}"{% elseif f.id == 'email' %} aria-describedby="pg-f-email-ajutor"{% endif %}>
+</div>
+{% endfor %}
+<div class="pg-camp pg-camp-lat">
+<label for="pg-f-tara">{{ t('comanda.camp.tara') }} <span class="pg-obligatoriu">({{ t('comanda.obligatoriu') }})</span></label>
+{% if erori_camp.tara is defined %}<span class="pg-eroare" id="pg-f-tara-eroare">{{ erori_camp.tara }}</span>{% endif %}
+<select id="pg-f-tara" name="tara" autocomplete="country" required{% if erori_camp.tara is defined %} aria-invalid="true" aria-describedby="pg-f-tara-eroare"{% endif %}>
+<option value="">{{ t('comanda.alegeti_tara') }}</option>
+{% for x in tari %}<option value="{{ x.cod }}"{% if x.cod == valori.tara %} selected{% endif %}>{{ x.nume }}</option>{% endfor %}
+</select>
+</div>
+<div class="pg-camp pg-camp-lat">
+<label for="pg-f-nota">{{ t('comanda.camp.nota') }}</label>
+<span class="pg-ajutor" id="pg-f-nota-ajutor">{{ t('comanda.camp.nota_ajutor') }}</span>
+{% if erori_camp.nota is defined %}<span class="pg-eroare" id="pg-f-nota-eroare">{{ erori_camp.nota }}</span>{% endif %}
+<textarea id="pg-f-nota" name="nota" rows="4" maxlength="1000" aria-describedby="pg-f-nota-ajutor{% if erori_camp.nota is defined %} pg-f-nota-eroare{% endif %}">{{ valori.nota }}</textarea>
+</div>
+<div class="pg-ascuns" aria-hidden="true"><label for="pg-f-site">{{ t('comanda.capcana') }}</label><input id="pg-f-site" name="site_web" type="text" value="" tabindex="-1" autocomplete="off"></div>
+<section class="pg-precontractual" aria-labelledby="pg-pre-titlu">
+<h2 id="pg-pre-titlu">{{ t(plata.card or plata.transfer ? 'comanda.precontractual.titlu_card' : 'comanda.precontractual.titlu') }}</h2>
+{% for p in precontractual %}<p>{{ p }}</p>{% endfor %}
+</section>
+<div class="pg-bifa">
+<input id="pg-f-acord" name="acord" type="checkbox" value="1" required{% if valori.acord == '1' %} checked{% endif %}{% if erori_camp.acord is defined %} aria-invalid="true" aria-describedby="pg-f-acord-eroare"{% endif %}>
+<label for="pg-f-acord">{{ t('comanda.acord_inceput') }} <a href="{{ linkuri.termeni }}">{{ t('comanda.acord_termeni') }}</a> {{ t('comanda.acord_si') }} <a href="{{ linkuri.confidentialitate }}">{{ t('legal.link.confidentialitate') }}</a>.</label>
+{% if erori_camp.acord is defined %}<span class="pg-eroare" id="pg-f-acord-eroare">{{ erori_camp.acord }}</span>{% endif %}
+</div>
+<div class="pg-bifa">
+<input id="pg-f-marketing" name="marketing" type="checkbox" value="1"{% if valori.marketing == '1' %} checked{% endif %}>
+<label for="pg-f-marketing">{{ noutati_text }}</label>
+</div>
+{#- Fără JavaScript, ALTCHA lipsește, deci codul pe e-mail se cere mereu: nota apare atunci în noscript. -#}
+{% if cod_info %}<p class="pg-ajutor">{{ t('comanda.cod_info') }}</p>{% else %}<noscript><p class="pg-ajutor pg-noscript">{{ t('comanda.noscript') }}</p></noscript>{% endif %}
+<cazo-altcha data-api="{{ altcha_api }}"><input type="hidden" name="altcha" value=""></cazo-altcha>
+{#- Plata: cu cardul, alegerea între avans și plata întreagă și butonul „Rezerv și plătesc”; cu cash,
+    textul plății la sosire și butonul cererii; cu transferul bancar, suma, termenul, restul de la sosire și
+    butonul lui. Cu mai multe metode, fiecare are butonul ei (merge și fără JavaScript). -#}
+{% set mai_multe = (plata.card ? 1 : 0) + (plata.transfer ? 1 : 0) + (plata.cash ? 1 : 0) > 1 %}
+<section class="pg-comanda-metode" aria-labelledby="pg-plata-titlu">
+<h2 id="pg-plata-titlu">{{ t('comanda.plata') }}</h2>
+{% if plata.card %}
+<div class="pg-comanda-metoda pg-comanda-plata-online">
+{% if mai_multe %}<h3 class="pg-comanda-metoda-titlu">{{ t('comanda.metode.card') }}</h3>{% endif %}
+{% if plata.optiuni %}
+<fieldset id="pg-f-plata"><legend>{{ t('comanda.plata_alegere') }}</legend>
+{% for o in plata.optiuni %}<div class="pg-plan"><input type="radio" id="pg-plata-{{ o.id }}" name="plata" value="{{ o.id }}"{% if o.ales %} checked{% endif %}><label for="pg-plata-{{ o.id }}">{{ o.text }}</label></div>{% endfor %}
+</fieldset>
+{% else %}
+<p class="pg-comanda-plata">{{ plata.text_card }}</p>
+{% endif %}
+{% if plata.regula is defined %}<p class="pg-ajutor">{{ plata.regula }}</p>{% endif %}
+<button class="pg-buton pg-comanda-buton" type="submit" name="metoda" value="card">{{ buton_card }}</button>
+</div>
+{% endif %}
+{% if plata.transfer %}
+<div class="pg-comanda-metoda pg-comanda-plata-transfer">
+{% if mai_multe %}<h3 class="pg-comanda-metoda-titlu">{{ t('comanda.metode.transfer') }}</h3>{% endif %}
+<p class="pg-comanda-plata">{{ plata.text_transfer }}</p>
+<p class="pg-ajutor">{{ plata.transfer_cont }}</p>
+{% if plata.regula_transfer is defined and not plata.card %}<p class="pg-ajutor">{{ plata.regula_transfer }}</p>{% endif %}
+<button class="{{ plata.card ? 'pg-buton-secundar' : 'pg-buton' }} pg-comanda-buton" type="submit" name="metoda" value="transfer">{{ buton_transfer }}</button>
+</div>
+{% endif %}
+{% if plata.cash %}
+<div class="pg-comanda-metoda pg-comanda-plata-sosire">
+{% if mai_multe %}<h3 class="pg-comanda-metoda-titlu">{{ t('comanda.metode.cash') }}</h3>{% endif %}
+{% if plata.rezerva %}<p class="pg-ajutor">{{ t('comanda.plata_rezerva') }}</p>{% endif %}
+<p class="pg-comanda-plata">{{ plata.text_cash }}</p>
+<button class="{{ plata.card or plata.transfer ? 'pg-buton-secundar' : 'pg-buton' }} pg-comanda-buton" type="submit"{% if plata.card or plata.transfer %} name="metoda" value="cash"{% endif %}>{{ buton }}</button>
+</div>
+{% endif %}
+</section>
+</form>
+</div>
+{% endif %}
+</section>

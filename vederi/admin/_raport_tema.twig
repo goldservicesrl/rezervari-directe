@@ -1,0 +1,3 @@
+{% if raport.erori %}<div class="pa-eroare"><p>{{ t('admin.teme.raport.erori', {n: raport.erori|length}) }}</p><ul>{% for e in raport.erori %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+{% if raport.avertismente %}<details><summary>{{ t('admin.teme.raport.avertismente', {n: raport.avertismente|length}) }}</summary><ul>{% for e in raport.avertismente %}<li>{{ e }}</li>{% endfor %}</ul></details>{% endif %}
+{% if raport.trece %}<p>{{ t('admin.teme.raport.trece') }}</p>{% endif %}

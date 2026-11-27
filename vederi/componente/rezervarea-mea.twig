@@ -1,0 +1,60 @@
+{#- „Rezervarea mea” (cazo.rezervarea_mea()): starea, rezumatul, .ics, contactul, retragerea acordului pentru noutăți;
+    cât plata prin transfer e așteptată, butonul „Am plătit”. -#}
+<section class="pg-rmea" data-pg="rezervarea-mea" aria-labelledby="pg-rmea-titlu">
+<h1 id="pg-rmea-titlu" class="pg-titlu-pagina">{{ t('rmea.titlu') }}</h1>
+{% if mesaj %}<p class="pg-comanda-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if incheiata %}
+<p>{{ text }}</p>
+{% else %}
+<p class="pg-stare-titlu">{{ text is defined ? text : titlu }}</p>
+{% if text is not defined %}{% for p in paragrafe|default([]) %}<p>{{ p }}</p>{% endfor %}{% endif %}
+{% if transfer is defined %}{% include 'componente/transfer.twig' with {x: transfer} only %}{% endif %}
+{% if am_platit is defined %}
+<form class="pg-am-platit" method="post" action="{{ am_platit.actiune }}">
+<input type="hidden" name="_csrf" value="{{ am_platit.csrf }}">
+<p>{{ am_platit.text }}</p>
+<button class="pg-buton" type="submit">{{ am_platit.buton }}</button>
+</form>
+{% endif %}
+{% if cauta is defined %}<p><a class="pg-buton" href="{{ cauta }}">{{ t('stare.alte_date') }}</a></p>{% endif %}
+{% if continua is defined %}<p><a class="pg-buton" href="{{ continua }}">{{ t('stare.continua_total') }}</a></p>{% endif %}
+{% if ics is defined %}<p><a href="{{ ics }}">{{ t('stare.ics') }}</a></p>{% endif %}
+<p class="pg-stare-cod">{{ t('email.cod_comanda') }}: {{ ref }}</p>
+{% if adresa ?? '' %}<p class="pg-rmea-adresa">{{ t('email.contract.adresa') }}: {{ adresa }}</p>{% endif %}
+<h2>{{ t('comanda.rezumat') }}</h2>
+{% include 'componente/rezumat-comanda.twig' with {r: rezumat} only %}
+<h2>{{ t('rmea.contact_titlu') }}</h2>
+<p>{{ schimbare }}</p>
+{% if contact.telefon or contact.email %}<p class="pg-contact-rand">{% if contact.telefon %}<a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a>{% endif %}{% if contact.email %} <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}</p>{% endif %}
+{% if schimbare_date is defined %}
+<section class="pg-rmea-schimbare" aria-labelledby="pg-rmea-schimbare-titlu">
+<h2 id="pg-rmea-schimbare-titlu">{{ t('rmea.schimbare_date.titlu') }}</h2>
+{% for p in schimbare_date.paragrafe %}<p>{{ p }}</p>{% endfor %}
+{% if schimbare_date.link is defined %}<p><a class="pg-buton" href="{{ schimbare_date.link }}">{{ schimbare_date.buton }}</a></p>{% endif %}
+</section>
+{% endif %}
+{% if anulare is defined %}
+<section class="pg-rmea-anulare" aria-labelledby="pg-rmea-anulare-titlu">
+<h2 id="pg-rmea-anulare-titlu">{{ t('rmea.anulare.titlu') }}</h2>
+{% for p in anulare.paragrafe %}<p>{{ p }}</p>{% endfor %}
+{% if anulare.fel %}
+<form class="pg-anulare" method="post" action="{{ anulare.actiune }}">
+<input type="hidden" name="_csrf" value="{{ anulare.csrf }}">
+<input type="hidden" name="fel" value="{{ anulare.fel }}">
+<p><input type="checkbox" id="pg-anulare-confirm" name="confirm" value="1" required><label for="pg-anulare-confirm">{{ t(anulare.fel == 'cerere' ? 'rmea.anulare.confirm_cerere' : 'rmea.anulare.confirm') }}</label></p>
+<button class="pg-buton-secundar" type="submit">{{ anulare.buton }}</button>
+</form>
+{% endif %}
+</section>
+{% endif %}
+{% if noutati is defined %}
+<form class="pg-noutati" method="post" action="{{ noutati.actiune }}">
+<input type="hidden" name="_csrf" value="{{ noutati.csrf }}">
+<p>{{ noutati.text }}</p>
+<button class="pg-buton-secundar" type="submit">{{ t('rmea.noutati_opreste') }}</button>
+</form>
+{% endif %}
+{#- „Cum ajungeți”, după confirmare, ultima pe pagină (harta interactivă ajunge sub blocul paginii). -#}
+{% include 'componente/cum-ajungeti.twig' %}
+{% endif %}
+</section>

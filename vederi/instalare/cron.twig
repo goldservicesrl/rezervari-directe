@@ -1,0 +1,24 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.cron') }}</h1>
+<p>{{ t('instalare.cron.merge_si_asa') }}</p>
+{% if verificat or cron.la %}
+<p class="{{ cron.ok ? 'pa-mesaj' : 'pa-nota' }}" role="status" data-cron="{{ cron.ok ? 'merge' : (cron.sursa ?? 'asteapta') }}">{{ cron.ok ? t('instalare.cron.merge', {la: cron.la}) : (cron.la ? t('instalare.cron.ultima.' ~ cron.sursa, {la: cron.la}) : t('instalare.cron.asteapta')) }}</p>
+{% endif %}
+<h2>{{ t('instalare.cron.cpanel_titlu') }}</h2>
+<p>{{ t('instalare.cron.cpanel_text') }}</p>
+<ol class="pa-pasi-cron">
+<li>{{ t('instalare.cron.cpanel_1') }}</li>
+<li>{{ t('instalare.cron.cpanel_2') }}</li>
+<li>{{ t('instalare.cron.cpanel_3') }}
+<p><label for="pi-comanda">{{ t('instalare.cron.comanda') }}</label><input id="pi-comanda" class="pa-de-copiat" value="{{ comanda }}" readonly></p></li>
+<li>{{ t('instalare.cron.cpanel_4') }}</li>
+</ol>
+<p><label for="pi-linie">{{ t('instalare.cron.linie') }}</label><span class="pa-ajutor" id="pi-linie-ajutor">{{ t('instalare.cron.linie_ajutor') }}</span><input id="pi-linie" class="pa-de-copiat" value="{{ linie }}" readonly aria-describedby="pi-linie-ajutor"></p>
+<h2>{{ t('instalare.cron.extern_titlu') }}</h2>
+<p>{{ t('instalare.cron.extern_text') }}</p>
+<p><label for="pi-extern">{{ t('instalare.cron.extern') }}</label><input id="pi-extern" class="pa-de-copiat" value="{{ extern }}" readonly></p>
+<form method="post" action="{{ actiune }}" class="pa-inline">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="verifica"><button type="submit" class="pa-buton-secundar">{{ t('instalare.cron.verificati') }}</button></form>
+<form method="post" action="{{ actiune }}" class="pa-inline">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="continua"><button type="submit" class="pa-buton">{{ t('instalare.continuati') }}</button></form>
+<p class="pa-ajutor">{{ t('instalare.cron.mai_tarziu') }}</p>
+{% endblock %}

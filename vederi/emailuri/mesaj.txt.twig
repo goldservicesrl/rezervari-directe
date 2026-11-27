@@ -1,0 +1,25 @@
+{% autoescape false %}{% if segmente is defined and segmente %}{{ segmente_text }}{% else %}{{ salut }}
+
+{% for p in paragrafe %}{{ p }}
+
+{% endfor %}{% if cod %}{{ cod }}
+
+{% endif %}{% for d in detalii %}{{ d[0] }}: {{ d[1] }}
+{% endfor %}{% if detalii %}
+{% endif %}{% for x in sectiuni %}{{ x.titlu }}
+
+{% for p in x.paragrafe %}{{ p }}
+
+{% endfor %}{% endfor %}{% endif %}{% for b in butoane %}{{ b.text }}: {{ b.url }}
+
+{% endfor %}{% if contact %}{{ contact }}
+
+{% endif %}{% if nota_gazda is defined and nota_gazda %}{{ nota_titlu }}
+{{ nota_gazda }}
+
+{% endif %}{{ semnatura }}
+{% if subsol is defined and subsol %}
+--
+{{ subsol.text }}
+{{ subsol.link }}: {{ subsol.url }}
+{% endif %}{% endautoescape %}

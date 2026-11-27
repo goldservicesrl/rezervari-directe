@@ -1,0 +1,97 @@
+{
+  "fraza": "O pensiune cu două camere într-o casă de lemn și piatră din Sirnea, cu mic dejun și cină gătite de gazdă.",
+  "ilustratie": "casa",
+  "masa_standard": "mic_dejun",
+  "plan_masa": {"titlu": "Cu cină", "masa": "demipensiune", "suma": 9500},
+  "proprietate": {
+    "nume": "Casa cu Nuci",
+    "tip": "pensiune",
+    "descriere": {
+      "ro": "Avem două camere într-o casă de lemn și piatră, pe culmea dintre Bran și Rucăr. De pe prispă vedeți Piatra Craiului, iar dimineața vă așteptăm la masă cu ouă din curte și caș de la stâna satului.",
+      "en": "We have two rooms in a wood and stone house on the ridge between Bran and Rucăr. From the porch you can see the Piatra Craiului ridge, and in the morning breakfast waits with eggs from our yard and cheese from the village sheepfold."
+    },
+    "adresa": {
+      "strada": "Sirnea nr. 112",
+      "localitate": "Sirnea",
+      "judet": "Brașov"
+    },
+    "coordonate": {
+      "lat": 45.4936,
+      "lng": 25.2621
+    },
+    "ore": {
+      "checkin_de_la": "15:00",
+      "checkin_pana_la": "21:00",
+      "plecare_pana_la": "11:00",
+      "setate_de_gazda": true
+    },
+    "reguli_casa": {
+      "copii": true,
+      "bebelusi": true,
+      "animale": true,
+      "animale_max": 1,
+      "evenimente": false,
+      "fumat": false
+    },
+    "contact": {
+      "email": "rezervari@casa-cu-nuci.test",
+      "telefon": "+40 700 000 000"
+    },
+    "operator": {
+      "denumire": "Casa cu Nuci SRL",
+      "sediu": "Sirnea nr. 112, comuna Fundata, județul Brașov",
+      "forma": "srl",
+      "capital_social": "200 lei",
+      "cui": "RO12345678",
+      "registrul_comertului": "J08/123/2020",
+      "clasificari": [
+        {
+          "fel": "certificat",
+          "numar": "1234/2026",
+          "tip_structura": "Pensiune agroturistică",
+          "tip_structura_en": "Agritourism guesthouse",
+          "categorie": 3,
+          "camere": []
+        }
+      ]
+    }
+  },
+  "camere": [
+    {
+      "id": "dubla",
+      "titlu": "Camera Nucului",
+      "unitati": 1,
+      "oaspeti_max": 2,
+      "pret": 32000,
+      "weekend": 4000,
+      "sejur_minim": 1,
+      "spatii": "dubla"
+    },
+    {
+      "id": "apartament",
+      "titlu": "Camera cu Sobă",
+      "unitati": 1,
+      "oaspeti_max": 4,
+      "pret": 44000,
+      "weekend": 4000,
+      "sejur_minim": 2,
+      "spatii": null
+    }
+  ],
+  "repere": [
+    {"nume": "Biserica din Sirnea", "categorie": "atractie", "minute": 5, "principal": true},
+    {"nume": "Pasul Giuvala", "categorie": "natura", "km": 6},
+    {"nume": "Peștera Dâmbovicioara", "categorie": "natura", "km": 18},
+    {"nume": "Castelul Bran", "categorie": "atractie", "km": 24},
+    {"nume": "Zărnești, intrarea în Parcul Național Piatra Craiului", "categorie": "natura", "km": 38}
+  ],
+  "poze": [
+    {"fisier": "rustic-exterior.jpg", "categorie": "exterior"},
+    {"fisier": "rustic-camera.jpg", "categorie": "camera"},
+    {"fisier": "rustic-soba.jpg", "categorie": "camera"},
+    {"fisier": "rustic-baie.jpg", "categorie": "baie"},
+    {"fisier": "rustic-prispa.jpg", "categorie": "terasa"},
+    {"fisier": "rustic-dejun.jpg", "categorie": "loc_de_masa"},
+    {"fisier": "rustic-priveliste.jpg", "categorie": "priveliste"}
+  ]
+}

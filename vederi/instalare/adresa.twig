@@ -1,0 +1,65 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.adresa') }}</h1>
+{#- fără cheie, doar domeniul gazdei; cu cheie, domeniul gazdei sau subdomeniul gratuit cazo.ro (rezervat în EasyCheck › Site web). -#}
+{% set de_continuat %}
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="continua"><button type="submit" class="pa-buton">{{ t('instalare.continuati') }}</button></form>
+{% endset %}
+{% set potrivire_bloc %}
+{% if potrivire %}
+<p class="pa-mesaj" role="status" data-adresa="potrivita">{{ t('instalare.adresa.potrivita', {adresa: curenta}) }}</p>
+{% else %}
+<p class="pa-avertizare" role="alert" data-adresa="nepotrivita">{{ t('instalare.adresa.nepotrivita', {config: config, curenta: curenta}) }}</p>
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="potriveste"><button type="submit" class="pa-buton-secundar">{{ t('instalare.adresa.folositi_curenta', {adresa: curenta}) }}</button></form>
+{% endif %}
+{% endset %}
+{% if local %}
+<p>{{ t('instalare.adresa.text_local') }}</p>
+<h2>{{ t('instalare.adresa.domeniu') }}</h2>
+{{ potrivire_bloc }}
+{% if potrivire %}{{ de_continuat }}{% endif %}
+{% elseif pe_cazo %}
+<p>{{ t('instalare.adresa.text') }}</p>
+{% if legat %}
+<p class="pa-mesaj" role="status" data-adresa="cazo-legat">{{ t('instalare.adresa.cazo_legat', {domeniu: rezervare.domeniu}) }}</p>
+{{ potrivire_bloc }}
+{% if potrivire %}{{ de_continuat }}{% endif %}
+{% else %}
+<p class="pa-avertizare" role="alert" data-adresa="cazo-nerezervat">{{ t('instalare.adresa.cazo_nerezervat', {domeniu: pe_cazo ~ '.cazo.ro'}) }}</p>
+<ol class="pa-pasi-cron">
+<li>{{ t('instalare.adresa.pas_rezervare') }} <a href="{{ url_ec }}" target="_blank" rel="noopener">{{ t('instalare.adresa.link_ec') }}</a></li>
+<li>{{ t('instalare.adresa.pas_verificati') }}</li>
+</ol>
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="verifica"><button type="submit" class="pa-buton">{{ t('instalare.adresa.verificati') }}</button></form>
+{% endif %}
+{% else %}
+<p>{{ t('instalare.adresa.text') }}</p>
+<form method="post" action="{{ actiune }}" class="pa-formular">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="alege">
+<fieldset class="pa-camp"><legend>{{ t('instalare.adresa.alegeti') }}</legend>
+<p><input type="radio" id="pi-adr-domeniu" name="fel" value="domeniu"{% if fel == 'domeniu' %} checked{% endif %}><label for="pi-adr-domeniu">{{ t('instalare.adresa.domeniu') }}</label></p>
+<p class="pa-ajutor">{{ t('instalare.adresa.domeniu_ajutor') }}</p>
+<p><input type="radio" id="pi-adr-cazo" name="fel" value="cazo"{% if fel == 'cazo' %} checked{% endif %}><label for="pi-adr-cazo">{{ t('instalare.adresa.cazo') }}</label></p>
+<p class="pa-ajutor">{{ t('instalare.adresa.cazo_ajutor') }}</p>
+</fieldset>
+<button type="submit" class="pa-buton-secundar">{{ t('instalare.adresa.alegeti_buton') }}</button>
+</form>
+{% if fel == 'domeniu' %}
+{{ potrivire_bloc }}
+{% if potrivire %}{{ de_continuat }}{% endif %}
+{% elseif rezervare.stare == 'rezervat' %}
+<p class="pa-mesaj" role="status" data-adresa="cazo-rezervat">{{ t('instalare.adresa.cazo_rezervat', {domeniu: rezervare.domeniu, curenta: curenta}) }}</p>
+{% if rezervare.dns != 'activ' %}<p class="pa-nota">{{ t('instalare.adresa.dns_asteptare', {domeniu: rezervare.domeniu}) }}</p>{% endif %}
+{% if potrivire %}{{ de_continuat }}{% else %}{{ potrivire_bloc }}{% endif %}
+{% else %}
+<p class="pa-nota" data-adresa="cazo-pasi">{{ t('instalare.adresa.cazo_pasi_intro') }}</p>
+<ol class="pa-pasi-cron">
+<li>{{ t('instalare.adresa.pas_1') }} <a href="{{ url_ec }}" target="_blank" rel="noopener">{{ t('instalare.adresa.link_ec') }}</a></li>
+<li>{{ t('instalare.adresa.pas_2') }}</li>
+<li>{{ t('instalare.adresa.pas_3') }}</li>
+<li>{{ t('instalare.adresa.pas_4') }}</li>
+</ol>
+<p class="pa-ajutor">{{ t('instalare.adresa.cazo_pasi_dupa') }}</p>
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<input type="hidden" name="actiune" value="verifica"><button type="submit" class="pa-buton-secundar">{{ t('instalare.adresa.verificati') }}</button></form>
+{% endif %}
+{% endif %}
+{% endblock %}

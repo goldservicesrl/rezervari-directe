@@ -1,0 +1,9 @@
+{#- Fișa camerei: doar rândurile cu date (camere_local.fisa); fără date, fișa lipsește. -#}
+{% if c.fisa.pat or c.fisa.suprafata_mp or c.fisa.baie or c.fisa.vedere %}
+<dl class="at-fisa">
+{% if c.fisa.pat %}<div><dt>{{ t('spec.pat') }}</dt><dd>{{ c.fisa.pat }}</dd></div>{% endif %}
+{% if c.fisa.suprafata_mp %}<div><dt>{{ t('spec.suprafata') }}</dt><dd>{{ t('spec.mp', {n: c.fisa.suprafata_mp}) }}</dd></div>{% endif %}
+{% if c.fisa.baie %}<div><dt>{{ t('spec.baie') }}</dt><dd>{{ c.fisa.baie }}</dd></div>{% endif %}
+{% if c.fisa.vedere %}<div><dt>{{ t('spec.vedere') }}</dt><dd>{{ c.fisa.vedere }}</dd></div>{% endif %}
+</dl>
+{% endif %}

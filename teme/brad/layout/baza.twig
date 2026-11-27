@@ -1,0 +1,17 @@
+{#- Montan: capitole pe toată lățimea; aspectul de iarnă (noiembrie-martie) sau de vară vine din luna curentă. -#}
+{%- set iarna = site.luna is not defined or site.luna >= 11 or site.luna <= 3 -%}
+<!doctype html>
+<html lang="{{ site.limba }}">
+<head>
+{{ cazo.head() }}
+</head>
+<body class="br-corp {{ iarna ? 'br--iarna' : 'br--vara' }}">
+<a class="br-salt" href="#continut">{{ t('salt_continut') }}</a>
+{% include "partials/antet.twig" %}
+<main id="continut" class="br-principal">
+{% block continut %}{% endblock %}
+</main>
+{% include "partials/subsol.twig" %}
+{{ cazo.foot() }}
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"nume": {"ro": "Fotografiile", "en": "Photos"}, "setari": [{"id": "capitol", "tip": "checkbox", "implicit": true}, {"id": "numar", "tip": "range", "min": 3, "max": 5, "implicit": 5}]}

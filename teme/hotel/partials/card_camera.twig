@@ -1,0 +1,25 @@
+{#- Cardul unei camere: poza, câte la fel, titlul, propoziția gazdei, fișa, prețul și acțiunile. -#}
+{% set v = c.vedere ?? c.fisa.vedere ?? '' %}
+{% set mp = c.suprafata_mp ?? c.fisa.suprafata_mp ?? null %}
+{% set paturi = c.paturi ?? [] %}
+{% set baie = (c.baie_tip ?? '') in ['proprie', 'comuna'] ? t('baie.' ~ c.baie_tip) : (c.fisa.baie ?? '') %}
+{% set pat = c.fisa.pat ?? '' %}
+<li class="et-camera">
+<div class="et-camera-poza">{% if c.poza_principala %}{{ img(c.poza_principala, [480, 960], false, '(min-width: 48rem) 24rem, 100vw') }}{% else %}<span class="et-fara-poza" aria-hidden="true"></span>{% endif %}</div>
+<div class="et-camera-cap">
+{% if c.unitati > 1 %}<p class="et-camera-unitati">{{ t('camera.la_fel', {n: c.unitati}) }}</p>{% endif %}
+{% if nivel == 2 %}<h2 class="et-camera-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h2>{% else %}<h3 class="et-camera-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h3>{% endif %}
+</div>
+{% if c.descriere %}<p class="et-camera-text">{{ c.descriere|scurtat(160) }}</p>{% else %}<span class="et-gol" aria-hidden="true"></span>{% endif %}
+{% if c.oaspeti_max or mp or paturi|length > 0 or pat or v or baie %}<dl class="et-card-fisa">
+{% if c.oaspeti_max %}<div><dt>{{ t('card.oaspeti') }}</dt><dd>{{ c.oaspeti_max }}</dd></div>{% endif %}
+{% if mp %}<div><dt>{{ t('card.suprafata') }}</dt><dd>{{ t('camera.mp', {n: mp}) }}</dd></div>{% endif %}
+{% if paturi|length > 0 or pat %}<div class="et-card-fisa-lat"><dt>{{ t('card.paturi') }}</dt><dd>{% if paturi|length > 0 %}{% for p in paturi %}{% include "partials/eticheta.twig" with {d: p} only %}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}{{ pat }}{% endif %}</dd></div>{% endif %}
+{% if v %}<div><dt>{{ t('card.vedere') }}</dt><dd>{{ v in ['oras', 'mare', 'munte', 'lac', 'curte', 'gradina'] ? t('vedere.' ~ v) : v }}</dd></div>{% endif %}
+{% if baie %}<div><dt>{{ t('card.baie') }}</dt><dd>{{ baie }}</dd></div>{% endif %}
+</dl>{% else %}<span class="et-gol" aria-hidden="true"></span>{% endif %}
+<div class="et-camera-jos">
+{% if c.pret_de_la %}<p class="et-pret"><span>{{ t('pret.de_la') }}</span> <b>{{ c.pret_de_la.suma|lei }}</b> <span>{{ t('pret.pe_noapte') }}</span>{% if c.pret_de_la.mentiune ?? '' %}<small>{{ c.pret_de_la.mentiune }}</small>{% endif %}</p>{% endif %}
+<p class="et-actiuni"><a class="et-buton et-buton-plin" href="{{ c.url }}">{{ t('card.rezervati') }}<span class="et-ascuns">: {{ c.titlu }}</span></a><a class="et-legatura" href="{{ c.url }}">{{ t('card.detalii') }}<span class="et-ascuns">: {{ c.titlu }}</span></a></p>
+</div>
+</li>

@@ -1,0 +1,59 @@
+{% extends 'admin/baza.twig' %}
+{% block antet %}{% include 'admin/_antet.twig' %}{% endblock %}
+{% block continut %}
+<h1>{{ t('admin.teme.setari_titlu', {tema: tema.nume}) }}</h1>
+{% if mesaj %}<p class="pa-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if eroare %}<p class="pa-eroare" role="alert"><a href="#pa-import">{{ eroare }}</a></p>{% endif %}
+{% if erori %}<div class="pa-eroare" role="alert"><p>{{ t('admin.teme.setari_erori') }}</p><ul>{% for id, e in erori %}<li><a href="#pa-s-{{ id }}">{{ e }}</a></li>{% endfor %}</ul></div>{% endif %}
+{% if not incorporat|default(false) %}<p><a href="{{ url.inapoi }}">{{ t('admin.teme.inapoi') }}</a></p>{% endif %}
+<p>{{ t('admin.teme.setari_contrast', {text: praguri.text, interfata: praguri.interfata}) }}</p>
+{% if campuri %}
+<form method="post" action="{{ url.salveaza }}" enctype="multipart/form-data" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% for c in campuri %}
+{% set id = 'pa-s-' ~ c.id %}
+{% set err = erori[c.id] ?? null %}
+{% set descris %}{% if c.ajutor %}{{ id }}-a{% endif %}{% if c.ajutor and err %} {% endif %}{% if err %}{{ id }}-e{% endif %}{% endset %}
+<div class="pa-camp">
+{% if c.tip == 'color_scheme' %}
+<fieldset id="{{ id }}"><legend>{{ c.eticheta }}</legend>
+<p><label for="{{ id }}-fundal">{{ t('admin.teme.fundal') }}</label><input id="{{ id }}-fundal" name="setari[{{ c.id }}][fundal]" type="color" value="{{ c.valoare.fundal }}"></p>
+<p><label for="{{ id }}-text">{{ t('admin.teme.text') }}</label><input id="{{ id }}-text" name="setari[{{ c.id }}][text]" type="color" value="{{ c.valoare.text }}"></p>
+</fieldset>
+{% elseif c.tip == 'radio' %}
+<fieldset id="{{ id }}"><legend>{{ c.eticheta }}</legend>
+{% for o in c.optiuni %}<p><input type="radio" id="{{ id }}-{{ o.valoare }}" name="setari[{{ c.id }}]" value="{{ o.valoare }}"{% if c.valoare == o.valoare %} checked{% endif %}><label for="{{ id }}-{{ o.valoare }}">{{ o.eticheta }}</label></p>{% endfor %}
+</fieldset>
+{% elseif c.tip == 'checkbox' %}
+<p><input type="hidden" name="setari[{{ c.id }}]" value="0"><input id="{{ id }}" name="setari[{{ c.id }}]" type="checkbox" value="1"{% if c.valoare %} checked{% endif %}><label for="{{ id }}">{{ c.eticheta }}</label></p>
+{% else %}
+<p><label for="{{ id }}">{{ c.eticheta }}{% if c.tip == 'range' and c.unitate %} ({{ c.unitate }}){% endif %}</label>
+{% if c.tip == 'color' %}<input id="{{ id }}" name="setari[{{ c.id }}]" type="color" value="{{ c.valoare }}"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>
+{% elseif c.tip == 'font' or c.tip == 'select' %}<select id="{{ id }}" name="setari[{{ c.id }}]"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>{% for o in c.optiuni %}<option value="{{ o.valoare }}"{% if c.valoare == o.valoare %} selected{% endif %}>{{ o.eticheta }}</option>{% endfor %}</select>
+{% elseif c.tip == 'range' %}<input id="{{ id }}" name="setari[{{ c.id }}]" type="number" inputmode="numeric" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.pas }}" value="{{ c.valoare }}"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>
+{% elseif c.tip == 'textarea' or c.tip == 'richtext' %}<textarea id="{{ id }}" name="setari[{{ c.id }}]" rows="5"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>{{ c.valoare }}</textarea>
+{% elseif c.tip == 'image' %}{% if c.valoare %}<img src="{{ c.valoare }}" alt="" width="160" height="90"> {% endif %}<input id="{{ id }}" name="imagine_{{ c.id }}" type="file" accept="image/png,image/jpeg,image/webp"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}><input type="hidden" name="setari[{{ c.id }}]" value="{{ c.valoare }}">
+{% elseif c.tip == 'url' %}<input id="{{ id }}" name="setari[{{ c.id }}]" type="url" value="{{ c.valoare }}"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>
+{% else %}<input id="{{ id }}" name="setari[{{ c.id }}]" type="text" value="{{ c.valoare }}"{% if err %} aria-invalid="true"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}>{% endif %}
+</p>
+{% endif %}
+{% if c.ajutor %}<p class="pa-ajutor" id="{{ id }}-a">{{ c.ajutor }}</p>{% endif %}
+{% if err %}<p class="pa-eroare" id="{{ id }}-e">{{ err }}</p>{% endif %}
+</div>
+{% endfor %}
+<button type="submit" class="pa-buton">{{ t('admin.teme.salveaza') }}</button>
+</form>
+<p><a href="{{ url.previzualizare }}">{{ t('admin.teme.previzualizare') }}</a></p>
+<details class="pa-teme-avansat" id="pa-setari-avansat"{% if import_esuat %} open{% endif %}>
+<summary>{{ t('admin.teme.setari_avansat') }}</summary>
+<h2>{{ t('admin.teme.export_titlu') }}</h2>
+<p>{{ t('admin.teme.export_explicatie') }}</p>
+<p><a href="{{ url.export }}">{{ t('admin.teme.export') }}</a></p>
+<form method="post" action="{{ url.import }}" enctype="multipart/form-data" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-import">{{ t('admin.teme.import_fisier') }}</label><input id="pa-import" name="setari" type="file" accept=".json,application/json" required{% if import_esuat %} aria-invalid="true" aria-describedby="pa-import-e"{% endif %}>
+{% if import_esuat %}<span class="pa-eroare" id="pa-import-e">{{ eroare }}</span>{% endif %}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.teme.import') }}</button></form>
+</details>
+{% else %}
+<p>{{ t('admin.teme.fara_setari') }}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+{% if proprietate.descriere %}
+<section class="sc-sectiune sc-text" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime sc-text-interior">
+<h2 id="{{ sectiune.id }}-t" class="sc-titlu-sectiune">{{ t(sectiune.setari.titlu, {nume: proprietate.nume}) }}</h2>
+{% if proprietate.descriere_limba != site.limba %}<p lang="{{ proprietate.descriere_limba }}">{% else %}<p>{% endif %}{{ proprietate.descriere|nl2br }}</p>
+</div>
+</section>
+{% endif %}

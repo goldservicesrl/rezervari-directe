@@ -1,0 +1,48 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+{% if de_restaurat %}
+<h1>{{ t('admin.copii.restaurare_titlu', {cand: de_restaurat.la}) }}</h1>
+{% include 'admin/_stare.twig' %}
+<p><a href="{{ url.lista }}">{{ t('admin.copii.inapoi') }}</a></p>
+<div class="pa-avertizare">
+<p><strong>{{ t('admin.copii.restaurare_ce') }}</strong></p>
+<p>{{ t('admin.sistem.restaureaza_ajutor') }}</p>
+<p>{{ t('admin.copii.restaurare_durata') }}</p>
+</div>
+<form method="post" action="{{ url.copii }}restaureaza"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="copie" value="{{ de_restaurat.nume }}">
+<p><input type="checkbox" id="pa-restaurare-confirm" name="confirm" value="1" required{% if fara_bifa %} aria-invalid="true" aria-describedby="pa-restaurare-confirm-eroare"{% endif %}><label for="pa-restaurare-confirm">{{ t('admin.sistem.restaureaza_confirm') }}</label>
+{% if fara_bifa %}<span class="pa-eroare-camp" id="pa-restaurare-confirm-eroare">{{ t('admin.copii.eroare_bifa') }}</span>{% endif %}</p>
+{% include 'admin/_reauth.twig' with {id: 'restaurare'} %}
+<div class="pa-actiuni"><button type="submit" class="pa-buton-pericol">{{ t('admin.copii.restaurare_buton', {cand: de_restaurat.la}) }}</button> <a class="pa-buton-secundar" href="{{ url.lista }}">{{ t('admin.copii.renunta') }}</a></div>
+</form>
+<details class="pa-avansat"><summary>{{ t('admin.sistem.detalii') }}</summary>
+<dl class="pa-detalii"><dt>{{ t('admin.copii.fisier') }}</dt><dd><code>{{ de_restaurat.nume }}</code></dd><dt>{{ t('admin.sistem.copie_tip') }}</dt><dd>{{ de_restaurat.fel }}</dd><dt>{{ t('admin.sistem.copie_marime') }}</dt><dd>{{ de_restaurat.marime }}</dd></dl>
+</details>
+{% else %}
+<h1>{{ t('admin.sistem.copii') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.sistem.copii_explicatie') }}</p>
+<form method="post" action="{{ url.copii }}creeaza"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.sistem.copie_noua') }}</button></form>
+<h2>{{ t('admin.copii.lista') }}</h2>
+{% if copii %}
+{% include 'admin/_reauth_formular.twig' %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.sistem.copie') }}</th><th scope="col">{{ t('admin.sistem.copie_tip') }}</th><th scope="col">{{ t('admin.sistem.copie_marime') }}</th><th scope="col">{{ t('admin.cereri.col.actiuni') }}</th></tr></thead>
+<tbody>{% for x in copii %}<tr><th scope="row" data-eticheta="{{ t('admin.sistem.copie') }}">{{ x.la }}</th><td data-eticheta="{{ t('admin.sistem.copie_tip') }}">{{ x.fel }}</td><td data-eticheta="{{ t('admin.sistem.copie_marime') }}">{{ x.marime }}</td><td>
+<a class="pa-buton-secundar" href="{{ x.url_restaurare }}">{{ t('admin.sistem.restaureaza') }}<span class="pa-ascuns"> ({{ x.la }})</span></a>
+{% if reautentificat %}
+<form method="post" action="{{ url.copii }}descarca" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="copie" value="{{ x.nume }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.sistem.descarca') }}<span class="pa-ascuns"> ({{ x.la }})</span></button></form>
+<details class="pa-confirma"><summary>{{ t('admin.sistem.sterge') }}<span class="pa-ascuns"> ({{ x.la }})</span></summary>
+<form method="post" action="{{ url.copii }}sterge"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="copie" value="{{ x.nume }}">
+<p>{{ t('admin.copii.sterge_ce', {cand: x.la}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.copii.sterge_da') }}</button></form></details>
+{% else %}<span class="pa-ajutor">{{ t('admin.copii.reauth_intai') }}</span>{% endif %}
+</td></tr>{% endfor %}</tbody>
+</table></div>
+<details class="pa-avansat"><summary>{{ t('admin.sistem.detalii') }}</summary>
+<p>{{ marimi }}</p>
+<dl class="pa-detalii">{% for x in copii %}<dt>{{ x.la }}</dt><dd><code>{{ x.nume }}</code></dd>{% endfor %}</dl>
+</details>
+{% else %}<p class="pa-gol">{{ t('admin.sistem.copii_gol') }}</p>{% endif %}
+{% endif %}
+{% endblock %}

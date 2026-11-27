@@ -1,0 +1,28 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.pas.verificari') }}</h1>
+<p>{{ verificari.ok ? t('instalare.verificari.ok') : t('instalare.verificari.blocat') }}</p>
+{# fiecare rând are semnul lui (bifă verde, semn galben, semn roșu) și starea scrisă în cuvinte; rândurile cu probleme își arată explicația dedesubt. #}
+<ul class="pa-verificari">
+{% for e in verificari.elemente %}
+{% set stare = e.ok ? 'ok' : (e.blocant ? 'rezolvat' : 'recomandat') %}
+<li class="pa-verif pa-verif-{{ stare }}" data-verificare="{{ e.id }}" data-ok="{{ e.ok ? '1' : '0' }}">
+{% include 'instalare/_semn.twig' %}
+<div class="pa-verif-corp"><p class="pa-verif-rand"><strong>{{ t('instalare.verificari.' ~ e.id ~ '.titlu') }}:</strong> <span class="pa-verif-stare">{{ e.ok ? t('instalare.verificari.bun') : (e.blocant ? t('instalare.verificari.de_rezolvat') : t('instalare.verificari.recomandat')) }}</span></p>
+{% if e.ok %}{% if e.nota ?? false %}
+<p>{{ t(e.nota, {valoare: e.valoare}) }}</p>{% endif %}
+{% else %}
+<p>{{ t('instalare.verificari.' ~ e.id ~ '.problema', {valoare: e.valoare}) }}</p>
+{% if e.gazduire %}<p><label for="pi-gazduire-{{ e.id }}">{{ t('instalare.verificari.text_gazduire') }}</label>
+<textarea id="pi-gazduire-{{ e.id }}" rows="4" readonly>{{ t('instalare.verificari.' ~ e.id ~ '.gazduire', {valoare: e.valoare}) }}</textarea></p>{% endif %}
+{% endif %}
+</div></li>
+{% endfor %}
+</ul>
+<p><a class="pa-buton-secundar" href="{{ actiune }}">{{ t('instalare.verificari.din_nou') }}</a></p>
+{% if verificari.ok %}
+<form method="post" action="{{ actiune }}">{% include 'instalare/formular.twig' %}<button type="submit" class="pa-buton">{{ t('instalare.continuati') }}</button></form>
+{% endif %}
+{#- găzduirea recomandată, cu legătura de afiliere (rel="sponsored"). -#}
+<p class="pa-ajutor">{{ t('instalare.gazduire.recomandare') }} <a href="{{ gazduire_recomandata }}" rel="sponsored noopener">{{ t('instalare.gazduire.link') }}</a></p>
+{% endblock %}

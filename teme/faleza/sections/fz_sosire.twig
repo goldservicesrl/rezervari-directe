@@ -1,0 +1,34 @@
+{#- Sosirea (macheta: orele și lista practică): check-in de la și până la (ore.checkin_pana_la, când
+    EasyCheck îl dă), check-out, accesul (acces.mod: self_checkin sau gazda), parcarea (parcare.tip; „fără
+    parcare” nu se afișează, texte afirmative), apoi regulile casei din EasyCheck (copiii, bebelușii, animalele,
+    evenimentele, fumatul), cu textele _schelet. Rândul „Ora sosirii” din machetă lipsește până când comanda
+    nucleului are câmpul. Fără niciun rând, secțiunea lipsește. -#}
+{% set ore = proprietate.ore %}
+{% set pana_la = ore.checkin_pana_la ?? '' %}
+{% set rc = proprietate.reguli_casa %}
+{% set mod_acces = acces.mod ?? '' %}
+{% set parcare_tip = parcare.tip ?? '' %}
+{% set copii = rc.copii ?? null %}
+{% set bebelusi = rc.bebelusi ?? null %}
+{% set randuri = (mod_acces in ['self_checkin', 'gazda'] ? 1 : 0) + (parcare_tip in ['gratuita', 'cu_plata', 'publica'] ? 1 : 0) + (copii is not null ? 1 : 0) + ((rc.animale ?? null) is not null ? 1 : 0) + ((rc.evenimente ?? null) is not null ? 1 : 0) + ((rc.fumat ?? null) is not null ? 1 : 0) %}
+{% if ore.checkin_de_la or ore.plecare_pana_la or randuri > 0 %}
+<section class="fz-sosire" aria-labelledby="{{ sectiune.id }}-t">
+<div class="fz-latime fz-sosire-grila">
+<div>
+<h2 id="{{ sectiune.id }}-t" class="fz-titlu">{{ t('sosire.titlu') }}</h2>
+{% if ore.checkin_de_la or ore.plecare_pana_la %}<dl class="fz-ore">
+{% if ore.checkin_de_la %}<div><dt>{{ t('sosire.checkin') }}</dt><dd>{{ pana_la ? t('sosire.interval', {de: ore.checkin_de_la, pana: pana_la}) : t('sosire.de_la', {ora: ore.checkin_de_la}) }}</dd></div>{% endif %}
+{% if ore.plecare_pana_la %}<div><dt>{{ t('sosire.checkout') }}</dt><dd>{{ t('sosire.pana_la', {ora: ore.plecare_pana_la}) }}</dd></div>{% endif %}
+</dl>{% endif %}
+</div>
+{% if randuri > 0 %}<dl class="fz-sosire-lista">
+{% if mod_acces in ['self_checkin', 'gazda'] %}<div><dt>{{ t('sosire.acces') }}</dt><dd>{{ t('sosire.acces_' ~ mod_acces) }}</dd></div>{% endif %}
+{% if parcare_tip in ['gratuita', 'cu_plata', 'publica'] %}<div><dt>{{ t('sosire.parcare') }}</dt><dd>{{ parcare_tip == 'cu_plata' and (parcare.pret ?? null) ? t('sosire.parcare_pret', {suma: parcare.pret|lei}) : t('sosire.parcare_' ~ parcare_tip) }}</dd></div>{% endif %}
+{% if copii is not null %}<div><dt>{{ t('sosire.familii') }}</dt><dd>{{ copii and bebelusi ? t('sosire.copii_bebelusi') : t('reguli.copii.' ~ (copii ? 'da' : 'nu')) }}{% if copii and bebelusi is not null and not bebelusi %} {{ t('reguli.bebelusi.nu') }}{% endif %}</dd></div>{% endif %}
+{% if (rc.animale ?? null) is not null %}<div><dt>{{ t('sosire.animale') }}</dt><dd>{{ t('reguli.animale.' ~ (rc.animale ? 'da' : 'nu')) }}</dd></div>{% endif %}
+{% if (rc.evenimente ?? null) is not null %}<div><dt>{{ t('sosire.evenimente') }}</dt><dd>{{ t('reguli.evenimente.' ~ (rc.evenimente ? 'da' : 'nu')) }}</dd></div>{% endif %}
+{% if (rc.fumat ?? null) is not null %}<div><dt>{{ t('sosire.fumat') }}</dt><dd>{{ t('reguli.fumat.' ~ (rc.fumat ? 'da' : 'nu')) }}</dd></div>{% endif %}
+</dl>{% endif %}
+</div>
+</section>
+{% endif %}

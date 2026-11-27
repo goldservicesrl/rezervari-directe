@@ -1,0 +1,3 @@
+{#- Diferențele pe rânduri (Editabile::diferente): rândurile scoase și cele adăugate, marcate și în text, nu doar prin culoare. -#}
+<div class="pa-diferente">{% for x in linii %}{% if x.fel == 'adaugat' %}<ins class="pa-dif pa-dif-adaugat"><span class="pa-dif-semn">+ </span>{{ x.text }}</ins>{% elseif x.fel == 'scos' %}<del class="pa-dif pa-dif-scos"><span class="pa-dif-semn">− </span>{{ x.text }}</del>{% else %}<span class="pa-dif">{{ x.text }}</span>{% endif %}
+{% endfor %}</div>

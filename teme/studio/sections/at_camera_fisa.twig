@@ -1,0 +1,14 @@
+{#- la o singură unitate fără descriere proprie, descrierea proprietății (cea de pe Acasă) stă în fișă. -#}
+{% set despre = not camera.descriere and camere|length == 1 and proprietate.descriere %}
+{% if despre or camera.fisa.pat or camera.fisa.suprafata_mp or camera.fisa.baie or camera.fisa.vedere or camera.dotari %}
+<section class="at-camera-fisa at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('fisa.titlu') }}</h2></header>
+{% if despre %}{% if proprietate.descriere_limba != site.limba %}<p class="at-camera-despre" lang="{{ proprietate.descriere_limba }}">{% else %}<p class="at-camera-despre">{% endif %}{{ proprietate.descriere|nl2br }}</p>{% endif %}
+<div class="at-fisa-grila">
+{% include "partials/fisa.twig" with {c: camera} %}
+{% if camera.dotari %}<ul class="at-dotari" aria-label="{{ t('spec.dotari') }}">{% for d in camera.dotari|slice(0, 12) %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+</div>
+</div>
+</section>
+{% endif %}

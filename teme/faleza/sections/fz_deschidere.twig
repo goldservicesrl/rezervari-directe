@@ -1,0 +1,46 @@
+{#- Deschiderea (macheta: hero): zona sau localitatea, titlul (prezentare.titlu, generat de nucleu; până atunci numele
+    proprietății), textul scurt al gazdei (prezentare.text, altfel descrierea din EasyCheck: titlul,
+    primul paragraf întreg și restul la „Citiți toată descrierea”), insignele din
+    dotările bifate, fotografia principală cu legenda categoriei și reperul principal, apoi căutarea nucleului și
+    prețul „de la” cel mai mic. Afirmațiile promoționale ale machetei („cel mai bun preț”) lipsesc. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set poza = galerie.principala ?? (proprietate.poze|length > 0 ? proprietate.poze|first : null) %}
+{% set titlu = prezentare.titlu ?? proprietate.nume %}
+{% set text = prezentare.text ?? '' %}
+{% set paragrafe = (prezentare.text ?? null) is null and proprietate.descriere ? (proprietate.descriere_paragrafe ?? [proprietate.descriere]) : [] %}
+{% set insigne = prezentare.insigne ?? (g ? g.dotari|slice(0, 4) : []) %}
+{% set reper = null %}
+{% for r in repere ?? [] %}{% if (r.minute ?? null) or (r.km ?? null) %}{% if r.principal ?? false %}{% set reper = r %}{% elseif reper is null or (not (reper.principal ?? false) and (r.minute ?? 999) < (reper.minute ?? 999)) %}{% set reper = r %}{% endif %}{% endif %}{% endfor %}
+{% set de_la = null %}
+{% for c in camere %}{% if c.pret_de_la and (de_la is null or c.pret_de_la.suma < de_la.suma) %}{% set de_la = c.pret_de_la %}{% endif %}{% endfor %}
+<section class="fz-deschidere" aria-labelledby="{{ sectiune.id }}-t">
+<div class="fz-latime fz-deschidere-sus">
+<div>
+{% set loc = proprietate.zona ?? proprietate.adresa.localitate %}{% if loc %}<p class="fz-supratitlu">{{ loc }}</p>{% endif %}
+<h1 id="{{ sectiune.id }}-t" class="fz-titlu-mare">{{ titlu }}</h1>
+</div>
+{% if text or paragrafe|length > 0 or insigne|length > 0 %}<div>
+{% if text %}<p class="fz-deschidere-text">{{ text }}</p>
+{% else %}{% if paragrafe|length > 0 %}<div class="fz-descriere fz-deschidere-text"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="fz-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+<p>{{ paragrafe|first }}</p>
+{% if paragrafe|length > 1 %}<details class="fz-descriere-rest"><summary><span class="fz-descriere-toata">{{ t('descriere.toata') }}</span><span class="fz-descriere-putin">{{ t('descriere.mai_putin') }}</span></summary>
+{% for x in paragrafe|slice(1) %}<p>{{ x }}</p>{% endfor %}
+</details>{% endif %}
+</div>{% endif %}{% endif %}
+{% if insigne|length > 0 %}<ul class="fz-insigne" aria-label="{{ t('dotari.eticheta') }}">{% for d in insigne %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+</div>{% endif %}
+</div>
+{% if poza %}<figure class="fz-panorama">
+{{ img(poza, [960, 1440, 2048], true, '(min-width: 72rem) 72rem, 100vw') }}
+{% if reper %}<p class="fz-panorama-reper">{% include "partials/reper.twig" with {r: reper, limba: site.limba} only %}</p>{% endif %}
+{% if poza.legenda ?? '' %}<figcaption class="fz-legenda">{{ poza.legenda }}</figcaption>{% endif %}
+</figure>{% endif %}
+<div class="fz-latime">
+<div class="fz-cautare{% if poza %} fz-cautare-peste{% endif %}">
+{{ cazo.bara_rezervare() }}
+{% if de_la %}{% include "partials/de_la.twig" with {p: de_la} %}{% endif %}
+</div>
+</div>
+</section>

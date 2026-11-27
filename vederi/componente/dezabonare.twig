@@ -1,0 +1,14 @@
+{#- Dezabonarea de la oferte: adresa și butonul de confirmare; după confirmare, mesajul. Formularul trimite la aceeași
+    adresă, ținută de jetonul semnat din ea (ca dezabonarea cu un clic din programul de e-mail). -#}
+<section class="pg-rmea" data-pg="dezabonare" aria-labelledby="pg-dezabonare-titlu">
+<h1 id="pg-dezabonare-titlu" class="pg-titlu-pagina">{{ t('oferte.dezabonare.titlu') }}</h1>
+{% if gata %}
+<p class="pg-comanda-mesaj" role="status">{{ t('oferte.dezabonare.gata', {email: email, nume: nume}) }}</p>
+<p><a href="{{ acasa }}">{{ t('oferte.dezabonare.acasa') }}</a></p>
+{% else %}
+<p>{{ t('oferte.dezabonare.text', {email: email, nume: nume}) }}</p>
+<form class="pg-noutati" method="post" action="{{ actiune }}">
+<button class="pg-buton" type="submit">{{ t('oferte.dezabonare.buton') }}</button>
+</form>
+{% endif %}
+</section>

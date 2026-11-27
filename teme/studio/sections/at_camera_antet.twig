@@ -1,0 +1,14 @@
+{#- Pagina camerei: titlul ca o planșă, capacitatea, descrierea scurtă a gazdei (cel mult 160 de caractere), prețul „de la” al nucleului. -#}
+<section class="at-camera-antet" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime at-camera-grila">
+<div class="at-camera-text">
+{% if camere|length > 1 %}<p class="at-firimituri"><a href="{{ url('camere') }}">{{ t('camere.titlu') }}</a></p>{% endif %}
+<p class="at-folio" aria-hidden="true"></p>
+<h1 id="{{ sectiune.id }}-t" class="at-pagina-titlu at-camera-titlu"{% if camera.titlu_limba != site.limba %} lang="{{ camera.titlu_limba }}"{% endif %}>{{ camera.titlu }}</h1>
+{% include "partials/capacitate.twig" with {c: camera} %}
+{% if camera.descriere %}<p class="at-camera-descriere">{{ camera.descriere|scurtat(160) }}</p>{% endif %}
+{% if camera.pret_de_la %}<p class="at-obiect-pret">{{ camera.pret_de_la.text }}</p>{% endif %}
+</div>
+{% if camera.poza_principala %}<figure class="at-placa at-camera-placa">{{ img(camera.poza_principala, [480, 960, 1440], true, '(min-width: 48rem) 30rem, 90vw', true) }}{% include "partials/legenda.twig" with {p: camera.poza_principala} %}</figure>{% endif %}
+</div>
+</section>

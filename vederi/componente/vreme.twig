@@ -1,0 +1,8 @@
+{#- Vremea (cazo.vreme()): datele citite pe server, cel mult o oră vechime la citire și 3 ore la afișare;
+    sursa cerută de licența CC BY 4.0 rămâne lângă date. Fără cereri externe din browser. -#}
+<div class="pg-vreme" data-pg="vreme">
+<p class="pg-vreme-acum"><span class="pg-vreme-temperatura">{{ t('vreme.grade', {n: temperatura}) }}</span> <span class="pg-vreme-cer">{{ text }}</span></p>
+{% if zile %}<ul class="pg-vreme-zile">{% for z in zile %}<li class="pg-vreme-zi pg-vreme-zi--{{ z.stare }}"><span class="pg-vreme-data">{{ z.eticheta }}</span> <span class="pg-vreme-cer">{{ z.text }}</span> <span class="pg-vreme-interval">{{ t('vreme.interval', {min: t('vreme.grade', {n: z.min}), max: t('vreme.grade', {n: z.max})}) }}</span></li>{% endfor %}</ul>{% endif %}
+{% if rasarit and apus %}<p class="pg-vreme-soare">{{ t('vreme.soare', {rasarit: rasarit, apus: apus}) }}</p>{% endif %}
+<p class="pg-vreme-sursa"><a href="{{ sursa_url }}" rel="noopener noreferrer">{{ sursa }}</a></p>
+</div>

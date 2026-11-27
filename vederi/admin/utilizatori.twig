@@ -1,0 +1,60 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.utilizatori.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.utilizatori.explicatie') }}</p>
+{% if colegi %}{% include 'admin/_reauth_formular.twig' %}{% endif %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.utilizatori.col.cont') }}</th><th scope="col">{{ t('admin.cont.rol') }}</th><th scope="col">{{ t('admin.utilizatori.col.stare') }}</th><th scope="col">{{ t('admin.2fa.titlu') }}</th><th scope="col">{{ t('admin.utilizatori.col.ultima') }}</th><th scope="col">{{ t('admin.cereri.col.actiuni') }}</th></tr></thead>
+<tbody>
+{% for x in lista %}
+<tr data-utilizator="{{ x.id }}"><th scope="row" data-eticheta="{{ t('admin.utilizatori.col.cont') }}">{{ x.email }}<br><span class="pa-ajutor">{% if x.nume %}{{ x.nume }} · {% endif %}{{ x.limba }}</span></th>
+<td data-eticheta="{{ t('admin.cont.rol') }}">{{ x.rol_text }}{% if x.rol == 'personal' and x.poate and drepturi_rambursare %}, {{ t('admin.utilizatori.cu_rambursari') }}{% endif %}</td>
+<td data-eticheta="{{ t('admin.utilizatori.col.stare') }}">{{ x.stare_text }}</td><td data-eticheta="{{ t('admin.2fa.titlu') }}">{{ x.doi_f ? t('admin.utilizatori.2fa_da') : t('admin.utilizatori.2fa_nu') }}</td><td data-eticheta="{{ t('admin.utilizatori.col.ultima') }}">{{ x.ultima }}</td>
+<td>{% if x.eu %}{{ t('admin.utilizatori.contul_dumneavoastra') }}{% elseif not reautentificat %}<span class="pa-ajutor">{{ t('admin.reauth.intai') }}</span>{% else %}
+{% if x.stare == 'dezactivat' %}
+<form method="post" action="{{ url.baza }}/{{ x.id }}/reactiveaza" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.utilizatori.reactiveaza') }}<span class="pa-ascuns"> ({{ x.email }})</span></button></form>
+{% else %}
+{% if x.rol == 'proprietar' %}
+<form method="post" action="{{ url.baza }}/{{ x.id }}/rol" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="rol" value="personal"><button type="submit" class="pa-buton-secundar">{{ t('admin.utilizatori.fa_personal') }}<span class="pa-ascuns"> ({{ x.email }})</span></button></form>
+{% else %}
+<form method="post" action="{{ url.baza }}/{{ x.id }}/drept" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="da" value="{{ x.poate ? '0' : '1' }}"><button type="submit" class="pa-buton-secundar">{{ x.poate ? t('admin.plati.ia_dreptul') : t('admin.plati.da_dreptul') }}<span class="pa-ascuns"> ({{ x.email }})</span></button></form>
+{% endif %}
+{% if x.stare == 'invitat' %}<form method="post" action="{{ url.baza }}/{{ x.id }}/reinvita" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.utilizatori.reinvita') }}<span class="pa-ascuns"> ({{ x.email }})</span></button></form>{% endif %}
+{% if x.rol == 'personal' %}
+<details class="pa-confirma"><summary>{{ t('admin.utilizatori.fa_proprietar') }}<span class="pa-ascuns"> ({{ x.email }})</span></summary>
+<form method="post" action="{{ url.baza }}/{{ x.id }}/rol"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="rol" value="proprietar">
+<p>{{ t('admin.utilizatori.fa_proprietar_ce', {email: x.email}) }}</p>
+<p><input type="checkbox" id="pa-u{{ x.id }}-confirm" name="confirm" value="1" required><label for="pa-u{{ x.id }}-confirm">{{ t('admin.utilizatori.fa_proprietar_confirm') }}</label></p>
+<p><label for="pa-u{{ x.id }}-parola">{{ t('admin.reauth.parola') }}</label><span class="pa-ajutor" id="pa-u{{ x.id }}-parola-ajutor">{{ t('admin.utilizatori.fa_proprietar_parola') }}</span><input id="pa-u{{ x.id }}-parola" name="parola" type="password" autocomplete="current-password" required aria-describedby="pa-u{{ x.id }}-parola-ajutor"></p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.utilizatori.fa_proprietar_da') }}</button></form></details>
+{% endif %}
+{% if x.doi_f %}
+<details class="pa-confirma"><summary>{{ t('admin.utilizatori.reseteaza_2fa') }}<span class="pa-ascuns"> ({{ x.email }})</span></summary>
+<form method="post" action="{{ url.baza }}/{{ x.id }}/reseteaza-2fa"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.utilizatori.reseteaza_2fa_ce', {email: x.email}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.utilizatori.reseteaza_2fa_da') }}</button></form></details>
+{% endif %}
+<details class="pa-confirma"><summary>{{ t('admin.utilizatori.dezactiveaza') }}<span class="pa-ascuns"> ({{ x.email }})</span></summary>
+<form method="post" action="{{ url.baza }}/{{ x.id }}/dezactiveaza"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.utilizatori.dezactiveaza_ce', {email: x.email}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.utilizatori.dezactiveaza_da') }}</button></form></details>
+{% endif %}
+{% endif %}</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if colegi %}<p class="pa-ajutor">{{ t('admin.utilizatori.ajutor_2fa') }}</p>{% endif %}
+<h2>{{ t('admin.utilizatori.invita_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}/invita"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-inv-email">{{ t('admin.intrare.email') }}</label><input id="pa-inv-email" name="email" type="email" autocomplete="off" required value="{{ invitatie.email }}"{% if erori_camp.email is defined %} aria-invalid="true" aria-describedby="pa-inv-email-eroare"{% endif %}>
+{% if erori_camp.email is defined %}<span class="pa-eroare-camp" id="pa-inv-email-eroare">{{ erori_camp.email }}</span>{% endif %}</p>
+<p><label for="pa-inv-nume">{{ t('admin.cont.nume') }}</label><input id="pa-inv-nume" name="nume" type="text" autocomplete="off" maxlength="120" value="{{ invitatie.nume }}"></p>
+<fieldset><legend>{{ t('admin.cont.rol') }}</legend>
+<p><input type="radio" id="pa-inv-personal" name="rol" value="personal"{% if invitatie.rol != 'proprietar' %} checked{% endif %}><label for="pa-inv-personal">{{ t('admin.rol.personal') }}: {{ t('admin.utilizatori.rol_personal_ajutor') }}</label></p>
+{% if drepturi_rambursare %}<p class="pa-sub-optiune"><input type="checkbox" id="pa-inv-ramb" name="poate_rambursa" value="1"{% if invitatie.poate_rambursa %} checked{% endif %} aria-describedby="pa-inv-ramb-ajutor"><label for="pa-inv-ramb">{{ t('admin.utilizatori.cu_rambursari_eticheta') }}</label><span class="pa-ajutor" id="pa-inv-ramb-ajutor">{{ t('admin.utilizatori.cu_rambursari_ajutor') }}</span></p>{% endif %}
+<p><input type="radio" id="pa-inv-proprietar" name="rol" value="proprietar"{% if invitatie.rol == 'proprietar' %} checked{% endif %}><label for="pa-inv-proprietar">{{ t('admin.rol.proprietar') }}: {{ t('admin.utilizatori.rol_proprietar_ajutor') }}</label></p>
+</fieldset>
+<p><label for="pa-inv-limba">{{ t('admin.cont.limba') }}</label><select id="pa-inv-limba" name="limba"><option value="ro" lang="ro"{% if invitatie.limba == 'ro' %} selected{% endif %}>Română</option><option value="en" lang="en"{% if invitatie.limba == 'en' %} selected{% endif %}>English</option></select></p>
+{% include 'admin/_reauth.twig' with {id: 'inv'} %}
+<button type="submit" class="pa-buton">{{ t('admin.utilizatori.invita') }}</button></form>
+{% endblock %}

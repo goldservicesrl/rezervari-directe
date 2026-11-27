@@ -1,0 +1,28 @@
+{#- Cardul unei camere (forma C): poza principală a grupului cu legenda categoriei,
+    vederea, titlul, câte unități la fel, oaspeții, paturile, baia, suprafața, cel mult 3 dotări, „de la X lei”.
+    Câmpurile lipsă nu lasă etichete goale. -#}
+{% set v = c.vedere ?? c.fisa.vedere ?? '' %}
+{% set mp = c.suprafata_mp ?? c.fisa.suprafata_mp ?? null %}
+{% set paturi = c.paturi ?? [] %}
+{% set baie = (c.baie_tip ?? '') in ['proprie', 'comuna'] ? t('baie.' ~ c.baie_tip) : (c.fisa.baie ?? '') %}
+<li class="fz-card{% for k in vederi_cheie %}{% if k == v %} fz-are-{{ loop.index + 1 }}{% endif %}{% endfor %}">
+<div class="fz-card-poza">
+{% if c.poza_principala %}<figure>{{ img(c.poza_principala, [480, 960], false, '(min-width: 45rem) 18rem, 85vw') }}{% if c.poza_principala.legenda ?? '' %}<figcaption class="fz-legenda">{{ c.poza_principala.legenda }}</figcaption>{% endif %}</figure>{% else %}<span class="fz-card-fara-poza" aria-hidden="true"></span>{% endif %}
+{% if v %}<p class="fz-card-vedere">{{ v in ['oras', 'mare', 'munte', 'lac', 'curte', 'gradina'] ? t('vedere.' ~ v) : v }}</p>{% endif %}
+</div>
+<div class="fz-card-corp">
+{% if nivel == 2 %}<h2 class="fz-card-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h2>{% else %}<h3 class="fz-card-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h3>{% endif %}
+{% if c.unitati > 1 %}<p class="fz-card-unitati">{{ t('camera.la_fel', {n: c.unitati}) }}</p>{% endif %}
+{% if c.oaspeti_max or paturi|length > 0 or (c.fisa.pat ?? '') or baie or mp %}<ul class="fz-card-date">
+{% if c.oaspeti_max %}<li>{% include "partials/oaspeti.twig" with {n: c.oaspeti_max} only %}</li>{% endif %}
+{% if paturi|length > 0 %}{% for p in paturi %}<li>{% include "partials/eticheta.twig" with {d: p} only %}</li>{% endfor %}{% elseif c.fisa.pat ?? '' %}<li>{{ c.fisa.pat }}</li>{% endif %}
+{% if baie %}<li>{{ baie }}</li>{% endif %}
+{% if mp %}<li>{{ t('camera.mp', {n: mp}) }}</li>{% endif %}
+</ul>{% endif %}
+{% if c.dotari|length > 0 %}<ul class="fz-dotari" aria-label="{{ t('dotari.eticheta') }}">{% for d in c.dotari|slice(0, 3) %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+<div class="fz-card-subsol">
+{% if c.pret_de_la %}{% include "partials/de_la.twig" with {p: c.pret_de_la} %}{% endif %}
+<a class="fz-card-link" href="{{ c.url }}">{{ t('camera.detalii') }}<span class="fz-ascuns">: {{ c.titlu }}</span></a>
+</div>
+</div>
+</li>

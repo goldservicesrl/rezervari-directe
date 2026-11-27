@@ -1,0 +1,39 @@
+{#- Acasă, sosirile de azi și de mâine și cererile care așteaptă răspuns. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+{#- în modurile E și P, sosirile se văd în EasyCheck; în P rămân cererile, cu butoanele de probă. -#}
+{% if not ec_acasa|default(null) %}
+<h2>{{ t('admin.acasa.sosiri') }}</h2>
+{% if sosiri %}<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.acasa.col.cand') }}</th><th scope="col">{{ t('admin.cereri.col.ref') }}</th><th scope="col">{{ t('admin.cereri.col.sejur') }}</th><th scope="col">{{ t('admin.cereri.col.oaspete') }}</th></tr></thead>
+<tbody>{% for x in sosiri %}<tr><td data-eticheta="{{ t('admin.acasa.col.cand') }}">{{ x.zi }}</td><th scope="row" data-eticheta="{{ t('admin.cereri.col.ref') }}"><a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a></th><td data-eticheta="{{ t('admin.cereri.col.sejur') }}">{{ x.sejur }}</td><td data-eticheta="{{ t('admin.cereri.col.oaspete') }}">{{ x.oaspete }}{% if x.suprapunere %} <span class="pa-stare pa-stare-problema">{{ t('admin.rezervari.suprapunere') }}</span>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>{% else %}<p class="pa-gol">{{ t('admin.acasa.sosiri_gol') }}</p>{% endif %}
+{% endif %}
+<h2>{{ t('admin.cereri.titlu') }}</h2>
+{% if cereri %}
+<p>{{ proba ? (proba_rol ? t('admin.cereri.proba_info') : t('admin.cereri.proba_proprietar')) : t('admin.cereri.raspuns_ec') }}{% if proba_transferuri and proba_rol %} {{ t('admin.transfer.proba_info') }}{% endif %}</p>
+<div class="pa-tabel">
+<table>
+<thead><tr><th scope="col">{{ t('admin.cereri.col.ref') }}</th><th scope="col">{{ t('admin.cereri.col.sejur') }}</th><th scope="col">{{ t('admin.cereri.col.oaspete') }}</th><th scope="col">{{ t('admin.cereri.col.total') }}</th><th scope="col">{{ t('admin.cereri.col.termen') }}</th>{% if proba and proba_rol %}<th scope="col">{{ t('admin.cereri.col.actiuni') }}</th>{% endif %}</tr></thead>
+<tbody>
+{% for c in cereri %}
+<tr data-ref="{{ c.ref }}"><th scope="row" data-eticheta="{{ t('admin.cereri.col.ref') }}"><a href="{{ url.rezervari }}{{ c.ref }}">{{ c.ref }}</a></th><td data-eticheta="{{ t('admin.cereri.col.sejur') }}">{{ c.sejur }}{% if c.curand %} <span class="pa-stare pa-stare-asteapta">{{ c.curand }}</span>{% endif %}</td><td data-eticheta="{{ t('admin.cereri.col.oaspete') }}">{{ c.oaspete }}{% if c.transfer|default('') %} <span class="pa-stare pa-stare-asteapta">{{ c.transfer }}</span>{% endif %}</td><td data-eticheta="{{ t('admin.cereri.col.total') }}">{{ c.total }}</td><td data-eticheta="{{ t('admin.cereri.col.termen') }}">{{ c.termen }}</td>
+{% if proba and proba_rol %}<td class="pa-celula-actiuni">{% if c.proba_transfer|default(false) %}
+<form method="post" action="{{ url.proba_transfer }}{{ c.ref }}/proba-confirma" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.transfer.proba_confirma') }}<span class="pa-ascuns"> {{ c.ref }}</span></button></form>
+<details class="pa-confirma"><summary>{{ t('admin.transfer.proba_refuza') }}<span class="pa-ascuns"> {{ c.ref }}</span></summary>
+<form method="post" action="{{ url.proba_transfer }}{{ c.ref }}/proba-refuza"><input type="hidden" name="_csrf" value="{{ csrf }}"><p>{{ t('admin.transfer.refuz_confirmare') }}</p><button type="submit" class="pa-buton-pericol">{{ t('admin.transfer.refuz_da') }}<span class="pa-ascuns"> {{ c.ref }}</span></button></form></details>
+{% if c.prelungire|default(false) %}<form method="post" action="{{ url.proba_transfer }}{{ c.ref }}/prelungeste" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><label for="pz-{{ c.ref }}">{{ t('admin.transfer.prelungiti_cu') }}<span class="pa-ascuns"> {{ c.ref }}</span></label> <select id="pz-{{ c.ref }}" name="zile">{% for z, text in prelungiri %}<option value="{{ z }}">{{ text }}</option>{% endfor %}</select> <button type="submit" class="pa-buton-secundar">{{ t('admin.transfer.prelungiti') }}<span class="pa-ascuns"> {{ c.ref }}</span></button></form>{% endif %}
+{% endif %}{% if c.proba %}
+<form method="post" action="{{ url.proba }}{{ c.ref }}/proba-accepta" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton">{{ t('admin.cereri.proba_accepta') }}<span class="pa-ascuns"> {{ c.ref }}</span></button></form>
+<details class="pa-confirma"><summary>{{ t('admin.cereri.proba_refuza') }}<span class="pa-ascuns"> {{ c.ref }}</span></summary>
+<form method="post" action="{{ url.proba }}{{ c.ref }}/proba-refuza"><input type="hidden" name="_csrf" value="{{ csrf }}"><p>{{ t('admin.cereri.refuz_confirmare') }}</p><button type="submit" class="pa-buton-pericol">{{ t('admin.cereri.refuz_da') }}<span class="pa-ascuns"> {{ c.ref }}</span></button></form></details>
+{% endif %}</td>{% endif %}</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<p class="pa-gol">{{ t('admin.cereri.gol') }}</p>
+{% endif %}
+<p><a href="{{ url.toate }}">{{ t('admin.acasa.toate_rezervarile') }}</a></p>
+{% endblock %}

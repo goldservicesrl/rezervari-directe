@@ -1,0 +1,397 @@
+/* Foile nucleului Cazo.
+   Ordinea straturilor: nucleu (stilul de bază al componentelor), apoi tema (CSS-ul temei, înfășurat de nucleu).
+   Protecțiile de la sfârșit stau în afara straturilor și au !important: bat orice declarație a temei, deci
+   blocul legal, contactul, bara, calendarul și rezumatul rămân vizibile și lizibile. */
+@layer nucleu, tema;
+
+@layer nucleu {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 1rem; scroll-padding-bottom: 5rem; }
+  body { margin: 0; font-family: var(--pg-font-text, system-ui, sans-serif); line-height: 1.5; }
+  img, picture, svg { max-width: 100%; height: auto; }
+  picture.pg-poza { display: block; }
+  picture.pg-poza img { display: block; width: 100%; height: auto; }
+  :focus-visible { outline: 3px solid var(--pg-culoare-accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms; animation-iteration-count: 1; transition-duration: 0.01ms; scroll-behavior: auto; }
+  }
+  .pg-ascuns { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* câmpurile și butoanele nucleului: ținte de 44 px (2.5.8) */
+  .pg-camp { display: flex; flex-direction: column; gap: 0.25rem; min-width: 9rem; flex: 1 1 9rem; }
+  .pg-camp-mic { flex: 0 1 6rem; min-width: 5.5rem; }
+  .pg-camp label { font-weight: 600; font-size: 0.9375rem; }
+  .pg-camp input, .pg-camp select { min-height: 44px; padding: 0.5rem 0.625rem; font: inherit; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); }
+  .pg-buton, .pg-buton-secundar { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.5rem 1.125rem; font: inherit; font-weight: 700; border-radius: var(--pg-raza); cursor: pointer; text-decoration: none; }
+  .pg-buton { border: 2px solid var(--pg-culoare-accent); }
+  .pg-buton-secundar { border: 1px solid var(--pg-culoare-linie); }
+
+  .pg-banda { margin: 0; padding: 0.5rem 1rem; text-align: center; font-weight: 700; }
+  .pg-banda p { margin: 0; }
+  .pg-banda a { color: inherit; }
+
+  .pg-bara-formular { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
+  .pg-bara-lipicios { display: none; }
+
+  .pg-calendar-luni { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+  .pg-calendar-luna { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+  .pg-calendar-luna caption { font-weight: 700; text-align: left; padding-bottom: 0.25rem; text-transform: capitalize; white-space: nowrap; }
+  .pg-calendar-titlu, .pg-rezumat-titlu { margin: 0 0 0.625rem; line-height: 1.2; }
+  .pg-calendar-luna th { font-size: 0.8125rem; font-weight: 600; padding: 0.25rem 0; }
+  .pg-zi { min-height: 44px; height: 3rem; padding: 0.125rem; text-align: center; vertical-align: top; border-radius: calc(var(--pg-raza) / 2); font-size: 0.875rem; }
+  .pg-zi-numar { display: block; font-weight: 700; }
+  .pg-zi-pret { display: block; font-size: 0.6875rem; line-height: 1.2; }
+  .pg-calendar-nav { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .pg-calendar-legenda { display: flex; flex-wrap: wrap; gap: 1rem; list-style: none; padding: 0; margin: 0.75rem 0 0; font-size: 0.875rem; }
+  .pg-legenda { display: inline-block; width: 1rem; height: 1rem; margin-right: 0.375rem; vertical-align: -0.125rem; border-radius: 3px; }
+
+  .pg-rezumat-formular { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
+  .pg-rezumat-planuri { flex: 1 1 100%; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); padding: 0.75rem; margin: 0; }
+  .pg-plan { display: grid; grid-template-columns: auto 1fr; gap: 0 0.5rem; align-items: center; padding: 0.375rem 0; }
+  .pg-plan input { width: 1.25rem; height: 1.25rem; margin: 0; }
+  .pg-plan label { font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+  .pg-plan-politica { grid-column: 2; font-size: 0.875rem; }
+  .pg-rezumat-total { margin-top: 1rem; }
+  .pg-total { font-size: 1.25rem; margin: 0 0 0.5rem; }
+  .pg-total-euro { margin: -0.25rem 0 0.5rem; font-size: 0.9375rem; }
+  .pg-total-separat { margin: 0 0 0.5rem; font-size: 0.9375rem; font-weight: 600; }
+  /* nopțile ocupate sau o restricție se văd într-o casetă, cu datele libere apropiate ca butoane. */
+  .pg-total-avertisment { padding: 0.875rem 1rem; border: 2px solid var(--pg-culoare-accent); border-left-width: 6px; border-radius: var(--pg-raza); }
+  .pg-total-avertisment .pg-total-mesaj { margin: 0; font-weight: 700; font-size: 1.0625rem; }
+  .pg-alternative-titlu { margin: 0.75rem 0 0.375rem; }
+  .pg-alternative { list-style: none; margin: 0; padding: 0; gap: 0.5rem; flex-wrap: wrap; }
+  .pg-rezumat-formular .pg-buton[aria-busy="true"] { cursor: progress; }
+  .pg-eroare-pagina { max-width: 60rem; margin-inline: auto; padding: 2rem 1rem 3rem; }
+  .pg-vreme-acum { margin: 0 0 0.5rem; }
+  .pg-vreme-temperatura { font-size: 1.5rem; font-weight: 700; }
+  .pg-vreme-zile { list-style: none; margin: 0 0 0.5rem; padding: 0; }
+  .pg-vreme-zi { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+  .pg-vreme-sursa, .pg-vreme-soare { font-size: 0.875rem; margin: 0.25rem 0 0; }
+  .pg-total-componente summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+  .pg-total-rand { display: flex; justify-content: space-between; gap: 1rem; }
+  .pg-total-rand dd, .pg-legal-rand dd { margin: 0; }
+  /* Datele legale: fiecare etichetă lângă valoarea ei, aliniate; pe telefon, valoarea sub etichetă. */
+  .pg-legal-rand { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); gap: 0 1rem; align-items: baseline; }
+  .pg-legal-rand dd { overflow-wrap: anywhere; }
+  @media (max-width: 30rem) {
+    .pg-legal-rand { grid-template-columns: minmax(0, 1fr); }
+  }
+  .pg-oferte { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+  .pg-oferta { padding-top: 0.75rem; border-top: 1px solid var(--pg-culoare-linie); }
+  .pg-oferta-titlu { font-size: 1.0625rem; margin: 0; }
+  .pg-oferta-nota, .pg-oferta-politica, .pg-card-plan-nota { font-size: 0.875rem; margin: 0.125rem 0 0; }
+  .pg-oferta .pg-total { margin-top: 0.5rem; }
+  /* masa inclusă în tarif, lângă numele lui (pe rândul lui, la etichetele formularului cu o linie nouă). */
+  .pg-masa { font-size: 0.875rem; font-weight: 600; margin: 0.125rem 0 0; }
+  label > .pg-masa { display: block; }
+
+  /* Harta interactivă: un element pus de harta.js după componentă, cu stilul Leaflet neatins de protecții. */
+  .pg-harta-interactiva { height: 22rem; margin: 0.75rem 0; border-radius: var(--pg-raza); border: 1px solid var(--pg-culoare-linie); background-color: var(--pg-culoare-suprafata); }
+  .pg-harta-adresa { font-weight: 700; margin: 0; }
+  .pg-harta-linkuri { display: flex; flex-wrap: wrap; gap: 1rem; padding: 0; list-style: none; }
+  .pg-harta-linkuri a, .pg-legal-linkuri a { display: inline-flex; min-height: 44px; align-items: center; }
+
+  /* Subsolul: sus, trei zone (numele, adresa publică și e-mailul; legăturile legale, una sub alta;
+     pictograma SAL); dedesubt, sub o linie subțire, datele firmei pe un rând de text mic, despărțite prin „·”, apoi
+     „©”. 13 px sus, 12 px la datele firmei, în culoarea ștearsă a textului (--pg-culoare-text-sters, contrast de cel
+     puțin 4,5:1). Pe telefon, zonele stau una sub alta, iar legăturile pe un rând. */
+  .pg-contact { font-style: normal; display: flex; flex-direction: column; gap: 0.125rem; }
+  .pg-contact-titlu { font-weight: 600; }
+  .pg-legal-linkuri ul { display: flex; flex-wrap: wrap; gap: 0 1.25rem; list-style: none; padding: 0; margin: 0; line-height: 1.9; }
+  /* Pictograma SAL (Ordinul ANPC 449/2022, cu modificările din 2026): legătura ocupă 250 x 50 px, iar imaginea
+     oficială (201 x 50 px) stă în ea neschimbată. */
+  .pg-legal-sal { margin: 0; }
+  .pg-legal-sal a { display: inline-flex; width: 250px; max-width: 100%; height: 50px; align-items: center; }
+  .pg-legal-sal img { display: block; width: 201px; height: 50px; }
+  .pg-legal-jos { padding-top: 0.875rem; border-top: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); line-height: 1.7; }
+  .pg-legal-date { list-style: none; padding: 0; margin: 0 0 0.25rem; }
+  .pg-legal-date > .pg-legal-rand { display: inline; overflow-wrap: anywhere; }
+  .pg-legal-date > .pg-legal-rand:not(:last-child)::after { content: "\00B7"; margin: 0 0.45em; }
+  .pg-legal-an { margin: 0; }
+  .pg-legal-ec { margin: 0.25rem 0 0; }
+  .pg-legal-ec a { display: inline-flex; min-height: 24px; align-items: center; }
+  .pg-legal-pagina, .pg-pagina { max-width: 46rem; margin-inline: auto; padding: 2rem 1rem 3rem; }
+  /* Zona nucleului (izolarea): sobră, la fel în toate temele, cu jetoanele temei (culori, fonturi). */
+  /* zona nucleului are lățimea declarată de temă (theme.json, `latime_rem`), ca antetul temei și conținutul
+     nucleului să stea pe aceeași coloană; fără ea, 72rem. */
+  .pg-nucleu-latime { max-width: var(--pg-latime, 72rem); margin-inline: auto; }
+  .pg-nucleu--jos { padding: 1.75rem 1rem 2rem; border-top: 1px solid var(--pg-culoare-linie); font-size: 0.8125rem; line-height: 1.6; }
+  .pg-nucleu--jos .pg-nucleu-latime, .pg-nucleu--jos .pg-legal { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+  .pg-nucleu--continut { padding: 1.5rem 1rem 2.5rem; }
+  @media (min-width: 48rem) {
+    .pg-nucleu--jos .pg-nucleu-latime { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr) auto; grid-template-rows: auto auto; gap: 1.25rem 3rem; align-items: start; }
+    .pg-nucleu--jos .pg-contact { grid-column: 1; grid-row: 1; }
+    /* Blocul legal se întinde peste toată grila și îi preia coloanele și rândurile (subgrid): legăturile și pictograma
+       stau pe primul rând, lângă contact, iar datele firmei pe al doilea, pe toată lățimea. */
+    .pg-nucleu--jos .pg-legal { grid-column: 1 / -1; grid-row: 1 / 3; grid-template-columns: subgrid; grid-template-rows: subgrid; gap: 1.25rem 3rem; }
+    .pg-nucleu--jos .pg-legal-linkuri { grid-column: 2; grid-row: 1; }
+    .pg-nucleu--jos .pg-legal-linkuri ul { flex-direction: column; }
+    .pg-nucleu--jos .pg-legal-sal { grid-column: 3; grid-row: 1; }
+    .pg-nucleu--jos .pg-legal-jos { grid-column: 1 / -1; grid-row: 2; }
+    @supports not (grid-template-rows: subgrid) {
+      .pg-nucleu--jos .pg-legal { grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; }
+      .pg-nucleu--jos .pg-legal-linkuri { grid-column: 1; }
+      .pg-nucleu--jos .pg-legal-sal { grid-column: 2; }
+    }
+  }
+  .pg-legal-operator { display: grid; gap: 0.25rem; }
+  .pg-legal-versiune { font-size: 0.875rem; }
+
+  /* Paginile de rezervare ale nucleului: titlu mare, carduri, spații între bucățile de text,
+     un singur buton principal. Aceleași reguli în toate temele, cu jetoanele temei. */
+  /* Căutarea, starea comenzii și „Rezervarea mea” stau în <main>-ul temei: își aduc singure lățimea, centrarea și
+     marginile, ca la orice temă textul să stea departe de marginea ecranului și de antet. */
+  .pg-cautare, .pg-stare, .pg-rmea { max-width: 60rem; margin-inline: auto; padding: 2rem 1rem 3rem; }
+  .pg-titlu-pagina { line-height: 1.15; margin: 0 0 0.5rem; }
+  .pg-cautare-rezumat { margin: 0 0 1.25rem; font-size: 1.0625rem; }
+  .pg-cautare-formular { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin: 1.25rem 0 2rem; padding: 1rem; border: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); border-radius: var(--pg-raza); }
+  .pg-cautare-subtitlu { font-size: 1.125rem; margin: 1.5rem 0 0.75rem; }
+  .pg-cautare-mesaj { margin: 1rem 0; }
+  .pg-cautare-lista { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: 1.25rem; }
+  .pg-card { border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); padding: 1.25rem; }
+  .pg-card-cap { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+  .pg-card-poza { flex: none; width: 6rem; line-height: 0; }
+  .pg-card-poza img { display: block; width: 6rem; height: 4.5rem; object-fit: cover; border-radius: calc(var(--pg-raza) / 2); }
+  .pg-card-titlu { margin: 0; font-size: 1.25rem; line-height: 1.25; }
+  .pg-card-de-la { margin: 0.125rem 0 0; font-size: 0.875rem; }
+  .pg-card-planuri { list-style: none; padding: 0; margin: 0; }
+  .pg-card-plan { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem 2rem; align-items: center; padding-top: 1rem; border-top: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); }
+  .pg-card-plan + .pg-card-plan { margin-top: 1rem; }
+  .pg-card-plan-text { display: grid; gap: 0.25rem; }
+  .pg-card-plan-titlu { font-weight: 700; font-size: 1.0625rem; margin: 0; }
+  .pg-card-plan-nota { font-size: 0.875rem; margin: 0; }
+  .pg-card-politica { font-size: 0.9375rem; margin: 0.25rem 0 0; }
+  .pg-card-plan-pret { display: grid; justify-items: end; gap: 0.125rem; text-align: right; }
+  .pg-card-total { font-size: 1.625rem; font-weight: 700; line-height: 1.15; margin: 0; white-space: nowrap; }
+  .pg-card-sejur { font-size: 0.875rem; margin: 0 0 0.625rem; }
+  .pg-card-mesaj { margin: 0 0 0.625rem; max-width: 22rem; }
+  .pg-card-alege { min-width: 10rem; }
+  .pg-cautare-vecine, .pg-cautare-ocupate { padding-left: 1.25rem; line-height: 1.9; }
+  @media (max-width: 40rem) {
+    .pg-card { padding: 1rem; }
+    .pg-card-plan { grid-template-columns: minmax(0, 1fr); }
+    .pg-card-plan-pret { justify-items: start; text-align: left; }
+    .pg-card-alege { width: 100%; }
+  }
+
+  /* comanda, starea, „Rezervarea mea” */
+  .pg-comanda-grila { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); align-items: start; margin-top: 1.5rem; }
+  @media (min-width: 56rem) { .pg-comanda-grila { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 2.5rem; } }
+  .pg-comanda-rezumat, .pg-precontractual { border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); padding: 1.25rem; }
+  .pg-comanda-rezumat > h2, .pg-precontractual > h2 { margin: 0 0 0.875rem; font-size: 1.25rem; line-height: 1.25; }
+  .pg-precontractual p { margin: 0 0 0.625rem; font-size: 0.9375rem; }
+  .pg-precontractual p:last-child { margin-bottom: 0; }
+  .pg-rezumat-comanda { margin: 0 0 0.75rem; display: grid; gap: 0.5rem; }
+  .pg-rezumat-comanda dt { font-weight: 400; flex: none; }
+  .pg-rezumat-comanda dd { font-weight: 600; text-align: right; }
+  .pg-total-rand--total { font-size: 1.375rem; font-weight: 700; padding-top: 0.75rem; margin-top: 0.25rem; border-top: 1px solid var(--pg-culoare-linie); align-items: baseline; }
+  .pg-total-rand--total dt { font-weight: 700; }
+  .pg-rezumat-plata { margin: 0.5rem 0 0; }
+  /* Ce se plătește acum și ce la sosire, pe fiecare metodă de plată oferită. */
+  .pg-metode { margin-top: 0.875rem; padding-top: 0.875rem; border-top: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); }
+  .pg-metode-titlu { font-size: 1rem; margin: 0 0 0.625rem; }
+  .pg-metode-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .pg-metoda-nume { font-weight: 700; }
+  .pg-metoda-acum, .pg-metoda-sosire { font-size: 0.9375rem; }
+  .pg-reguli-titlu { font-size: 1rem; margin: 1rem 0 0.375rem; }
+  .pg-comanda-formular { display: grid; gap: 1.125rem; }
+  .pg-comanda-formular > h2 { margin: 0; font-size: 1.25rem; line-height: 1.25; }
+  /* Metodele de plată: fiecare în cardul ei, cu textul și butonul ei; un singur buton principal. */
+  .pg-comanda-metode { display: grid; gap: 1rem; margin-top: 0.5rem; }
+  .pg-comanda-metode > h2 { margin: 0; font-size: 1.25rem; line-height: 1.25; }
+  .pg-comanda-metoda { display: grid; gap: 0.625rem; padding: 1rem 1.25rem 1.25rem; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); }
+  .pg-comanda-metoda p, .pg-comanda-metoda fieldset { margin: 0; }
+  .pg-comanda-metoda-titlu { margin: 0; font-size: 1.0625rem; }
+  .pg-comanda-plata { font-weight: 600; }
+  .pg-camp-lat { min-width: 0; flex: none; }
+  .pg-camp-lat input, .pg-camp-lat select, .pg-camp textarea { width: 100%; min-height: 44px; padding: 0.5rem 0.625rem; font: inherit; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); }
+  .pg-ajutor { font-size: 0.875rem; }
+  .pg-obligatoriu { font-weight: 400; font-size: 0.875rem; }
+  .pg-eroare { font-weight: 700; }
+  .pg-bifa { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; align-items: start; }
+  .pg-bifa input { width: 1.5rem; height: 1.5rem; margin: 0.125rem 0 0; }
+  .pg-bifa .pg-eroare { grid-column: 2; }
+  .pg-comanda-erori { border: 2px solid var(--pg-culoare-text); border-radius: var(--pg-raza); padding: 0.75rem 1rem; margin-bottom: 1rem; }
+  .pg-comanda-erori-titlu, .pg-stare-titlu { font-weight: 700; margin-top: 0; }
+  /* Starea comenzii: textul stării într-un card cu marginea în culoarea accentului. */
+  .pg-stare-mesaj { margin: 1.25rem 0 1.5rem; padding: 1rem 1.25rem; border: 1px solid var(--pg-culoare-linie); border-left: 4px solid var(--pg-culoare-accent); border-radius: var(--pg-raza); }
+  .pg-stare-mesaj .pg-stare-titlu { font-size: 1.125rem; margin: 0 0 0.5rem; }
+  .pg-stare-mesaj p:last-child { margin-bottom: 0; }
+  .pg-stare-rezumat { margin-top: 1.5rem; max-width: 40rem; }
+  .pg-comanda-mesaj { font-weight: 700; padding: 0.75rem 1rem; border-left: 4px solid var(--pg-culoare-accent); }
+  .pg-comanda-buton { width: 100%; }
+  .pg-comanda-tarif { margin-top: 1rem; display: grid; gap: 0.75rem; }
+  .pg-cod-formular { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 0.75rem; }
+  .pg-stare-linkuri { padding-left: 1.25rem; }
+  .pg-stare-linkuri a, .pg-rmea a { display: inline-flex; min-height: 44px; align-items: center; }
+  .pg-reguli { padding-left: 1.25rem; margin: 0; }
+  /* Instrucțiunile transferului bancar, ca un card: fiecare valoare pe rândul ei, eticheta lângă ea;
+     IBAN-ul, SWIFT-ul, suma și codul se selectează întregi la un clic, iar comanda.js le pune alături butonul „Copiați”. */
+  .pg-transfer { margin: 1.5rem 0; padding: 1.25rem; border: 1px solid var(--pg-culoare-linie); border-radius: var(--pg-raza); max-width: 40rem; }
+  .pg-transfer > h2 { margin: 0 0 0.75rem; font-size: 1.25rem; line-height: 1.25; }
+  .pg-transfer-date { margin: 0 0 1rem; display: grid; }
+  .pg-transfer-rand { display: grid; grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr); gap: 0.125rem 1rem; align-items: center; padding: 0.625rem 0; border-top: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); }
+  .pg-transfer-rand:first-child { border-top: 0; }
+  .pg-transfer-rand dt { font-weight: 400; }
+  .pg-transfer-rand dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; gap: 0.375rem 1rem; align-items: center; justify-content: space-between; }
+  .pg-transfer-copiaza { user-select: all; -webkit-user-select: all; font-size: 1.0625rem; }
+  .pg-copiaza-buton { min-height: 2.25rem; padding: 0.25rem 0.875rem; font-size: 0.875rem; font-weight: 600; }
+  .pg-transfer-nota { margin: 0; font-size: 0.9375rem; }
+
+
+  @media (max-width: 40rem) {
+    .pg-bara-lipicios { display: flex; position: fixed; left: 0.75rem; right: 0.75rem; bottom: 0.75rem; z-index: 20; }
+    .pg-transfer-rand { grid-template-columns: minmax(0, 1fr); }
+  }
+}
+
+/* ---- protecțiile nucleului: în afara straturilor, cu !important ---- */
+/* Izolarea: containerul temei e un context de suprapunere (z-index 0), fără înălțime impusă; zona nucleului,
+   soră cu el, stă deasupra, cu jetoanele temei. Selectorii temei sunt prefixați cu :where(.pg-tema), deci nu ajung aici.
+   Containerul nu poate muta zona: margin, padding și float fixate, inset neutru, iar flow-root oprește marginile negative
+   ale copiilor să treacă prin el (un margin-bottom uriaș pe ultimul element ar trage zona în sus). */
+body > .pg-tema { display: flow-root !important; position: relative !important; inset: auto !important; float: none !important; margin: 0 !important; padding: 0 !important; z-index: 0 !important; isolation: isolate !important; height: auto !important; max-height: none !important; min-height: auto !important; visibility: visible !important; opacity: 1 !important; transform: none !important; translate: none !important; scale: none !important; rotate: none !important; zoom: 1 !important; filter: none !important; clip-path: none !important; mask: none !important; -webkit-mask: none !important; content-visibility: visible !important; contain: none !important; }
+body > .pg-nucleu { display: block !important; position: relative !important; z-index: 1 !important; isolation: isolate !important; visibility: visible !important; opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; margin: 0 !important; background-color: var(--pg-culoare-fundal) !important; color: var(--pg-culoare-text) !important; font-family: var(--pg-font-text, system-ui, sans-serif) !important; }
+/* La o temă terță (Randare pune pg-corp--terta pe <body>), zona nucleului are fontul de sistem al nucleului: un font terț
+   poate desena glife goale sau amestecate. La temele oficiale, zona păstrează fontul temei. */
+body.pg-corp--terta > .pg-nucleu, body.pg-corp--terta > .pg-nucleu * { font-family: system-ui, sans-serif !important; }
+html { display: block !important; visibility: visible !important; opacity: 1 !important; position: static !important; transform: none !important; clip-path: none !important; filter: none !important; content-visibility: visible !important; font-size: 100% !important; height: auto !important; overflow: visible !important; color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; }
+body { display: block !important; visibility: visible !important; opacity: 1 !important; position: static !important; transform: none !important; clip-path: none !important; filter: none !important; content-visibility: visible !important; font-size: max(1rem, 16px) !important; height: auto !important; overflow: visible !important; color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; }
+:where(*):has(> [data-pg]), :where(*):has([data-pg="legal"]) { visibility: visible !important; opacity: 1 !important; content-visibility: visible !important; clip-path: none !important; filter: none !important; transform: none !important; }
+/* Strămoșii oricărui bloc al nucleului: tema nu-i poate tăia (height, max-height, overflow), nu le poate muta
+   textul (text-indent), iar pseudo-elementele lor nu pot acoperi blocul. display, position și margin rămân ale temei
+   (grilele, centrarea); ce le-ar ascunde sau muta în afara ecranului refuză validatorul (ValidatorCss::stramosi).
+   Strămoșii nu fac context de suprapunere (z-index, isolation, contain, will-change, mix-blend-mode), deci blocul,
+   poziționat și ridicat la z-index maxim, stă deasupra oricărui element al temei care l-ar acoperi (un outline
+   uriaș, un ::after fix peste pagină). */
+:where(*):has([data-pg]) { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: none !important; content-visibility: visible !important; backdrop-filter: none !important; perspective: none !important; height: auto !important; max-height: none !important; overflow: visible !important; text-indent: 0 !important; translate: none !important; scale: none !important; rotate: none !important; zoom: 1 !important; mask: none !important; -webkit-mask: none !important; z-index: auto !important; isolation: auto !important; contain: none !important; will-change: auto !important; mix-blend-mode: normal !important; }
+:where(*):has([data-pg])::before, :where(*):has([data-pg])::after { content: none !important; }
+/* Un strămoș cu atributul hidden sau un <details> închis nu ascund blocul (atributele le refuză și validatorul). */
+:where([hidden]):has([data-pg]) { display: block !important; }
+:where(details):has([data-pg])::details-content { content-visibility: visible !important; display: block !important; }
+[data-pg] { display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; transform: none !important; clip-path: none !important; filter: none !important; content-visibility: visible !important; font-size: max(1em, 0.875rem) !important; height: auto !important; overflow: visible !important; color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; max-height: none !important; text-indent: 0 !important; inset: auto !important; z-index: 2147483646 !important; }
+/* Bara de rezervare (cu bara lipicioasă de pe telefon) rămâne deasupra celorlalte blocuri, ca înainte; tema nu trece de z-index 10000 (validatorul). */
+[data-pg="bara"] { z-index: 2147483647 !important; }
+[data-pg] * { visibility: inherit !important; opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important; content-visibility: visible !important; position: static !important; font-size: max(1em, 0.75rem); color: inherit !important; background-color: transparent !important; text-indent: 0 !important; }
+/* Pe bloc și pe descendenți: transformările individuale, zoom, măștile, umplerea textului, font-size-adjust și imaginile
+   de fundal (excepțiile calendarului, mai specifice, rămân). */
+:is([data-pg], [data-pg] *) { translate: none !important; scale: none !important; rotate: none !important; zoom: 1 !important; mask: none !important; -webkit-mask: none !important; -webkit-text-fill-color: currentColor !important; font-size-adjust: none !important; background-image: none !important; -webkit-text-stroke: 0 !important; -webkit-text-security: none !important; direction: ltr !important; unicode-bidi: normal !important; text-decoration-thickness: auto !important; pointer-events: auto !important; }
+/* Spațierea literelor și a cuvintelor și înălțimea rândului rămân ale temei, în limitele validatorului (-0,1em … 0,5em,
+   rândul de cel puțin 0,8): impuse, ar muta sute de elemente în fiecare temă (măsurat). Pe blocurile cu rol legal
+   (datele legale, contactul, comanda), fontul e al nucleului, din jetoane; @font-face-ul temei nu-l poate micșora
+   (validatorul: size-adjust și *-override între 50% și 200%). */
+:is([data-pg="legal"], [data-pg="contact"], [data-pg="comanda"], :is([data-pg="legal"], [data-pg="contact"], [data-pg="comanda"]) *) { font-family: var(--pg-font-text, system-ui, sans-serif) !important; }
+/* Pseudo-elementele blocului rămân în flux și fără fundal (nu pot acoperi blocul); conținutul lor rămâne al temei. */
+:is([data-pg], [data-pg] *)::before, :is([data-pg], [data-pg] *)::after { position: static !important; background: none !important; }
+:is([data-pg], [data-pg] *)::first-line, :is([data-pg], [data-pg] *)::first-letter { color: inherit !important; -webkit-text-fill-color: currentColor !important; }
+[data-pg] :is(p, div, section, article, ul, ol, dl, dd, dt, h1, h2, h3, h4, form, fieldset, nav, details, summary, address, table, caption) { height: auto !important; overflow: visible !important; }
+[data-pg] :is(p, div, section, article, ul, ol, dl, dd, dt, h1, h2, h3, h4, form, fieldset, nav, address, caption, legend) { display: block !important; }
+[data-pg] li { display: list-item !important; }
+[data-pg] :is(table) { display: table !important; }
+/* titlul lunii rămâne titlul tabelului (display: block îl strângea în prima coloană, pe două rânduri). */
+[data-pg] :is(caption) { display: table-caption !important; }
+[data-pg] :is(thead) { display: table-header-group !important; }
+[data-pg] :is(tbody) { display: table-row-group !important; }
+[data-pg] :is(tr) { display: table-row !important; }
+[data-pg] :is(td, th) { display: table-cell !important; }
+[data-pg] :is(a, span, strong, em, small, label, abbr, time) { display: inline !important; }
+[data-pg] :is(input, select, button, img, picture) { display: inline-block !important; }
+[data-pg] :is(details) { display: block !important; }
+[data-pg] :is(summary) { display: list-item !important; }
+[data-pg] a { color: var(--pg-culoare-accent) !important; text-decoration: underline !important; }
+[data-pg] :is(input, select) { color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; }
+[data-pg] .pg-buton { color: var(--pg-culoare-accent-contrast) !important; background-color: var(--pg-culoare-accent) !important; text-decoration: none !important; display: inline-flex !important; }
+[data-pg] .pg-buton-secundar { color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; display: inline-flex !important; }
+[data-pg] .pg-ascuns { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; }
+[data-pg] [hidden] { display: none !important; }
+/* Butonul lipicios al barei: ascuns pe ecranele late, deși e și .pg-buton (regula de mai sus îl arăta). */
+[data-pg] .pg-bara-lipicios { display: none !important; }
+/* Și pe elementul marcat însuși (contactul este chiar <address data-pg>), altfel display:block de mai sus îl lipește. */
+:is([data-pg], [data-pg] *):is(.pg-bara-formular, .pg-rezumat-formular, .pg-cautare-formular, .pg-contact, .pg-calendar-nav, .pg-calendar-legenda, .pg-harta-linkuri, .pg-camp, .pg-total-rand) { display: flex !important; }
+[data-pg] :is(.pg-legal-linkuri ul) { display: flex !important; }
+[data-pg] .pg-alternative { display: flex !important; }
+[data-pg] .pg-alternative > li { display: block !important; }
+/* Contactul e chiar elementul cu data-pg: regula de mai sus (descendenții) nu-l atinge, iar fără ea liniile se lipeau. */
+[data-pg="contact"].pg-contact { display: flex !important; }
+[data-pg] :is(.pg-calendar-luni, .pg-legal-rand, .pg-oferte, .pg-plan, .pg-card-plan, .pg-cautare-lista, .pg-comanda-grila, .pg-rezumat-comanda, .pg-comanda-formular, .pg-bifa, .pg-comanda-tarif, .pg-card-plan-text, .pg-card-plan-pret, .pg-metode-lista, .pg-comanda-metode, .pg-comanda-metoda, .pg-transfer-date, .pg-transfer-rand) { display: grid !important; }
+[data-pg] :is(.pg-card-cap, .pg-transfer-rand dd) { display: flex !important; }
+/* Subsolul: datele firmei curg pe un rând, despărțite prin „·”; în zona de jos a nucleului, la care
+   selectorii temei nu ajung, blocurile au 13 px (12 px la datele firmei), culoarea ștearsă a textului (contrast de cel
+   puțin 4,5:1, calculat în Jetoane::textSters) și fundalul zonei. Blocul legal e o grilă întinsă peste cea a zonei
+   (subgrid), deci contactul stă deasupra lui, ca legăturile contactului să rămână de apăsat. */
+[data-pg] .pg-legal-date > .pg-legal-rand { display: inline !important; }
+.pg-nucleu--jos [data-pg] { font-size: 0.8125rem !important; color: var(--pg-culoare-text-sters, var(--pg-culoare-text)) !important; background-color: transparent !important; }
+.pg-nucleu--jos [data-pg] .pg-legal-jos { font-size: 0.75rem; }
+.pg-nucleu--jos [data-pg] .pg-contact-titlu { color: var(--pg-culoare-text) !important; }
+.pg-nucleu--jos [data-pg="legal"].pg-legal { display: grid !important; }
+.pg-nucleu--jos [data-pg="contact"].pg-contact { z-index: 2147483647 !important; }
+/* Mărimile textului pe paginile de rezervare. Regula de mai sus a descendenților (cel puțin
+   12 px, altfel mărimea părintelui) stă în afara straturilor, deci titlurile și totalurile își primesc mărimea aici, tot
+   în afara lor: titlul paginii mare, totalul mare, notele mici, niciuna sub 12 px. */
+[data-pg] .pg-titlu-pagina { font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.375rem); }
+[data-pg] :is(.pg-card-titlu, .pg-comanda-rezumat > h2, .pg-precontractual > h2, .pg-comanda-formular > h2, .pg-comanda-metode > h2, .pg-transfer > h2, .pg-stare > h2, .pg-rmea > h2, .pg-cum-ajungeti > h2) { font-size: 1.25rem; }
+[data-pg] :is(.pg-cautare-subtitlu, .pg-stare-mesaj .pg-stare-titlu) { font-size: 1.125rem; }
+[data-pg] :is(.pg-cautare-rezumat, .pg-card-plan-titlu, .pg-comanda-metoda-titlu, .pg-transfer-copiaza) { font-size: 1.0625rem; }
+[data-pg] :is(.pg-metode-titlu, .pg-reguli-titlu) { font-size: 1rem; }
+/* titlurile calendarului, ale rezumatului camerei și ale hărții au mărimea unui titlu de secțiune. */
+[data-pg] :is(.pg-calendar-titlu, .pg-rezumat-titlu, .pg-harta-titlu) { font-size: 1.25rem; }
+/* Pe confirmare și pe „Rezervarea mea”, regulile casei și „Cum ajungeți” au loc deasupra și la temele care șterg
+   marginile titlurilor; harta din „Cum ajungeți” are un titlu de nivelul 3, mai mic. */
+[data-pg] .pg-reguli-titlu { margin: 1rem 0 0.375rem; }
+[data-pg] .pg-cum-ajungeti { margin-top: 1.75rem; }
+[data-pg] .pg-cum-ajungeti > h2 { margin: 0 0 0.75rem; }
+[data-pg] .pg-cum-ajungeti .pg-harta-titlu { font-size: 1.0625rem; margin: 0 0 0.25rem; }
+/* pagina 404 ca restul paginilor nucleului: centrată, cu titlul paginii și aer între rânduri. */
+[data-pg] .pg-eroare-pagina > p { margin: 0.75rem 0 0; }
+/* Confirmarea și „Rezervarea mea”: blocurile paginii au aer între ele și la temele care șterg marginile. */
+:is(.pg-stare, .pg-rmea)[data-pg] > * + * { margin-top: 0.75rem; }
+:is(.pg-stare, .pg-rmea)[data-pg] > :is(h2, section) { margin-top: 1.5rem; }
+/* Paginile legale și paginile gazdei: centrate pe coloana lor, cu titlurile capitolelor și aer între paragrafe, și la
+   temele care șterg marginile (textul lipit, fără spațiu, la toate temele). */
+[data-pg] :is(.pg-legal-pagina, .pg-pagina) h2 { font-size: 1.25rem; margin: 1.75rem 0 0.5rem; }
+[data-pg] :is(.pg-legal-pagina, .pg-pagina) > p, [data-pg] .pg-legal-sectiune > p { margin: 0 0 0.75rem; }
+[data-pg] :is(.pg-card-politica, .pg-metoda-acum, .pg-metoda-sosire, .pg-transfer-nota, .pg-precontractual p) { font-size: 0.9375rem; }
+[data-pg] :is(.pg-card-de-la, .pg-card-plan-nota, .pg-card-sejur, .pg-ajutor, .pg-obligatoriu, .pg-copiaza-buton) { font-size: 0.875rem; }
+[data-pg] .pg-card-total { font-size: 1.625rem; }
+[data-pg] .pg-total-rand--total { font-size: 1.375rem; }
+/* Textul secundar al paginilor de rezervare (notele tarifului, „3 nopți, 2 oaspeți”, etichetele rezumatului). */
+[data-pg] :is(.pg-cautare-rezumat, .pg-card-de-la, .pg-card-plan-nota, .pg-card-sejur, .pg-ajutor, .pg-rezumat-comanda dt, .pg-transfer-rand dt, .pg-transfer-nota, .pg-metoda-acum, .pg-metoda-sosire) { color: var(--pg-culoare-text-sters, inherit) !important; }
+[data-pg] .pg-total-rand--total dt { color: inherit !important; }
+[data-pg] .pg-legal-sal a { display: inline-flex !important; }
+[data-pg] :is(.pg-oferte > li) { display: block !important; }
+[data-pg] :is(.pg-cod-formular) { display: flex !important; }
+[data-pg] :is(textarea) { display: block !important; color: var(--pg-culoare-text) !important; background-color: var(--pg-culoare-fundal) !important; }
+[data-pg] :is(cazo-altcha) { display: block !important; }
+[data-pg] :is(.pg-cautare-lista > li, .pg-calendar-legenda > li, .pg-harta-linkuri > li, .pg-legal-linkuri li, .pg-metode-lista > li) { display: block !important; }
+[data-pg] :is(.pg-zi-numar, .pg-zi-pret) { display: block !important; }
+[data-pg] .pg-legenda { display: inline-block !important; }
+[data-pg="banda"] { color: var(--pg-culoare-accent-contrast) !important; background-color: var(--pg-culoare-accent) !important; }
+[data-pg] .pg-zi--libera, [data-pg] .pg-legenda.pg-zi--libera { background-color: var(--pg-culoare-suprafata) !important; color: var(--pg-culoare-text) !important; }
+/* o singură stare pentru zilele care nu se pot rezerva (ocupate, închise, fără preț), fără hașură. */
+[data-pg] .pg-zi--indisponibila, [data-pg] .pg-legenda.pg-zi--indisponibila { background-color: var(--pg-culoare-fundal) !important; color: var(--pg-culoare-text) !important; text-decoration: line-through !important; }
+[data-pg] .pg-zi--trecuta { color: var(--pg-culoare-linie) !important; }
+/* fiecare pătrat al legendei are contur; „liberă” (culoarea suprafeței) nu se vedea pe un card de aceeași culoare. */
+[data-pg] .pg-legenda { outline: 1px solid var(--pg-culoare-linie); }
+/* Nopțile găsite ocupate chiar acum (409 la cererea cash): chenar în culoarea accentului, pe lângă tăietura zilei ocupate. */
+[data-pg] .pg-zi--acum { outline: 2px solid var(--pg-culoare-accent) !important; outline-offset: -2px; }
+[data-pg] .pg-calendar-mesaj { display: block !important; font-weight: 700; }
+[data-pg] .pg-zi[aria-selected="true"], [data-pg] .pg-zi.pg-zi--interval { background-color: var(--pg-culoare-accent) !important; color: var(--pg-culoare-accent-contrast) !important; }
+[data-pg] .pg-zi[tabindex] { cursor: pointer; }
+@media (max-width: 40rem) {
+  /* Doar cât bara e în afara ecranului: [hidden], pus de bara.js cât formularul se vede, rămâne mai tare. */
+  [data-pg] .pg-bara-lipicios:not([hidden]) { display: flex !important; position: fixed !important; color: var(--pg-culoare-accent-contrast) !important; background-color: var(--pg-culoare-accent) !important; }
+}
+/* blocul nucleului pus de temă într-un card de culoarea suprafeței (clasa pg-pe-suprafata pe un strămoș)
+   ia culoarea suprafeței, nu pe a fundalului paginii: fără benzi de altă culoare în card. Textul pe suprafață e o
+   pereche verificată (Jetoane::PERECHI), iar textul șters trece pragul pe ambele; legăturile iau culoarea textului
+   (accentul e verificat doar pe fundal). Câmpurile și zilele ocupate rămân pe culoarea fundalului. */
+.pg-pe-suprafata [data-pg] { background-color: var(--pg-culoare-suprafata) !important; }
+.pg-pe-suprafata [data-pg] a:not(.pg-buton, .pg-buton-secundar) { color: var(--pg-culoare-text) !important; }
+.pg-pe-suprafata [data-pg] .pg-zi--libera { background-color: var(--pg-culoare-suprafata) !important; outline: 1px solid var(--pg-culoare-linie-fina, var(--pg-culoare-linie)); outline-offset: -1px; }
+@media (max-width: 40rem) {
+  /* cât butonul fix de jos e pe ecran, pagina are loc sub ultimul ei rând, ca butonul să nu-l acopere. */
+  body:has(.pg-bara-lipicios:not([hidden])) > .pg-nucleu--jos { padding-bottom: 5.5rem; }
+}
+
+/* Galeria pozelor: poza deschizibilă; fereastra are foaia ei (galerie.css), adusă la primul clic. */
+.pg-poza-deschide { cursor: zoom-in; display: block; }

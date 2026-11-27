@@ -1,0 +1,1 @@
+{% set s = "abcdefghij" %}{% for i in 1..14 %}{% set s = s ~ s %}{% endfor %}{% set m %}{{ s }}{% endset %}{% set a = [m, m, m, m, m, m, m, m, m, m] %}{% set t %}{% for i in 1..90 %}{% for x in a %}{{ x }}{% endfor %}{% endfor %}{% endset %}{{ t|length }}

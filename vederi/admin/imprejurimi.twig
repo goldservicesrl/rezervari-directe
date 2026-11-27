@@ -1,0 +1,53 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.repere.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.repere.explicatie') }}</p>
+<h2>{{ t('admin.repere.lista_titlu') }}</h2>
+{% if repere %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.repere.col.nume') }}</th><th scope="col">{{ t('admin.repere.col.categorie') }}</th><th scope="col">{{ t('admin.repere.col.distanta') }}</th><th scope="col">{{ t('admin.repere.col.sursa') }}</th><th scope="col">{{ t('admin.pret.col.actiuni') }}</th></tr></thead>
+<tbody>{% for r in repere %}<tr data-reper="{{ r.id }}"><th scope="row">{{ r.nume }}{% if r.principal %} <span class="pa-stare pa-stare-confirmata">{{ t('admin.repere.principal') }}</span>{% endif %}</th><td data-eticheta="{{ t('admin.repere.col.categorie') }}">{{ r.eticheta }}</td><td data-eticheta="{{ t('admin.repere.col.distanta') }}">{{ r.distanta }}
+{% if r.minute %}{% set gresit = minute_reper == r.id %}<details{% if gresit %} open{% endif %}><summary>{{ t('admin.repere.corectati_minute') }}<span class="pa-ascuns"> ({{ r.nume }})</span></summary><form method="post" action="{{ url.imprejurimi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="minute"><input type="hidden" name="id" value="{{ r.id }}"><p><label for="pa-min-{{ r.id }}">{{ t('admin.repere.corectati') }}<span class="pa-ascuns"> ({{ r.nume }})</span></label><input id="pa-min-{{ r.id }}" name="minute" class="pa-scurt" inputmode="numeric" value="{{ gresit ? minute_scrise : r.minute }}"{% if gresit %} aria-invalid="true" aria-describedby="pa-min-{{ r.id }}-eroare"{% endif %}>
+{% if gresit %}<span class="pa-eroare-camp" id="pa-min-{{ r.id }}-eroare">{{ eroare }}</span>{% endif %}</p><button type="submit" class="pa-buton-secundar">{{ t('admin.repere.minute_salvati') }}<span class="pa-ascuns"> ({{ r.nume }})</span></button></form></details>{% endif %}</td>
+<td data-eticheta="{{ t('admin.repere.col.sursa') }}">{{ t('admin.repere.sursa.' ~ r.sursa) }}</td>
+<td><form method="post" action="{{ url.imprejurimi }}" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="principal"><input type="hidden" name="id" value="{{ r.id }}"><button type="submit" class="pa-buton-secundar">{{ r.principal ? t('admin.repere.principal_scoateti') : t('admin.repere.principal_alegeti') }}<span class="pa-ascuns"> ({{ r.nume }})</span></button></form>
+<details class="pa-confirma"><summary>{{ t('admin.repere.stergeti') }}<span class="pa-ascuns"> ({{ r.nume }})</span></summary>
+<form method="post" action="{{ url.imprejurimi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="sterge"><input type="hidden" name="id" value="{{ r.id }}">
+<p>{{ t('admin.repere.sterge_efect', {nume: r.nume}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.repere.sterge_da') }}</button></form></details></td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="pa-gol">{{ t('admin.repere.gol') }}</p>
+{% endif %}
+{% if maxim %}<p class="pa-info">{{ t('admin.repere.maxim') }}</p>{% else %}
+<h2>{{ t('admin.repere.cauta_titlu') }}</h2>
+<p>{{ t('admin.repere.cauta_explicatie') }}</p>
+<form method="post" action="{{ url.imprejurimi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="cauta">
+<p><label for="pa-cauta">{{ t('admin.repere.cauta_camp') }}</label><input id="pa-cauta" name="text" maxlength="120" required value="{{ text }}"></p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.repere.cauta') }}</button></form>
+{% if cautat %}{% if cautare %}
+<form method="post" action="{{ url.imprejurimi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="adauga_osm">
+<fieldset><legend>{{ t('admin.repere.rezultate') }}</legend>
+{% for x in cautare %}<p><input type="radio" id="pa-rez-{{ x.i }}" name="ales" value="{{ x.i }}"{% if loop.first %} checked{% endif %}><label for="pa-rez-{{ x.i }}">{{ x.nume }}{% if x.distanta %}, {{ x.distanta }}{% endif %}</label><span class="pa-ajutor">{{ x.eticheta }}</span></p>{% endfor %}
+</fieldset>
+{% for x in cautare %}<input type="hidden" name="optiune[{{ x.i }}]" value="{{ x.valoare }}">{% endfor %}
+<p><label for="pa-rez-cat">{{ t('admin.repere.col.categorie') }}</label><select id="pa-rez-cat" name="categorie" required>{% for c in categorii %}<option value="{{ c.cheie }}"{% if cautare[0].categorie == c.cheie %} selected{% endif %}>{{ c.eticheta }}</option>{% endfor %}</select></p>
+<button type="submit" class="pa-buton">{{ t('admin.repere.adaugati') }}</button></form>
+{% else %}<p class="pa-gol">{{ t('admin.repere.cauta_gol') }}</p>{% endif %}{% endif %}
+
+
+<h2 id="pa-reper-manual">{{ t('admin.repere.manual_titlu') }}</h2>
+<p>{{ t('admin.repere.manual_explicatie') }}</p>
+<form method="post" action="{{ url.imprejurimi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="adauga">
+<p><label for="pa-m-nume">{{ t('admin.repere.col.nume') }}</label><input id="pa-m-nume" name="nume" maxlength="120" required value="{{ manual.nume }}"{% if eroare_camp == 'nume' %} aria-invalid="true" aria-describedby="pa-m-nume-eroare"{% endif %}>
+{% if eroare_camp == 'nume' %}<span class="pa-eroare-camp" id="pa-m-nume-eroare">{{ eroare }}</span>{% endif %}</p>
+<p><label for="pa-m-cat">{{ t('admin.repere.col.categorie') }}</label><select id="pa-m-cat" name="categorie" required{% if eroare_camp == 'categorie' %} aria-invalid="true" aria-describedby="pa-m-cat-eroare"{% endif %}>{% for c in categorii %}<option value="{{ c.cheie }}"{% if manual.categorie == c.cheie %} selected{% endif %}>{{ c.eticheta }}</option>{% endfor %}</select>
+{% if eroare_camp == 'categorie' %}<span class="pa-eroare-camp" id="pa-m-cat-eroare">{{ eroare }}</span>{% endif %}</p>
+<p><label for="pa-m-dist">{{ t('admin.repere.camp.distanta') }}</label><span class="pa-ajutor" id="pa-m-dist-a">{{ t('admin.repere.camp.distanta_ajutor') }}</span><input id="pa-m-dist" name="distanta" class="pa-scurt" inputmode="decimal" required value="{{ manual.distanta }}" aria-describedby="pa-m-dist-a{% if eroare_camp == 'distanta' %} pa-m-dist-eroare{% endif %}"{% if eroare_camp == 'distanta' %} aria-invalid="true"{% endif %}>
+{% if eroare_camp == 'distanta' %}<span class="pa-eroare-camp" id="pa-m-dist-eroare">{{ eroare }}</span>{% endif %}</p>
+<p><label for="pa-m-unit">{{ t('admin.repere.camp.unitate') }}</label><select id="pa-m-unit" name="unitate" class="pa-scurt"><option value="minute"{% if manual.unitate != 'km' %} selected{% endif %}>{{ t('admin.repere.unitate.minute') }}</option><option value="km"{% if manual.unitate == 'km' %} selected{% endif %}>{{ t('admin.repere.unitate.km') }}</option></select></p>
+<button type="submit" class="pa-buton">{{ t('admin.repere.adaugati') }}</button></form>
+{% endif %}
+<p class="pa-ajutor">{{ t('admin.repere.atribuire', {sursa: atribuire}) }} <a href="{{ atribuire_url }}" rel="noopener noreferrer">{{ t('admin.repere.atribuire_link') }}</a></p>
+{% endblock %}

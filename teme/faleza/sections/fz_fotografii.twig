@@ -1,0 +1,28 @@
+{#- Fotografiile (macheta: grila de 4 sub deschidere): câte o poză pe categorie (galerie.grila; până
+    atunci pozele de după cea principală), cu legenda generică a categoriei, apoi toate fotografiile grupate pe
+    categorii (galerie.grupe), într-un <details> care merge fără JavaScript. Cu mai puține poze, grila se strânge;
+    fără poze în afara celei principale, secțiunea lipsește. Asigurările de tipul „Fotografii reale” lipsesc. -#}
+{% set toate = proprietate.poze %}
+{% set grila = (galerie.grila ?? toate|slice(1, 4))|slice(0, 4) %}
+{% set numar = galerie.numar ?? toate|length %}
+{% if grila|length > 0 %}
+<section class="fz-latime fz-fotografii" aria-labelledby="{{ sectiune.id }}-t">
+<div class="fz-banda-cap">
+<h2 id="{{ sectiune.id }}-t" class="fz-titlu">{{ t('fotografii.titlu') }}</h2>
+</div>
+<ul class="fz-grila-foto fz-grila-{{ grila|length }}">
+{% for p in grila %}<li class="fz-foto-{{ loop.index }}"><figure>{{ img(p, loop.first ? [640, 960, 1440] : [480, 960], false, loop.first ? '(min-width: 45rem) 36rem, 100vw' : '(min-width: 45rem) 18rem, 50vw', true) }}{% if p.legenda ?? '' %}<figcaption class="fz-legenda">{{ p.legenda }}</figcaption>{% endif %}</figure></li>{% endfor %}
+</ul>
+{% if numar > grila|length + 1 %}
+<details class="fz-toate">
+<summary>{{ t('fotografii.toate', {n: numar}) }}</summary>
+{% if galerie.grupe ?? false %}
+{% for gr in galerie.grupe %}{% if gr.eticheta ?? '' %}<h3>{{ gr.eticheta }}</h3>{% endif %}
+<ul class="fz-toate-lista">{% for p in gr.poze %}<li>{{ img(p, [480, 960], false, '(min-width: 45rem) 14rem, 50vw', true) }}</li>{% endfor %}</ul>{% endfor %}
+{% else %}
+<ul class="fz-toate-lista">{% for p in toate %}<li><figure>{{ img(p, [480, 960], false, '(min-width: 45rem) 14rem, 50vw', true) }}{% if p.legenda ?? '' %}<figcaption class="fz-legenda">{{ p.legenda }}</figcaption>{% endif %}</figure></li>{% endfor %}</ul>
+{% endif %}
+</details>
+{% endif %}
+</section>
+{% endif %}

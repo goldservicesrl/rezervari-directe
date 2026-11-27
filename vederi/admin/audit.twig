@@ -1,0 +1,16 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.audit.titlu') }}</h1>
+{% include 'admin/_jurnal_filtru.twig' %}
+<p>{{ t('admin.audit.explicatie') }}</p>
+{% if verificare %}<p class="{{ verificare_ok ? 'pa-mesaj' : 'pa-eroare' }}" role="status">{{ verificare }}</p>{% endif %}
+<p><a class="pa-buton-secundar" href="{{ url.verifica }}">{{ verificare ? t('admin.audit.verifica_din_nou') : t('admin.audit.verifica') }}</a></p>
+{% if actiuni %}<form method="get" action="{{ url.baza }}" class="pa-filtre"><input type="hidden" name="jurnal" value="audit"><p><label for="pa-actiune">{{ t('admin.audit.filtru') }}</label><select id="pa-actiune" name="actiune"><option value="">{{ t('admin.audit.toate') }}</option>{% for x in actiuni %}<option value="{{ x.cod }}"{% if x.cod == actiune %} selected{% endif %}>{{ x.nume }}</option>{% endfor %}</select></p><p><button type="submit" class="pa-buton-secundar">{{ t('admin.audit.filtreaza') }}</button></p></form>{% endif %}
+{% if randuri %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rez.col.la') }}</th><th scope="col">{{ t('admin.audit.col.cine') }}</th><th scope="col">{{ t('admin.audit.col.actiune') }}</th><th scope="col">{{ t('admin.audit.col.obiect') }}</th><th scope="col">{{ t('admin.rez.col.detalii') }}</th></tr></thead>
+<tbody>{% for x in randuri %}<tr data-rand="{{ x.id }}"><td data-eticheta="{{ t('admin.rez.col.la') }}">{{ x.la }}</td><td data-eticheta="{{ t('admin.audit.col.cine') }}">{{ x.cine }}</td><td data-eticheta="{{ t('admin.audit.col.actiune') }}">{{ x.actiune }}{% if x.refuzata %} <span class="pa-stare pa-stare-refuzata">{{ t('admin.audit.refuzata') }}</span>{% endif %}</td><td data-eticheta="{{ t('admin.audit.col.obiect') }}">{% if x.ref %}<a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a>{% elseif x.cont %}{{ x.cont }}{% endif %}</td><td><details><summary>{{ t('admin.rez.col.detalii') }}<span class="pa-ascuns"> ({{ t('admin.audit.rand', {n: x.id}) }})</span></summary><dl class="pa-detalii"><dt>{{ t('admin.audit.rand_eticheta') }}</dt><dd>{{ x.id }}</dd><dt>{{ t('admin.audit.cod') }}</dt><dd><code>{{ x.cod }}</code></dd>{% if x.obiect %}<dt>{{ t('admin.audit.col.obiect') }}</dt><dd><code>{{ x.obiect }}</code></dd>{% endif %}{% if x.detalii %}<dt>{{ t('admin.rez.col.detalii') }}</dt><dd><code>{{ x.detalii }}</code></dd>{% endif %}{% if x.ip24 %}<dt>{{ t('admin.cont.sesiune_retea') }}</dt><dd>{{ x.ip24 }}</dd>{% endif %}</dl></details></td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<p class="pa-gol">{{ t('admin.audit.gol') }}</p>{% endif %}
+{% if url.inainte or url.dupa %}<nav class="pa-actiuni" aria-label="{{ t('admin.audit.pagini') }}">{% if url.inainte %}<a class="pa-buton-secundar" href="{{ url.inainte }}">{{ t('admin.pagina.inainte') }}</a>{% endif %}{% if url.dupa %}<a class="pa-buton-secundar" href="{{ url.dupa }}">{{ t('admin.pagina.dupa') }}</a>{% endif %}</nav>{% endif %}
+{% endblock %}

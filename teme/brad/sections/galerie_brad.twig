@@ -1,0 +1,23 @@
+{#- Fotografiile, după poza principală: grila cu cel mult 5 (prima mare); când sunt mai multe, „Toate fotografiile · n”
+    le deschide pe toate n, în ordine, fără JavaScript.
+    Legenda vizibilă e eticheta categoriei, când modelul o dă. -#}
+{% set toate = proprietate.poze %}
+{% if toate|length > 1 %}
+<section class="br-cap br-galerie" aria-labelledby="{{ sectiune.id }}-t">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: 'capitol.galerie'} %}
+<h2 id="{{ sectiune.id }}-t" class="br-titlu-cap">{{ t('galerie.titlu') }}</h2>
+<ul class="br-galerie-grila br-galerie-grila--{{ min(toate|length - 1, sectiune.setari.numar) }}">
+{% for p in toate|slice(1, sectiune.setari.numar) %}<li><figure>{{ img(p, loop.first ? [960, 1440] : [480, 960], false, loop.first ? '(min-width: 60rem) 36rem, 100vw' : '(min-width: 60rem) 18rem, 50vw', true) }}{% if p.legenda is defined and p.legenda %}<figcaption class="br-legenda">{{ p.legenda }}</figcaption>{% endif %}</figure></li>{% endfor %}
+</ul>
+{% if toate|length > 1 + sectiune.setari.numar %}
+<details class="br-galerie-toate">
+<summary class="br-buton br-buton--contur">{{ t('galerie.toate', {n: toate|length}) }}</summary>
+<ul class="br-galerie-rest">
+{% for p in toate %}<li><figure>{{ img(p, [480, 960], false, '(min-width: 60rem) 18rem, 50vw', true) }}{% if p.legenda is defined and p.legenda %}<figcaption class="br-legenda">{{ p.legenda }}</figcaption>{% endif %}</figure></li>{% endfor %}
+</ul>
+</details>
+{% endif %}
+</div>
+</section>
+{% endif %}

@@ -1,0 +1,20 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<div class="pa-intrare">
+<h1>{{ invitatie ? t('admin.invitatie.titlu') : t('admin.parola_noua.titlu') }}</h1>
+{% if eroare %}<p class="pa-eroare" role="alert">{{ eroare }}</p>{% endif %}
+{% if valid %}
+<p>{{ invitatie ? t('admin.invitatie.explicatie', {email: email}) : t('admin.parola_noua.explicatie', {email: email}) }}</p>
+<form method="post" action="{{ actiune }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<input type="hidden" name="email" value="{{ email }}" autocomplete="username">
+<p><label for="pa-parola">{{ t('admin.cont.parola_noua') }}</label><span class="pa-ajutor" id="pa-parola-ajutor">{{ t('admin.cont.parola_regula') }}</span><input id="pa-parola" name="parola" type="password" autocomplete="new-password" minlength="12" required aria-describedby="pa-parola-ajutor"></p>
+<p><label for="pa-parola-r">{{ t('admin.parola_noua.repetata') }}</label><input id="pa-parola-r" name="parola_repetata" type="password" autocomplete="new-password" minlength="12" required></p>
+{% if invitatie %}<p><label for="pa-limba">{{ t('admin.cont.limba') }}</label><select id="pa-limba" name="limba"><option value="ro"{% if limba_aleasa == 'ro' %} selected{% endif %} lang="ro">Română</option><option value="en"{% if limba_aleasa == 'en' %} selected{% endif %} lang="en">English</option></select></p>{% endif %}
+<p><button type="submit" class="pa-buton">{{ t('admin.parola_noua.buton') }}</button></p></form>
+{% else %}
+<p>{{ t('admin.cont.jeton_expirat') }}</p>
+{% endif %}
+<ul class="pa-legaturi">{% if not valid %}<li><a href="{{ url_uitata }}">{{ t('admin.intrare.uitata') }}</a></li>{% endif %}
+<li><a href="{{ url_intrare }}">{{ t('admin.uitata.inapoi') }}</a></li></ul>
+</div>
+{% endblock %}

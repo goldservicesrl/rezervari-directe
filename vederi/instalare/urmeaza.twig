@@ -1,0 +1,14 @@
+{% extends 'instalare/cadru.twig' %}
+{% block continut %}
+<h1>{{ t('instalare.urmeaza.titlu') }}</h1>
+<p>{{ t('instalare.urmeaza.text') }}</p>
+<ol>
+<li>{{ t('instalare.urmeaza.panou') }} <a href="{{ url_panou }}">{{ t('instalare.urmeaza.panou_link') }}</a></li>
+<li>{{ t('instalare.urmeaza.site') }} <a href="{{ url_site }}">{{ t('instalare.urmeaza.site_link') }}</a></li>
+<li>{{ t('instalare.urmeaza.cheie', {fisier: cheie_fisier}) }}</li>
+<li>{{ t('instalare.urmeaza.adresa_ec') }}</li>
+<li>{{ live ? t('instalare.urmeaza.termeni_live') : t('instalare.urmeaza.termeni') }}</li>
+<li>{{ t('instalare.urmeaza.publicare') }}</li>
+</ol>
+<p class="pa-ajutor">{{ t('instalare.urmeaza.inchis') }}</p>
+{% endblock %}

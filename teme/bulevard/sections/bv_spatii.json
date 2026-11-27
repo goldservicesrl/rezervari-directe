@@ -1,0 +1,1 @@
+{"nume": {"ro": "Spațiile sau camerele", "en": "Spaces or rooms"}, "setari": [{"id": "titlu", "tip": "text", "implicit": "camere.lista"}, {"id": "carduri", "tip": "checkbox", "implicit": false}]}

@@ -1,0 +1,48 @@
+# Cazo: totul trece prin index.php; niciun alt fișier .php nu se execută; fără listarea dosarelor.
+# Fără mod_rewrite, site-ul merge oricum, cu adrese /?r=/cale.
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^index\.php$ - [L]
+    # Activele scrise de Cazo (nume generate, extensii dintr-o listă închisă) se servesc direct.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^(_c|_t|_s|media)/ - [L]
+    # Validările de certificat și de domeniu (AutoSSL, Let's Encrypt, /.well-known/pki-validation/) puse de găzduire
+    # se servesc direct când fișierul există; altfel cererea ajunge la Cazo (de exemplu /.well-known/security.txt).
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^\.well-known/ - [L]
+    RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+# Orice fișier PHP în afară de index.php, și orice fișier ascuns (.cazo-cale.php, .htaccess), rămân inaccesibile.
+<FilesMatch "\.(php\d?|phtml|phar|pht|inc)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+<Files "index.php">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Allow from all
+    </IfModule>
+</Files>
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

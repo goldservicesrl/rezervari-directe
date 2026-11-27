@@ -1,0 +1,15 @@
+<section class="sc-sectiune sc-camere" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime">
+<h2 id="{{ sectiune.id }}-t" class="sc-titlu-sectiune">{{ t(sectiune.setari.titlu) }}</h2>
+<ul class="sc-grila">
+{% for c in camere %}
+<li class="sc-card">
+{% if c.poza_principala %}{{ img(c.poza_principala, [480, 960], false, '(min-width: 48rem) 33vw, 100vw') }}{% endif %}
+<h3 class="sc-card-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h3>
+{% if c.oaspeti_max %}<p class="sc-card-detaliu">{{ t('camera.oaspeti', {n: c.oaspeti_max}) }}</p>{% endif %}
+{% if c.pret_de_la %}<p class="sc-card-pret">{{ c.pret_de_la.text }}</p>{% endif %}
+</li>
+{% endfor %}
+</ul>
+</div>
+</section>

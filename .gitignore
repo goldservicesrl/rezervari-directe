@@ -1,0 +1,3 @@
+# Instanța locală (bin/cazo configureaza) și arhivele construite (bin/lansare.php)
+/local/
+/dist/

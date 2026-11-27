@@ -1,0 +1,103 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+{% set ec = eroare_camp %}
+<h1>{{ t('admin.pret.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t(sursa == 'site' ? 'admin.pret.sursa_site' : (sursa == 'easycheck' ? 'admin.pret.sursa_easycheck' : 'admin.pret.sursa_lipsa')) }}{% if not sursa %} <a href="{{ url.conexiuni }}">{{ t('admin.nav.conexiuni') }}</a>{% endif %}</p>
+
+{% if sursa == 'site' and not local %}
+<h2>{{ t('admin.pret.reduceri_titlu') }}</h2>
+<p>{{ t('admin.pret.reduceri_explicatie') }}</p>
+{% if fara_mod %}<p class="pa-avertizare" role="alert">{{ t('admin.pret.fara_mod', {reduceri: fara_mod}) }}</p>{% endif %}
+{% if reduceri %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.pret.col.nume') }}</th><th scope="col">{{ t('admin.pret.col.valoare') }}</th><th scope="col">{{ t('admin.pret.col.conditii') }}</th><th scope="col">{{ t('admin.pret.col.stare') }}</th><th scope="col">{{ t('admin.pret.col.actiuni') }}</th></tr></thead>
+<tbody>{% for r in reduceri %}<tr data-reducere="{{ r.id }}"><th scope="row">{{ r.titlu }}</th><td data-eticheta="{{ t('admin.pret.col.valoare') }}">{{ r.valoare }}</td><td data-eticheta="{{ t('admin.pret.col.conditii') }}">{{ r.conditii }}</td><td data-eticheta="{{ t('admin.pret.col.stare') }}"><span class="pa-stare {{ r.activa ? 'pa-stare-confirmata' : 'pa-stare-anulata' }}">{{ r.activa ? t('admin.pret.activa') : t('admin.pret.oprita') }}</span></td>
+<td><a class="pa-buton-secundar" href="{{ url.preturi }}{{ '?' in url.preturi ? '&' : '?' }}reducere={{ r.id }}#pa-formular-reducere">{{ t('admin.pret.editati') }}<span class="pa-ascuns"> ({{ r.titlu }})</span></a>
+<form method="post" action="{{ url.preturi }}" class="pa-inline"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="comuta"><input type="hidden" name="id" value="{{ r.id }}"><input type="hidden" name="activa" value="{{ r.activa ? '0' : '1' }}">
+{% if not r.activa and cere_mod_pornire %}<fieldset><legend>{{ t('admin.pret.mod_titlu') }}</legend>{% for m in ['cea_mai_mare', 'cumulate'] %}<p><input type="radio" id="pa-mod-{{ r.id }}-{{ m }}" name="mod" value="{{ m }}" required><label for="pa-mod-{{ r.id }}-{{ m }}">{{ t('admin.pret.mod.' ~ m) }}</label></p>{% endfor %}</fieldset>{% endif %}
+<button type="submit" class="pa-buton-secundar">{{ r.activa ? t('admin.pret.opriti') : t('admin.pret.porniti') }}<span class="pa-ascuns"> ({{ r.titlu }})</span></button></form>
+<details class="pa-confirma"><summary>{{ t('admin.pret.stergeti') }}<span class="pa-ascuns"> ({{ r.titlu }})</span></summary>
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="sterge"><input type="hidden" name="id" value="{{ r.id }}">
+<p>{{ t('admin.pret.sterge_efect', {nume: r.titlu}) }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.pret.sterge_da') }}</button></form></details></td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="pa-gol">{{ t('admin.pret.reduceri_gol') }}</p>
+{% endif %}
+
+{% if mod or reduceri|length > 1 %}
+<h3 id="pa-mod-titlu">{{ t('admin.pret.mod_titlu') }}</h3>
+<p>{{ mod ? t('admin.pret.mod_ales', {mod: t('admin.pret.mod.' ~ mod)}) : t('admin.pret.mod_alegeti') }}</p>
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="mod">
+<div role="radiogroup" aria-labelledby="pa-mod-titlu">{% for m in ['cea_mai_mare', 'cumulate'] %}<p><input type="radio" id="pa-mod-{{ m }}" name="mod" value="{{ m }}" required{% if mod == m %} checked{% endif %}><label for="pa-mod-{{ m }}">{{ t('admin.pret.mod.' ~ m) }}</label></p>{% endfor %}</div>
+<p class="pa-ajutor">{{ t('admin.pret.mod_ajutor') }}</p>
+<button type="submit" class="pa-buton">{{ t('admin.pret.salvati_alegerea') }}</button></form>
+{% endif %}
+
+{% set f = formular %}
+<h3 id="pa-formular-reducere">{{ f.id ? t('admin.pret.editare_titlu', {nume: f.titlu}) : t('admin.pret.adaugare_titlu') }}</h3>
+{% if maxim and not f.id %}<p class="pa-info">{{ t('admin.pret.maxim') }}</p>{% else %}
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="reducere">{% if f.id %}<input type="hidden" name="id" value="{{ f.id }}">{% endif %}
+<p><label for="pa-r-titlu">{{ t('admin.pret.camp.titlu') }}</label><span class="pa-ajutor" id="pa-r-titlu-a">{{ t('admin.pret.camp.titlu_ajutor') }}</span><input id="pa-r-titlu" name="titlu" maxlength="80" required value="{{ f.titlu }}" aria-describedby="pa-r-titlu-a{% if ec == 'titlu' %} pa-r-titlu-eroare{% endif %}"{% if ec == 'titlu' %} aria-invalid="true"{% endif %}>
+{% if ec == 'titlu' %}<span class="pa-eroare-camp" id="pa-r-titlu-eroare">{{ eroare }}</span>{% endif %}</p>
+<fieldset><legend>{{ t('admin.pret.camp.fel') }}</legend>{% for x in ['procent_sutimi', 'suma_noapte'] %}<p><input type="radio" id="pa-r-fel-{{ x }}" name="fel" value="{{ x }}" required{% if f.fel == x %} checked{% endif %}><label for="pa-r-fel-{{ x }}">{{ t('admin.pret.fel.' ~ x) }}</label></p>{% endfor %}
+{% if ec == 'fel' %}<p class="pa-eroare-camp">{{ eroare }}</p>{% endif %}</fieldset>
+<p><label for="pa-r-valoare">{{ t('admin.pret.camp.valoare') }}</label><input id="pa-r-valoare" name="valoare" class="pa-scurt" inputmode="decimal" required value="{{ f.valoare }}"{% if ec == 'valoare' %} aria-invalid="true" aria-describedby="pa-r-valoare-eroare"{% endif %}>
+{% if ec == 'valoare' %}<span class="pa-eroare-camp" id="pa-r-valoare-eroare">{{ eroare }}</span>{% endif %}</p>
+<fieldset><legend>{{ t('admin.pret.camp.perioada') }}</legend>
+<p><label for="pa-r-de">{{ t('admin.pret.camp.de') }}</label><input id="pa-r-de" name="sejur_de" type="date" value="{{ f.sejur_de }}"{% if ec == 'perioada' %} aria-invalid="true" aria-describedby="pa-r-perioada-eroare"{% endif %}></p>
+<p><label for="pa-r-pana">{{ t('admin.pret.camp.pana') }}</label><input id="pa-r-pana" name="sejur_pana" type="date" value="{{ f.sejur_pana }}"{% if ec == 'perioada' %} aria-invalid="true" aria-describedby="pa-r-perioada-eroare"{% endif %}></p>
+{% if ec == 'perioada' %}<p class="pa-eroare-camp" id="pa-r-perioada-eroare">{{ eroare }}</p>{% endif %}
+<p class="pa-ajutor">{{ t('admin.pret.camp.perioada_ajutor') }}</p></fieldset>
+<p><label for="pa-r-zmin">{{ t('admin.pret.camp.zile_inainte_min') }}</label><input id="pa-r-zmin" name="zile_inainte_min" class="pa-scurt" inputmode="numeric" value="{{ f.zile_inainte_min }}"{% if ec == 'zile_inainte' %} aria-invalid="true" aria-describedby="pa-r-zile-eroare"{% endif %}></p>
+<p><label for="pa-r-zmax">{{ t('admin.pret.camp.zile_inainte_max') }}</label><input id="pa-r-zmax" name="zile_inainte_max" class="pa-scurt" inputmode="numeric" value="{{ f.zile_inainte_max }}"{% if ec == 'zile_inainte' %} aria-invalid="true" aria-describedby="pa-r-zile-eroare"{% endif %}>
+{% if ec == 'zile_inainte' %}<span class="pa-eroare-camp" id="pa-r-zile-eroare">{{ eroare }}</span>{% endif %}</p>
+<p><label for="pa-r-nopti">{{ t('admin.pret.camp.nopti_min') }}</label><input id="pa-r-nopti" name="nopti_min" class="pa-scurt" inputmode="numeric" value="{{ f.nopti_min }}"{% if ec == 'nopti_min' %} aria-invalid="true" aria-describedby="pa-r-nopti-eroare"{% endif %}>
+{% if ec == 'nopti_min' %}<span class="pa-eroare-camp" id="pa-r-nopti-eroare">{{ eroare }}</span>{% endif %}</p>
+{% if planuri %}<fieldset><legend>{{ t('admin.pret.camp.planuri') }}</legend>{% for p in planuri %}<p><input type="checkbox" id="pa-r-plan-{{ p.id }}" name="planuri[]" value="{{ p.id }}"{% if p.id in f.planuri %} checked{% endif %}><label for="pa-r-plan-{{ p.id }}">{{ p.titlu }}</label></p>{% endfor %}
+{% if ec == 'planuri' %}<p class="pa-eroare-camp">{{ eroare }}</p>{% endif %}<p class="pa-ajutor">{{ t('admin.pret.camp.toate_ajutor') }}</p></fieldset>{% endif %}
+{% if camere %}<fieldset><legend>{{ t('admin.pret.camp.camere') }}</legend>{% for c in camere %}<p><input type="checkbox" id="pa-r-cam-{{ c.id }}" name="camere[]" value="{{ c.id }}"{% if c.id in f.camere %} checked{% endif %}><label for="pa-r-cam-{{ c.id }}">{{ c.titlu }}</label></p>{% endfor %}
+{% if ec == 'camere' %}<p class="pa-eroare-camp">{{ eroare }}</p>{% endif %}<p class="pa-ajutor">{{ t('admin.pret.camp.toate_ajutor') }}</p></fieldset>{% endif %}
+<p><input type="checkbox" id="pa-r-activa" name="activa" value="1"{% if f.activa %} checked{% endif %}><label for="pa-r-activa">{{ t('admin.pret.camp.activa') }}</label></p>
+{% if cere_mod %}<fieldset{% if ec == 'mod' %} class="pa-cere"{% endif %}><legend>{{ t('admin.pret.mod_cerut') }}</legend>{% for m in ['cea_mai_mare', 'cumulate'] %}<p><input type="radio" id="pa-r-mod-{{ m }}" name="mod" value="{{ m }}" required><label for="pa-r-mod-{{ m }}">{{ t('admin.pret.mod.' ~ m) }}</label></p>{% endfor %}
+{% if ec == 'mod' %}<p class="pa-eroare-camp">{{ eroare }}</p>{% endif %}<p class="pa-ajutor">{{ t('admin.pret.mod_ajutor') }}</p></fieldset>{% endif %}
+<button type="submit" class="pa-buton">{{ f.id ? t('admin.pret.salvati_reducerea') : t('admin.pret.adaugati') }}</button></form>
+{% endif %}
+{% elseif sursa == 'easycheck' %}
+<h2>{{ t('admin.pret.include_titlu') }}</h2>
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="include">
+<p><input type="checkbox" id="pa-inc-taxe" name="include_taxe" value="1"{% if inclus.taxe %} checked{% endif %}><label for="pa-inc-taxe">{{ t('admin.pret.include.taxe') }}</label></p>
+<fieldset><legend>{{ t('admin.pret.include.taxa_locala') }}</legend>
+{% if not inclus.card %}<p class="pa-ajutor" id="pa-taxa-online-ajutor">{{ t('admin.pret.taxa.online_card') }} <a href="{{ url.metode }}">{{ t('admin.nav.metode') }}</a></p>{% endif %}
+{% for v in ['online', 'la_sosire', 'afara'] %}{% if v != 'online' or inclus.card %}<p><input type="radio" id="pa-taxa-{{ v }}" name="taxa_locala" value="{{ v }}"{% if inclus.taxa == v %} checked{% endif %} required><label for="pa-taxa-{{ v }}">{{ t('admin.pret.taxa.' ~ v) }}</label></p>{% endif %}{% endfor %}
+</fieldset>
+<p class="pa-ajutor">{{ t('admin.pret.include_nota') }}</p>
+<button type="submit" class="pa-buton">{{ t('admin.pret.salvati') }}</button></form>
+{#- o diferență găsită de verificarea prețului pe noapte apare ca alertă pe Acasă, nu aici. -#}
+{% endif %}
+
+<h2>{{ t('admin.pret.euro_titlu') }}</h2>
+<p>{{ t('admin.pret.euro_explicatie') }}</p>
+<p><strong>{{ euro.pornit ? t('admin.pret.euro_pornit') : t('admin.pret.euro_oprit') }}</strong></p>
+{% if euro.pornit %}{% if euro.curs %}<p>{{ euro.curs }}{% if euro.exemplu %} {{ euro.exemplu }}{% endif %}</p>{% elseif euro.vechi %}<p class="pa-avertizare">{{ t('admin.pret.euro_vechi') }}</p>{% else %}<p>{{ t('admin.pret.euro_asteapta') }}</p>{% endif %}{% endif %}
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="euro"><input type="hidden" name="pornit" value="{{ euro.pornit ? '0' : '1' }}"><button type="submit" class="{{ euro.pornit ? 'pa-buton-secundar' : 'pa-buton' }}">{{ euro.pornit ? t('admin.pret.euro_opriti') : t('admin.pret.euro_porniti') }}</button></form>
+
+{% if titluri_planuri %}
+<h2>{{ t('admin.pret.titluri_planuri_titlu') }}</h2>
+<p>{{ t('admin.pret.titluri_planuri_text') }}</p>
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="titluri_planuri">
+{% for x in titluri_planuri %}<fieldset><legend>{{ t('admin.pret.titluri_planuri_plan', {plan: x.titlu}) }}</legend>
+<p><label for="pa-plan-{{ loop.index }}-ro">{{ t('admin.pret.titluri_planuri_ro') }}</label><input id="pa-plan-{{ loop.index }}-ro" name="titlu_plan[{{ x.id }}][ro]" type="text" maxlength="80" value="{{ x.local.ro }}"{% if x.auto.ro %} placeholder="{{ x.auto.ro }}"{% endif %}></p>
+<p><label for="pa-plan-{{ loop.index }}-en">{{ t('admin.pret.titluri_planuri_en') }}</label><input id="pa-plan-{{ loop.index }}-en" name="titlu_plan[{{ x.id }}][en]" type="text" maxlength="80" lang="en" value="{{ x.local.en }}"{% if x.auto.en %} placeholder="{{ x.auto.en }}"{% endif %}></p>
+</fieldset>{% endfor %}
+<button type="submit" class="pa-buton">{{ t('admin.pret.titluri_planuri_salveaza') }}</button></form>
+{% endif %}
+
+<details class="pa-avansat" id="pa-nopti-max-zona"{% if ec == 'nopti_max' %} open{% endif %}><summary>{{ t('admin.pret.nopti_max_avansat') }}</summary>
+<form method="post" action="{{ url.preturi }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="nopti_max">
+<p><label for="pa-nopti-max">{{ t('admin.pret.nopti_max') }}</label><span class="pa-ajutor" id="pa-nopti-max-a">{{ t('admin.pret.nopti_max_ajutor') }}</span><input id="pa-nopti-max" name="nopti_max" type="number" min="1" max="9999" step="1" inputmode="numeric" value="{{ nopti_max }}" aria-describedby="pa-nopti-max-a{% if ec == 'nopti_max' %} pa-nopti-max-eroare{% endif %}"{% if ec == 'nopti_max' %} aria-invalid="true"{% endif %}>
+{% if ec == 'nopti_max' %}<span class="pa-eroare-camp" id="pa-nopti-max-eroare">{{ eroare }}</span>{% endif %}</p>
+<button type="submit" class="pa-buton">{{ t('admin.pret.salvati') }}</button></form>
+</details>
+{% endblock %}

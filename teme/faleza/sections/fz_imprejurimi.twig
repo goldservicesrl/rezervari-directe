@@ -1,0 +1,34 @@
+{#- Împrejurimile (macheta: „drumul până la apă”, componenta-semnătură „distanța reală până la apă”):
+    reperul principal al gazdei (repere[]: nume, categorie, minute pe jos sau km, principal; altfel cel mai apropiat)
+    cu cifra mare și drumul desenat de la casă până la el, apoi celelalte repere (cel mult 5 în total). Pașii,
+    temperatura apei și sfatul gazdei din macheta veche lipsesc. Atribuirea datelor despre locuri (L15)
+    e textul nucleului, repere_atribuire, afișat lângă listă. Harta nucleului rămâne mereu (obligatorie pe Acasă);
+    fără repere, secțiunea arată doar harta, cu adresa. Fără reper marcat principal, cel mai apropiat se alege pe
+    aceeași unitate: kilometrii trec în minute pe jos cu 12 minute pe km (5 km/h). -#}
+{% set lista = (repere ?? [])|slice(0, 5) %}
+{% set reper = null %}
+{% for r in lista %}{% if (r.minute ?? null) or (r.km ?? null) %}{% if r.principal ?? false %}{% set reper = r %}{% elseif reper is null or (not (reper.principal ?? false) and (r.minute ?? (r.km * 12)) < (reper.minute ?? (reper.km * 12))) %}{% set reper = r %}{% endif %}{% endif %}{% endfor %}
+<section class="fz-imprejurimi"{% if lista|length > 0 %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t('imprejurimi.harta') }}"{% endif %}>
+<div class="fz-latime fz-imprejurimi-grila">
+{% if lista|length > 0 %}
+<div>
+<h2 id="{{ sectiune.id }}-t" class="fz-titlu">{{ t('imprejurimi.titlu') }}</h2>
+{% if reper %}<p class="fz-cifra-mare" aria-hidden="true">{{ reper.minute ?? (site.limba == 'ro' ? (reper.km ~ '')|replace({'.': ','}) : reper.km) }}<small>{{ (reper.minute ?? null) ? t('imprejurimi.min') : t('imprejurimi.km') }}</small></p>
+<p class="fz-imprejurimi-reper">{% include "partials/reper.twig" with {r: reper, limba: site.limba} only %}</p>{% endif %}
+</div>
+<div class="fz-drum-bloc">
+{% if reper %}<div class="fz-drum" aria-hidden="true">
+<div class="fz-drum-linie"><span class="fz-casa"></span><span class="fz-apa"></span></div>
+<p class="fz-drum-capete"><span>{{ proprietate.nume }}<small>{{ t('imprejurimi.plecare') }}</small></span><span>{{ reper.nume }}<small>{{ (reper.minute ?? null) ? t('imprejurimi.aprox_min', {n: reper.minute}) : t('imprejurimi.km_n', {n: site.limba == 'ro' ? (reper.km ~ '')|replace({'.': ','}) : reper.km}) }}</small></span></p>
+</div>{% endif %}
+{% if lista|length > 1 or not reper %}<ul class="fz-repere" aria-label="{{ t('imprejurimi.repere') }}">
+{% for r in lista %}{% if r != reper %}<li><span>{{ r.nume }}{% set cc = 'reper_categorie.' ~ (r.categorie ?? '') %}{% if t(cc) != cc %}<small class="fz-reper-cat">{{ t(cc) }}</small>{% endif %}</span><span>{{ (r.minute ?? null) ? t('imprejurimi.aprox_min', {n: r.minute}) : ((r.km ?? null) ? t('imprejurimi.km_n', {n: site.limba == 'ro' ? (r.km ~ '')|replace({'.': ','}) : r.km}) : '') }}</span></li>{% endif %}{% endfor %}
+</ul>{% endif %}
+{% if repere_atribuire ?? '' %}<p class="fz-sursa">{{ repere_atribuire }}</p>{% endif %}
+<div class="fz-harta">{{ cazo.harta() }}</div>
+</div>
+{% else %}
+<div class="fz-harta fz-harta-singura">{{ cazo.harta() }}</div>
+{% endif %}
+</div>
+</section>

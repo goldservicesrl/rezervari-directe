@@ -1,0 +1,1 @@
+{% set s = "x" %}{% for a in 1..100 %}{% set s = s ~ s %}{% endfor %}{{ s|length }}

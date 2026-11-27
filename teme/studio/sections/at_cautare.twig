@@ -1,0 +1,11 @@
+{#- Căutarea, așezată ca un rând de cuprins: bara nucleului și prețul „de la” al celei mai ieftine camere (textul nucleului). -#}
+{% set ieftina = null %}
+{% for c in camere %}{% if c.pret_de_la and (ieftina is null or c.pret_de_la.suma < ieftina.pret_de_la.suma) %}{% set ieftina = c %}{% endif %}{% endfor %}
+<section id="rezervare" class="at-cautare" aria-label="{{ t('bara.eticheta') }}">
+<div class="at-latime">
+<div class="at-cautare-rand">
+{{ cazo.bara_rezervare() }}
+{% if ieftina %}<p class="at-cautare-pret">{{ ieftina.pret_de_la.text }}</p>{% endif %}
+</div>
+</div>
+</section>

@@ -1,0 +1,21 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ inlocuire ? t('admin.2fa.inlocuieste') : t('admin.2fa.porneste') }}</h1>
+{% include 'admin/_stare.twig' %}
+<ol class="pa-pasi-numerotati">
+<li>{{ t('admin.2fa.pas.1') }}</li>
+<li>{{ t('admin.2fa.pas.2') }}</li>
+<li>{{ t('admin.2fa.pas.3') }}</li>
+</ol>
+<div class="pa-qr">{{ qr|raw }}</div>
+<details class="pa-avansat"><summary>{{ t('admin.2fa.nu_pot_scana') }}</summary>
+<p>{{ t('admin.2fa.cheie_text') }}</p>
+<dl class="pa-detalii"><dt>{{ t('admin.2fa.cheie_cont') }}</dt><dd>{{ cont_2fa }}</dd><dt>{{ t('admin.2fa.cheie_cheia') }}</dt><dd><span class="pa-cheie-text">{{ grupe }}</span></dd><dt>{{ t('admin.2fa.cheie_fel') }}</dt><dd>{{ t('admin.2fa.cheie_fel_valoare') }}</dd></dl>
+</details>
+<form method="post" action="{{ url['2fa'] }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="porneste">
+{% if inlocuire %}<p><label for="pa-cod-v">{{ t('admin.cont.cod_vechi_sau_rezerva') }}</label><input id="pa-cod-v" class="pa-scurt" name="cod_vechi" type="text" autocomplete="off" maxlength="12" required></p>{% endif %}
+<p><label for="pa-cod-n">{{ inlocuire ? t('admin.2fa.cod_nou') : t('admin.2fa.cod') }}</label><span class="pa-ajutor" id="pa-cod-n-ajutor">{{ t('admin.2fa.cod_ajutor') }}</span><input id="pa-cod-n" class="pa-scurt" name="cod" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,8}" maxlength="8" required aria-describedby="pa-cod-n-ajutor"></p>
+<button type="submit" class="pa-buton">{{ inlocuire ? t('admin.2fa.confirma_inlocuirea') : t('admin.2fa.confirma_pornirea') }}</button></form>
+<form method="post" action="{{ url['2fa'] }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="renunta"><button type="submit" class="pa-buton-secundar">{{ t('admin.2fa.renunta') }}</button></form>
+<p class="pa-ajutor">{{ t('admin.2fa.cheie_valabila') }}</p>
+{% endblock %}

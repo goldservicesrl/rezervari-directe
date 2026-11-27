@@ -1,0 +1,43 @@
+{#- Starea comenzii (cazo.stare()): textul stării, codul de 6 cifre când e cerut, rezumatul. -#}
+<section class="pg-stare" data-pg="stare" aria-labelledby="pg-stare-titlu"{% if in_lucru is defined %} data-api="{{ api }}" data-stare="{{ stare }}"{% endif %}>
+<h1 id="pg-stare-titlu" class="pg-titlu-pagina">{{ t('stare.titlu', {ref: ref}) }}</h1>
+{% if not legata %}
+<p class="pg-stare-text">{{ t('stare.legatura') }}</p>
+{% else %}
+{% if cod is defined %}
+<h2>{{ t('stare.cod_titlu') }}</h2>
+{% if cod.mesaj %}<p class="pg-comanda-mesaj" role="alert" id="pg-cod-mesaj">{{ cod.mesaj }}</p>{% endif %}
+<p>{{ t(cod.card|default(false) ? 'stare.cod_text_card' : 'stare.cod_text', {email: cod.email}) }}</p>
+<form class="pg-cod-formular" method="post" action="{{ cod.actiune }}">
+<input type="hidden" name="_csrf" value="{{ cod.csrf }}">
+<div class="pg-camp"><label for="pg-f-cod">{{ t('stare.cod_camp') }}</label>
+<input id="pg-f-cod" name="cod" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9 ]{6,8}" maxlength="8" required{% if cod.mesaj %} aria-describedby="pg-cod-mesaj"{% endif %}></div>
+<button class="pg-buton" type="submit">{{ t('stare.cod_buton') }}</button>
+</form>
+<form class="pg-cod-nou" method="post" action="{{ cod.actiune_nou }}">
+<input type="hidden" name="_csrf" value="{{ cod.csrf }}">
+<button class="pg-buton-secundar" type="submit">{{ t('stare.cod_retrimite') }}</button>
+</form>
+{% else %}
+<div class="pg-stare-mesaj" role="status" aria-live="polite">
+<p class="pg-stare-titlu">{{ titlu }}</p>
+{% for p in paragrafe|default([]) %}<p>{{ p }}</p>{% endfor %}
+</div>
+{% if reincarca is defined %}<noscript><p class="pg-noscript">{{ t('stare.reincarcare_text') }} <a href="{{ reincarca }}">{{ t('stare.reincarcare') }}</a></p></noscript>{% endif %}
+{% endif %}
+{% if transfer is defined %}{% include 'componente/transfer.twig' with {x: transfer} only %}{% endif %}
+{% if plata_url is defined %}<p><a class="pg-buton" href="{{ plata_url }}">{{ t('stare.continua_plata') }}</a></p>{% endif %}
+{% if cauta is defined %}<p><a class="pg-buton" href="{{ cauta }}">{{ t('stare.alte_date') }}</a></p>{% endif %}
+{% if continua is defined %}<p><a class="pg-buton" href="{{ continua }}">{{ continua_text|default(t('stare.continua_total')) }}</a></p>{% endif %}
+<ul class="pg-stare-linkuri">
+{% if ics is defined %}<li><a href="{{ ics }}">{{ t('stare.ics') }}</a></li>{% endif %}
+<li><a href="{{ rezervarea_mea }}">{{ t('stare.rezervarea_mea') }}</a></li>
+</ul>
+<section class="pg-comanda-rezumat pg-stare-rezumat" aria-labelledby="pg-stare-rezumat-titlu">
+<h2 id="pg-stare-rezumat-titlu">{{ t('comanda.rezumat') }}</h2>
+{% include 'componente/rezumat-comanda.twig' with {r: rezumat} only %}
+</section>
+{#- „Cum ajungeți” stă ultima, ca harta interactivă (pusă de harta.js după bloc) să ajungă imediat sub ea. -#}
+{% include 'componente/cum-ajungeti.twig' %}
+{% endif %}
+</section>

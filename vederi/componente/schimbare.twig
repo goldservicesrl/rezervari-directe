@@ -1,0 +1,28 @@
+{#- Schimbarea datelor din „Rezervarea mea”: noile date, oferta cu totalul și diferența, confirmarea.
+    Fără JavaScript: formularul GET aduce oferta, iar formularul POST trimite înapoi datele și totalul văzute. -#}
+<section class="pg-rmea pg-schimbare" data-pg="rezervarea-mea" aria-labelledby="pg-schimbare-titlu">
+<h1 id="pg-schimbare-titlu" class="pg-titlu-pagina">{{ t('schimbare.titlu') }}</h1>
+{% if mesaj %}<p class="pg-comanda-mesaj" role="alert">{{ mesaj }}</p>{% endif %}
+<p>{{ acum }}</p>
+<p>{{ t('schimbare.ajutor') }}</p>
+<form class="pg-schimbare-date" method="get" action="{{ actiune }}">
+<div class="pg-camp"><label for="pg-s-sosire">{{ t('bara.sosire') }}</label><input id="pg-s-sosire" name="sosire" type="date" value="{{ sosire }}" min="{{ min }}" required autocomplete="off"></div>
+<div class="pg-camp"><label for="pg-s-plecare">{{ t('bara.plecare') }}</label><input id="pg-s-plecare" name="plecare" type="date" value="{{ plecare }}" min="{{ min }}" required autocomplete="off"></div>
+<button class="pg-buton-secundar" type="submit">{{ t('schimbare.vezi') }}</button>
+</form>
+{% if eroare is defined %}<p class="pg-comanda-mesaj" role="alert">{{ eroare }}</p>{% endif %}
+{% if oferta is defined %}
+<section class="pg-schimbare-oferta" aria-labelledby="pg-schimbare-oferta-titlu">
+<h2 id="pg-schimbare-oferta-titlu">{{ t('schimbare.oferta_titlu') }}</h2>
+{% for p in oferta.paragrafe %}<p>{{ p }}</p>{% endfor %}
+<form class="pg-schimbare" method="post" action="{{ actiune }}">
+<input type="hidden" name="_csrf" value="{{ oferta.csrf }}">
+<input type="hidden" name="sosire" value="{{ oferta.sosire }}">
+<input type="hidden" name="plecare" value="{{ oferta.plecare }}">
+<input type="hidden" name="total" value="{{ oferta.total }}">
+<button class="pg-buton" type="submit">{{ oferta.buton }}</button>
+</form>
+</section>
+{% endif %}
+<p><a href="{{ inapoi }}">{{ t('schimbare.inapoi') }}</a></p>
+</section>

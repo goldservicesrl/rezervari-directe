@@ -1,0 +1,31 @@
+{#- Sosirea și regulile casei: orele mari (check-in de la, cu „până la” când EasyCheck îl dă; check-out până la),
+    apoi regulile din EasyCheck (copiii și bebelușii, animalele, evenimentele, fumatul), cu textele _schelet, formulate
+    afirmativ. Fără ore și fără reguli, secțiunea lipsește. -#}
+{% set ore = proprietate.ore %}
+{% set pana_la = ore.checkin_pana_la ?? '' %}
+{% set rc = proprietate.reguli_casa %}
+{% set copii = rc.copii ?? null %}
+{% set bebelusi = rc.bebelusi ?? null %}
+{% set n_reguli = (copii is not null ? 1 : 0) + ((rc.animale ?? null) is not null ? 1 : 0) + ((rc.evenimente ?? null) is not null ? 1 : 0) + ((rc.fumat ?? null) is not null ? 1 : 0) %}
+{% if ore.checkin_de_la or ore.plecare_pana_la or n_reguli > 0 %}
+<section class="et-sectiune et-reguli-sectiune" aria-labelledby="{{ sectiune.id }}-t">
+<div class="et-latime">
+<div class="et-cap">
+<p class="et-cheie">{{ t('reguli.cheie') }}</p>
+<h2 id="{{ sectiune.id }}-t" class="et-titlu">{{ t('reguli.titlu') }}</h2>
+</div>
+<div class="et-reguli-grila">
+{% if ore.checkin_de_la or ore.plecare_pana_la %}<dl class="et-ore">
+{% if ore.checkin_de_la %}<div><dt>{{ t('ore.checkin') }}</dt><dd><b>{{ ore.checkin_de_la }}</b>{% if pana_la %}<small>{{ t('ore.pana_la', {ora: pana_la}) }}</small>{% endif %}</dd></div>{% endif %}
+{% if ore.plecare_pana_la %}<div><dt>{{ t('ore.checkout') }}</dt><dd><b>{{ ore.plecare_pana_la }}</b><small>{{ t('ore.cel_tarziu') }}</small></dd></div>{% endif %}
+</dl>{% endif %}
+{% if n_reguli > 0 %}<ul class="et-reguli">
+{% if copii is not null %}<li>{{ copii and bebelusi ? t('reguli.copii_bebelusi.da') : t('reguli.copii.' ~ (copii ? 'da' : 'nu')) }}{% if copii and bebelusi is not null and not bebelusi %} {{ t('reguli.bebelusi.nu') }}{% endif %}</li>{% endif %}
+{% if (rc.animale ?? null) is not null %}<li>{{ t('reguli.animale.' ~ (rc.animale ? 'da' : 'nu')) }}</li>{% endif %}
+{% if (rc.evenimente ?? null) is not null %}<li>{{ t('reguli.evenimente.' ~ (rc.evenimente ? 'da' : 'nu')) }}</li>{% endif %}
+{% if (rc.fumat ?? null) is not null %}<li>{{ t('reguli.fumat.' ~ (rc.fumat ? 'da' : 'nu')) }}</li>{% endif %}
+</ul>{% endif %}
+</div>
+</div>
+</section>
+{% endif %}

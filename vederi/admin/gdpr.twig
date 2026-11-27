@@ -1,0 +1,76 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.gdpr.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<h2 id="pa-g-termene">{{ t('admin.gdpr.termene_titlu') }}</h2>
+<p>{{ t('admin.gdpr.termene_explicatie') }}</p>
+{% if not termene %}<p class="pa-avertizare" role="status">{{ t('admin.gdpr.propuse') }}</p>{% endif %}
+<form method="post" action="{{ url.termene }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{#- fiecare termen e un număr în unitatea lui (zile, ore, luni), între praguri, completat cu valoarea de acum sau cu cea recomandată. -#}
+{% for c in campuri %}
+<p><label for="pa-t-{{ c.cheie }}">{{ t('admin.gdpr.termen.' ~ c.cheie) }}</label><span class="pa-ajutor" id="pa-t-{{ c.cheie }}-ajutor">{{ t('admin.gdpr.termen_ajutor.' ~ c.cheie) }} {{ t('admin.gdpr.interval.' ~ c.unitate, {min: c.min, max: c.max, propus: c.propus, durata: c.durata_propus}) }}</span><input id="pa-t-{{ c.cheie }}" name="{{ c.cheie }}" class="pa-durata" type="number" inputmode="numeric" min="{{ c.min }}" max="{{ c.max }}" step="1" value="{{ c.valoare }}" required aria-describedby="pa-t-{{ c.cheie }}-ajutor{% if c.eroare %} pa-t-{{ c.cheie }}-eroare{% endif %}{% if c.in_afara is not null %} pa-t-{{ c.cheie }}-afara{% endif %}"{% if c.eroare %} aria-invalid="true"{% endif %}>
+{% if c.eroare %}<span class="pa-eroare pa-eroare-camp" id="pa-t-{{ c.cheie }}-eroare">{{ t('admin.gdpr.eroare_camp', {min: c.min, max: c.max}) }}</span>{% endif %}
+{% if c.in_afara is not null %}<span class="pa-avertizare pa-eroare-camp" id="pa-t-{{ c.cheie }}-afara">{{ t('admin.gdpr.termen_in_afara', {valoare: c.in_afara, min: c.min, max: c.max}) }}</span>{% endif %}</p>
+{% endfor %}
+<p class="pa-ajutor">{{ t('admin.gdpr.termene_jurist') }}</p>
+{% include 'admin/_reauth.twig' with {id: 'termene'} %}
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza') }}</button></form>
+<h3>{{ t('admin.alerte.jurnal') }}</h3>
+<form method="post" action="{{ url.alerte }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-al-zile">{{ t('admin.alerte.pastrare') }}</label><span class="pa-ajutor" id="pa-al-zile-ajutor">{{ t('admin.alerte.pastrare_ajutor', {min: alerte_zile.min, max: alerte_zile.max}) }}</span><input id="pa-al-zile" name="zile" type="number" inputmode="numeric" min="{{ alerte_zile.min }}" max="{{ alerte_zile.max }}" step="1" value="{{ alerte_zile.valoare }}" required aria-describedby="pa-al-zile-ajutor"></p>
+<button type="submit" class="pa-buton">{{ t('admin.plati.salveaza') }}</button></form>
+<h2 id="pa-g-oaspete">{{ t('admin.gdpr.cauta_titlu') }}</h2>
+<p>{{ t('admin.gdpr.cauta_explicatie') }}</p>
+<form method="post" action="{{ url.cauta }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-g-email">{{ t('admin.gdpr.email') }}</label><input id="pa-g-email" name="email" type="email" autocomplete="off" value="{{ email ?? '' }}" required{% if email_gresit %} aria-invalid="true" aria-describedby="pa-g-email-eroare"{% endif %}>
+{% if email_gresit %}<span class="pa-eroare-camp" id="pa-g-email-eroare">{{ t('admin.gdpr.eroare_email') }}</span>{% endif %}</p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.gdpr.cauta') }}</button></form>
+{% if gasite is not null %}
+<h3 id="pa-g-rezultate">{{ t('admin.gdpr.rezultate', {n: gasite|length}) }}</h3>
+{% if gasite %}
+<div class="pa-tabel"><table aria-labelledby="pa-g-rezultate"><thead><tr><th scope="col">{{ t('admin.gdpr.col.rezervare') }}</th><th scope="col">{{ t('admin.gdpr.col.sejur') }}</th><th scope="col">{{ t('admin.gdpr.col.stare') }}</th><th scope="col">{{ t('admin.gdpr.col.stergere') }}</th></tr></thead><tbody>
+{% for x in gasite %}<tr><td data-eticheta="{{ t('admin.gdpr.col.rezervare') }}"><a href="{{ url.rezervari }}{{ x.ref }}">{{ x.ref }}</a></td><td data-eticheta="{{ t('admin.gdpr.col.sejur') }}">{{ x.sejur }}</td><td data-eticheta="{{ t('admin.gdpr.col.stare') }}">{{ x.stare }}</td><td data-eticheta="{{ t('admin.gdpr.col.stergere') }}">{{ t(x.poate ? 'admin.gdpr.se_sterge' : 'admin.gdpr.inca_vie') }}</td></tr>
+{% endfor %}</tbody></table></div>
+<h3>{{ t('admin.gdpr.export_titlu') }}</h3>
+<form method="post" action="{{ url.export }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="email" value="{{ email }}">
+<p class="pa-ajutor">{{ t('admin.gdpr.export_ajutor') }}</p>
+{% if eroare_la == 'export' %}<p class="pa-eroare-camp" role="alert">{{ t('admin.reauth.eroare') }}</p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'export'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.gdpr.export') }}</button></form>
+<h3>{{ t('admin.gdpr.sterge_titlu') }}</h3>
+<details class="pa-confirma"{% if eroare_la in ['sterge', 'confirmare'] %} open{% endif %}><summary>{{ t('admin.gdpr.sterge') }}</summary>
+<form method="post" action="{{ url.sterge }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="email" value="{{ email }}">
+<p>{{ t('admin.gdpr.sterge_explicatie') }}</p>
+{% if eroare_la == 'sterge' %}<p class="pa-eroare-camp" role="alert">{{ t('admin.reauth.eroare') }}</p>{% endif %}
+<p><input type="checkbox" id="pa-g-confirm" name="confirm" value="1" required{% if eroare_la == 'confirmare' %} aria-invalid="true" aria-describedby="pa-g-confirm-eroare"{% endif %}><label for="pa-g-confirm">{{ t('admin.gdpr.sterge_confirm') }}</label>
+{% if eroare_la == 'confirmare' %}<span class="pa-eroare-camp" id="pa-g-confirm-eroare">{{ t('admin.gdpr.eroare_confirmare') }}</span>{% endif %}</p>
+{% include 'admin/_reauth.twig' with {id: 'sterge'} %}
+<button type="submit" class="pa-buton-pericol">{{ t('admin.gdpr.sterge_da') }}</button></form>
+</details>
+{% else %}<p class="pa-gol">{{ t('admin.gdpr.rezultate_gol') }}</p>
+{% endif %}
+{% endif %}
+<h2 id="pa-g-stergeri">{{ t('admin.gdpr.ec.titlu') }}</h2>
+<p>{{ t('admin.gdpr.ec.explicatie') }}</p>
+{% for s in stergeri %}
+<section class="pa-card" data-stergere="{{ s.id }}" aria-labelledby="pa-g-st-{{ s.id }}">
+<h3 id="pa-g-st-{{ s.id }}">{{ t('admin.gdpr.ec.stergere', {la: s.la, refs: s.refs}) }}</h3>
+<p><span class="pa-stare {{ s.stare == 'gata' ? 'pa-stare-confirmata' : (s.stare == 'de_facut' ? 'pa-stare-problema' : 'pa-stare-asteapta') }}">{{ t('admin.gdpr.ec.stare.' ~ s.stare) }}</span></p>
+{% if s.randuri %}<ul class="pa-stari">{% for x in s.randuri %}<li data-stare="{{ x.stare }}" class="{{ x.stare == 'facuta' ? 'pa-ok' : (x.stare == 'de_facut' ? 'pa-atentie' : 'pa-de-facut') }}"><div>{{ x.text }}{% if x.pastrate %}<ul>{% for p in x.pastrate %}<li>{{ p }}</li>{% endfor %}</ul>{% endif %}</div></li>{% endfor %}</ul>
+{% else %}<p>{{ t('admin.gdpr.ec.doar_site') }}</p>{% endif %}
+{% if s.text is not null %}
+<p><label for="pa-g-text-{{ s.id }}">{{ t('admin.gdpr.ec.text_oaspete') }}</label><span class="pa-ajutor" id="pa-g-text-{{ s.id }}-ajutor">{{ t('admin.gdpr.ec.text_ajutor') }}</span>
+<textarea id="pa-g-text-{{ s.id }}" readonly rows="12" aria-describedby="pa-g-text-{{ s.id }}-ajutor">{{ s.text }}</textarea></p>
+{% else %}<p class="pa-ajutor">{{ t('admin.gdpr.ec.text_asteapta') }}</p>{% endif %}
+{% if s.suport %}<details class="pa-avansat"><summary>{{ t('admin.gdpr.ec.suport') }}</summary><ul>{% for x in s.suport %}<li>{{ t('admin.gdpr.ec.suport_rand', {ref: x.ref, rez: x.ec_rezervare, cod: x.cod ?: '-'}) }}</li>{% endfor %}</ul></details>{% endif %}
+</section>
+{% else %}<p class="pa-gol">{{ t('admin.gdpr.ec.gol') }}</p>
+{% endfor %}
+<h2 id="pa-g-noutati">{{ t('admin.legal.noutati_titlu') }}</h2>
+<p>{{ t('admin.legal.noutati_explicatie', {n: noutati}) }}</p>
+<form method="post" action="{{ url.noutati }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p class="pa-ajutor">{{ t('admin.legal.noutati_ajutor') }}</p>
+{% if eroare_la == 'noutati' %}<p class="pa-eroare-camp" role="alert">{{ t('admin.reauth.eroare') }}</p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'noutati'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.legal.noutati_export') }}</button></form>
+{% endblock %}

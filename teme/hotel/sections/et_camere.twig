@@ -1,0 +1,22 @@
+{#- Camerele: câte un card pe grup, în grilă (o coloană pe telefon, trei pe ecran lat, cu
+    rândurile aliniate prin subgrid): poza principală decupată la 4:3, câte unități la fel, titlul, propoziția gazdei,
+    fișa (oaspeți, suprafață, paturi, vedere, baie), „de la X / noapte” cu mențiunea nucleului și „Rezervați”, spre
+    pagina camerei (calendarul și totalul). Câmpurile lipsă nu lasă etichete goale. Setarea `cu_titlu`: fără titlul
+    secțiunii (pagina Camere), cardurile urcă un nivel. Numele tagurilor rămân fixe (validatorul citește textul literal). -#}
+{% set cu_titlu = sectiune.setari.cu_titlu ?? true %}
+{% set nivel = cu_titlu ? 3 : 2 %}
+{% if camere|length > 0 %}
+{% set unitati = 0 %}
+{% for c in camere %}{% set unitati = unitati + c.unitati %}{% endfor %}
+<section class="et-sectiune et-camere-sectiune"{% if cu_titlu %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t('camere.titlu') }}"{% endif %}>
+<div class="et-latime">
+{% if cu_titlu %}<div class="et-cap">
+<p class="et-cheie">{% include "partials/numar.twig" with {n: unitati, cheie: 'camere.numar'} only %}{% if camere|length > 1 %} · {% include "partials/numar.twig" with {n: camere|length, cheie: 'camere.tipuri'} only %}{% endif %}</p>
+<h2 id="{{ sectiune.id }}-t" class="et-titlu">{{ t('camere.titlu') }}</h2>
+</div>{% endif %}
+<ul class="et-camere">
+{% for c in camere %}{% include "partials/card_camera.twig" %}{% endfor %}
+</ul>
+</div>
+</section>
+{% endif %}

@@ -1,0 +1,206 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+// CLI de dezvoltare. Comenzi:
+//   configureaza [--dir=local] [--url=http://localhost:8080] [--mysql=mysql://u:p@gazda:port/baza] [--prefix=pg_] [--fara-rescriere]
+//                [--easycheck=http://localhost:8090/api/v1]   (un EasyCheck de test sau serverul fals)
+//   migreaza     [--dir=local]
+//   serveste     [--dir=local] [--port=8080]
+//   cron         [--dir=local]
+//   stare        [--dir=local]
+//   texte        regenerează docs/texte-de-aprobat.md din cataloage, păstrând aprobările
+//   easycheck    [--dir=local] --cheie=ec_test_... [--fara-anunturi]   leagă cheia, înregistrează anunțurile, face proba
+//                și sincronizarea inițială (pașii instalatorului)
+//   sincronizeaza [--dir=local] [--resurse=eu,preturi]                 o sincronizare a oglinzii, acum
+//   oglinda      [--dir=local]                                         starea oglinzii, a cheii și a pozelor
+//   admin        [--dir=local] --email=... --parola=... [--nume=] [--rol=proprietar|personal] [--limba=ro|en]
+//                                                                      un utilizator al panoului (instalatorul îl face într-o versiune următoare)
+//   email        [--dir=local] --gazda=smtp.exemplu.ro [--port=587] [--securitate=tls|ssl|niciuna] [--utilizator=] [--parola=]
+//                [--expeditor=rezervari@domeniu.ro] [--nume-expeditor=]  SMTP-ul cutiei de e-mailuri (panoul E-mailuri vine într-o versiune următoare)
+//   comenzi      [--dir=local]                                         ultimele comenzi, cu starea și jurnalul tranzițiilor
+//   tema-phar    [--iesire=cazo-tema.phar]                           unealta autorilor de teme (bin/cazo-tema), cu nucleul
+
+if (PHP_SAPI !== 'cli') {
+    exit;
+}
+
+define('CAZO', true);
+$radacina = dirname(__DIR__);
+require $radacina . '/app/incarca.php';
+
+use Cazo\Baza\Baza;
+use Cazo\Dezvoltare\Instanta;
+use Cazo\Dezvoltare\TexteDeAprobat;
+use Cazo\Nucleu\Aplicatie;
+
+$comanda = $argv[1] ?? 'ajutor';
+$opt = [];
+foreach (array_slice($argv, 2) as $a) {
+    if (preg_match('~^--([a-z\-]+)(?:=(.*))?$~', $a, $m)) {
+        $opt[$m[1]] = $m[2] ?? true;
+    }
+}
+$dir = (string) ($opt['dir'] ?? $radacina . '/local');
+if (!str_starts_with($dir, '/')) {
+    $dir = getcwd() . '/' . $dir;
+}
+$privat = $dir . '/cazo-privat';
+
+switch ($comanda) {
+    case 'configureaza':
+        $o = [
+            'site_url' => (string) ($opt['url'] ?? 'http://localhost:' . ($opt['port'] ?? '8080')),
+            'lansare_dev' => $radacina,
+            'rescriere' => !isset($opt['fara-rescriere']),
+            'prefix' => (string) ($opt['prefix'] ?? 'pg_'),
+        ];
+        if (isset($opt['mysql'])) {
+            $o['baza'] = Baza::descriereDinUrl((string) $opt['mysql']);
+        }
+        if (isset($opt['easycheck'])) {
+            $o['easycheck'] = ['baza' => (string) $opt['easycheck']];
+        }
+        $r = Instanta::configureaza($dir, $o);
+        echo "Instanța locală e gata.\n  privat: {$r['privat']}\n  public: {$r['public']}\n";
+        echo '  cron (linia cPanel): ' . \Cazo\Instalare\Instalator::linieCron($r['privat']) . "\n";
+        echo "  cron extern: {$o['site_url']}/_cron/{$r['cron_token']}\n";
+        echo "Porniți serverul cu: bin/cazo serveste" . (isset($opt['dir']) ? ' --dir=' . $opt['dir'] : '') . "\n";
+        break;
+
+    case 'migreaza':
+        $app = Aplicatie::dinDosar($privat);
+        $aplicate = $app->migrator()->migreaza();
+        echo $aplicate === [] ? "Schema e la zi.\n" : 'Migrări aplicate: ' . implode(', ', $aplicate) . "\n";
+        break;
+
+    case 'serveste':
+        $port = (int) ($opt['port'] ?? 8080);
+        $public = $dir . '/public_html';
+        echo "Cazo pe http://localhost:$port (Ctrl+C pentru oprire)\n";
+        passthru(escapeshellarg(PHP_BINARY) . ' -S ' . escapeshellarg("localhost:$port") . ' -t ' . escapeshellarg($public) . ' ' . escapeshellarg("$public/index.php"));
+        break;
+
+    case 'cron':
+        passthru(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($radacina . '/bin/cron.php') . ' ' . escapeshellarg('--privat=' . $privat), $cod);
+        exit($cod);
+
+    case 'stare':
+        $app = Aplicatie::dinDosar($privat);
+        echo 'Versiunea: ' . Aplicatie::versiune() . "\n";
+        echo 'Baza: ' . $app->baza()->dialect()->nume() . ', prefix ' . $app->baza()->prefix() . "\n";
+        echo 'Migrări aplicate: ' . implode(', ', $app->migrator()->aplicate()) . "\n";
+        $asteptare = $app->migrator()->inAsteptare();
+        echo 'Migrări în așteptare: ' . ($asteptare === [] ? 'niciuna' : implode(', ', $asteptare)) . "\n";
+        echo 'Ultima rulare a cronului: ' . json_encode($app->setari()->get('cron.ultima'), JSON_UNESCAPED_UNICODE) . "\n";
+        echo 'Joburi în coadă: ' . $app->coada()->numar() . "\n";
+        break;
+
+    case 'easycheck':
+        $app = Aplicatie::dinDosar($privat);
+        $c = $app->ecConectare();
+        $rezumat = $c->legaCheia((string) ($opt['cheie'] ?? ''));
+        echo 'Cheia: ' . $rezumat['proprietate'] . ' (' . $rezumat['nume'] . '), mod ' . $rezumat['mod'] . ', scop ' . $rezumat['scop']
+            . ', prețul: ' . $rezumat['sursa'] . "\n";
+        // declarația site-ului la EasyCheck (cu un EasyCheck mai vechi, nimic nu pleacă).
+        echo 'Starea site-ului: ' . ($app->stareSite()->declara() ? 'site-ul s-a declarat la EasyCheck' : 'fără declarație (EasyCheck fără această funcție sau oprită din config.php)') . "\n";
+        if (!isset($opt['fara-anunturi'])) {
+            try {
+                $a = $c->inregistreazaAnunturile();
+                echo 'Anunțurile: ' . ($a['primit'] ? 'proba a ajuns și semnătura e verificată' : 'proba nu a ajuns (' . $a['motiv'] . '); site-ul merge pe interogare') . "\n";
+            } catch (\Throwable $e) {
+                echo 'Anunțurile: ' . \Cazo\Nucleu\Jurnal::mascheaza($e->getMessage()) . "; site-ul merge pe interogare\n";
+            }
+        }
+        $s = $c->sincronizeazaTot($app->ecSincronizare());
+        echo 'Sincronizarea: ' . json_encode($s, JSON_UNESCAPED_UNICODE) . "\n";
+        break;
+
+    case 'sincronizeaza':
+        $app = Aplicatie::dinDosar($privat);
+        $resurse = isset($opt['resurse']) ? explode(',', (string) $opt['resurse']) : null;
+        echo json_encode($app->ecSincronizare()->ruleaza($resurse, 60.0), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "\n";
+        break;
+
+    case 'oglinda':
+        $app = Aplicatie::dinDosar($privat);
+        $t = $app->traducator('ro', 'admin');
+        $stare = $app->ecLicenta()->stare();
+        echo 'Cheia: ' . json_encode($app->ecLicenta()->cheie(), JSON_UNESCAPED_UNICODE) . "\n";
+        foreach ($stare['alerte'] as $a) {
+            echo '  alertă: ' . $t->t($a) . "\n";
+        }
+        foreach ($app->baza()->toate('SELECT resursa, etag, versiune, verificat_la, schimbat_la, invechit, ultima_eroare FROM {ec_resurse} ORDER BY resursa') as $r) {
+            echo sprintf("  %-16s v%-3d verificat %s, schimbat %s%s%s\n", $r['resursa'], $r['versiune'], $r['verificat_la'] ?? '-', $r['schimbat_la'] ?? '-',
+                (int) $r['invechit'] ? ', învechit' : '', $r['ultima_eroare'] ? ', eroare: ' . $r['ultima_eroare'] : '');
+        }
+        foreach (['nopti', 'nopti_pret', 'planuri'] as $tab) {
+            echo "  $tab: " . $app->baza()->valoare("SELECT COUNT(*) FROM {{$tab}}") . " rânduri\n";
+        }
+        foreach ($app->baza()->toate('SELECT stare, COUNT(*) AS n FROM {poze} GROUP BY stare') as $r) {
+            echo "  poze {$r['stare']}: {$r['n']}\n";
+        }
+        echo 'Anunțurile: ' . json_encode($app->setari()->get('ec.anunturi'), JSON_UNESCAPED_UNICODE) . "\n";
+        echo 'Bugetul: ' . json_encode($app->ecBuget()->stare(), JSON_UNESCAPED_UNICODE) . "\n";
+        break;
+
+    case 'admin':
+        $app = Aplicatie::dinDosar($privat);
+        $id = $app->sesiuneAdmin()->creeazaUtilizator((string) ($opt['email'] ?? ''), (string) ($opt['nume'] ?? 'Gazda'), (string) ($opt['parola'] ?? ''),
+            (string) ($opt['rol'] ?? 'proprietar'), (string) ($opt['limba'] ?? 'ro'));
+        echo "Utilizatorul #$id e gata; panoul: " . $app->url()->absolut('/admin/') . "\n";
+        break;
+
+    case 'email':
+        $app = Aplicatie::dinDosar($privat);
+        if (!isset($opt['gazda'])) {
+            echo "Lipsește --gazda.\n";
+            exit(1);
+        }
+        $sec = (string) ($opt['securitate'] ?? 'tls');
+        if (!in_array($sec, ['tls', 'ssl', 'niciuna'], true)) {
+            echo "--securitate: tls, ssl sau niciuna.\n";
+            exit(1);
+        }
+        $app->setari()->pune('email.smtp', ['gazda' => (string) $opt['gazda'], 'port' => (int) ($opt['port'] ?? ($sec === 'ssl' ? 465 : 587)), 'securitate' => $sec,
+            'utilizator' => (string) ($opt['utilizator'] ?? '')]);
+        if (isset($opt['parola'])) {
+            $app->secrete()->pune('smtp_parola', (string) $opt['parola']);
+        }
+        if (isset($opt['expeditor'])) {
+            $app->setari()->pune('email.expeditor', ['adresa' => (string) $opt['expeditor'], 'nume' => (string) ($opt['nume-expeditor'] ?? '')]);
+        }
+        echo "SMTP-ul e salvat: {$opt['gazda']}, $sec. E-mailuri în coadă: " . $app->emailuri()->inAsteptare() . "\n";
+        break;
+
+    case 'comenzi':
+        $app = Aplicatie::dinDosar($privat);
+        foreach ($app->baza()->toate('SELECT id, ref, fel, stare, sosire, plecare, total, ec_cerere, ec_rezervare, eroare_cod, creat_la FROM {comenzi} ORDER BY id DESC LIMIT 20') as $c) {
+            echo sprintf("%s  %-4s %-20s %s - %s  %s bani  %s %s%s\n", $c['ref'], $c['fel'], $c['stare'], $c['sosire'], $c['plecare'], $c['total'], $c['ec_cerere'] ?? '-',
+                $c['ec_rezervare'] ?? '-', $c['eroare_cod'] ? '  eroare: ' . $c['eroare_cod'] : '');
+            foreach ($app->masinaStari()->istoric((int) $c['id']) as $j) {
+                echo '      ' . $j['la'] . '  ' . ($j['din_stare'] ?? '-') . ' -> ' . $j['in_stare'] . '  ' . $j['actor'] . ($j['detalii'] ? '  ' . $j['detalii'] : '') . "\n";
+            }
+        }
+        break;
+
+    case 'texte':
+        $n = TexteDeAprobat::scrie($radacina);
+        echo "docs/texte-de-aprobat.md: $n texte.\n";
+        break;
+
+    case 'tema-phar':
+        // cazo-tema.phar cere phar.readonly=0; comanda se re-lansează singură cu el.
+        if (ini_get('phar.readonly')) {
+            passthru(escapeshellarg(PHP_BINARY) . ' -d phar.readonly=0 ' . implode(' ', array_map('escapeshellarg', $argv)), $cod);
+            exit($cod);
+        }
+        $r = \Cazo\Dezvoltare\TemaPhar::construieste($radacina, (string) ($opt['iesire'] ?? getcwd() . '/cazo-tema.phar'));
+        echo "{$r['cale']}: {$r['fisiere']} fișiere, sha256 {$r['sha256']}\n";
+        break;
+
+    default:
+        echo "Folosire: bin/cazo configureaza|migreaza|serveste|cron|stare|texte|easycheck|sincronizeaza|oglinda|admin|email|comenzi|tema-phar [--dir=local] ...\n";
+        exit($comanda === 'ajutor' ? 0 : 1);
+}

@@ -1,0 +1,10 @@
+{%- set sg = site.sigla ?? null -%}
+<header class="po-antet">
+<div class="po-latime po-antet-interior">
+<a class="po-sigla{% if sg %} po-sigla--imagine{% endif %}" href="{{ site.url_baza }}">{% if sg %}<img class="pg-sigla-img" src="{{ sg.url }}" alt="{{ sg.cu_nume ? '' : site.nume }}" width="{{ sg.latime }}" height="{{ sg.inaltime }}">{% if sg.cu_nume %}<span>{{ site.nume }}</span>{% endif %}{% else %}{{ site.nume }}{% endif %}</a>
+<nav class="po-meniu" aria-label="{{ t('meniu.principal') }}">
+<ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}"{% if m.activ %} aria-current="page"{% endif %}>{{ m.titlu }}</a></li>{% endfor %}</ul>
+</nav>
+{% if site.limbi|length > 1 %}<nav class="po-limbi" aria-label="{{ t('meniu.limba') }}"><ul>{% for l in site.limbi %}<li><a href="{{ l.url }}" hreflang="{{ l.cod }}" lang="{{ l.cod }}" title="{{ l.nume }}"{% if l.activa %} aria-current="true"{% endif %}>{{ l.cod|upper }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+</header>

@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cazo.ro/scheme/settings.schema.json",
+  "title": "Setările temei (settings.schema.json), secțiunile (sections/<id>.json) și compozițiile (templates/<pagina>.json)",
+  "type": "object",
+  "required": ["setari"],
+  "properties": {
+    "setari": {"type": "array", "maxItems": 60, "items": {"$ref": "#/$defs/setare"}},
+    "contrast": {
+      "type": "array",
+      "description": "Culorile fixe ale temei, desenate peste jetoanele gazdei: fiecare culoare trece pragul pe fiecare jeton din pe (Tema::contrastTema).",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["culori", "pe", "prag"],
+        "properties": {
+          "culori": {"type": "array", "minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}},
+          "pe": {"type": "array", "minItems": 1, "maxItems": 10, "items": {"type": "string", "pattern": "^culoare_[a-z_]{1,40}$"}},
+          "prag": {"type": "number", "minimum": 3, "maximum": 7}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "eticheta": {
+      "type": "object",
+      "required": ["ro", "en"],
+      "properties": {
+        "ro": {"type": "string", "minLength": 1, "maxLength": 80},
+        "en": {"type": "string", "minLength": 1, "maxLength": 80}
+      },
+      "additionalProperties": false
+    },
+    "setare": {
+      "type": "object",
+      "required": ["id", "tip"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+        "tip": {"enum": ["color", "color_scheme", "font", "image", "text", "textarea", "richtext", "select", "radio", "checkbox", "range", "url", "continut"]},
+        "eticheta": {"$ref": "#/$defs/eticheta"},
+        "ajutor": {"$ref": "#/$defs/eticheta"},
+        "implicit": {"type": ["string", "integer", "number", "boolean", "null", "object"]},
+        "min": {"type": "integer", "minimum": -10000, "maximum": 10000},
+        "max": {"type": "integer", "minimum": -10000, "maximum": 10000},
+        "pas": {"type": "integer", "minimum": 1, "maximum": 1000},
+        "unitate": {"type": "string", "maxLength": 8, "pattern": "^[a-z%]*$"},
+        "lungime_max": {"type": "integer", "minimum": 1, "maximum": 2000},
+        "optiuni": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "oneOf": [
+              {"type": "string", "pattern": "^[a-z0-9_\\-]{1,40}$"},
+              {
+                "type": "object",
+                "required": ["valoare"],
+                "properties": {
+                  "valoare": {"type": "string", "pattern": "^[a-z0-9_\\-]{1,40}$"},
+                  "eticheta": {"$ref": "#/$defs/eticheta"}
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {"anyOf": [
+          {"properties": {"tip": {"enum": ["select", "radio"]}}, "required": ["optiuni"]},
+          {"properties": {"tip": {"enum": ["color", "color_scheme", "font", "image", "text", "textarea", "richtext", "checkbox", "range", "url", "continut"]}}}
+        ]},
+        {"anyOf": [
+          {"properties": {"tip": {"const": "range"}}, "required": ["min", "max"]},
+          {"properties": {"tip": {"enum": ["color", "color_scheme", "font", "image", "text", "textarea", "richtext", "select", "radio", "checkbox", "url", "continut"]}}}
+        ]}
+      ]
+    },
+    "sectiune": {
+      "type": "object",
+      "required": ["nume"],
+      "properties": {
+        "nume": {"$ref": "#/$defs/eticheta"},
+        "setari": {"type": "array", "maxItems": 30, "items": {"$ref": "#/$defs/setare"}},
+        "blocuri": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["tip"],
+            "properties": {
+              "tip": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+              "nume": {"$ref": "#/$defs/eticheta"},
+              "setari": {"type": "array", "maxItems": 20, "items": {"$ref": "#/$defs/setare"}},
+              "max": {"type": "integer", "minimum": 1, "maximum": 50}
+            },
+            "additionalProperties": false
+          }
+        },
+        "presetari": {"type": "array", "maxItems": 10, "items": {"type": "object"}}
+      },
+      "additionalProperties": false
+    },
+    "sablon": {
+      "type": "object",
+      "required": ["sectiuni"],
+      "properties": {
+        "sectiuni": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "required": ["tip"],
+            "properties": {
+              "tip": {"type": "string", "pattern": "^[a-z0-9_\\-]{1,64}$"},
+              "setari": {"type": "object"},
+              "blocuri": {"type": "array", "maxItems": 50, "items": {"type": "object"}},
+              "ascunsa": {"type": "boolean"}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

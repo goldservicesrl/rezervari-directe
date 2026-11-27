@@ -1,0 +1,28 @@
+{#- Setări › Legătura cu EasyCheck, „Datele firmei”: datele vin din EasyCheck și se văd pe pagina Date legale.
+    Ce lipsește acolo și e cerut de lege se completează aici (formularul apare doar atunci). -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.legal.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if lipsa_vanzare or lipsa or lipsa_contact %}<div class="pa-avertizare" role="status">
+{% if lipsa_vanzare %}<p>{{ t('admin.legal.lipsa_vanzare', {campuri: lipsa_vanzare|join(', ')}) }}</p>{% endif %}
+{% if lipsa %}<p>{{ t('admin.legal.lipsa', {campuri: lipsa|join(', ')}) }}</p>{% endif %}
+{% if lipsa_contact %}<p>{{ t('admin.legal.lipsa_contact') }}</p>{% endif %}
+</div>{% endif %}
+<p>{{ t('admin.legal.vin_din_easycheck') }} <a href="{{ url.pagina }}">{{ t('admin.legal.vezi_pagina') }}</a></p>
+{% if cui_ec %}<p class="pa-ajutor">{{ t('admin.legal.forma_easycheck') }}</p>{% endif %}
+{% if persoana_fizica %}<p class="pa-info">{{ t('admin.legal.persoana_fizica') }}</p>{% endif %}
+{% if din_ec %}<details class="pa-avansat"><summary>{{ t('admin.legal.din_easycheck_titlu') }}</summary>
+<dl class="pa-detalii">{% for x in din_ec %}<dt>{{ x.eticheta }}</dt><dd>{{ x.valoare }}</dd>{% endfor %}</dl>
+<p class="pa-ajutor">{{ t('admin.legal.din_easycheck_ajutor') }}</p></details>{% endif %}
+{% if campuri or not forma_ec %}<h2>{{ t('admin.legal.completari_titlu') }}</h2>
+<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% if not forma_ec %}<p><label for="pa-l-forma">{{ t('admin.legal.forma') }}</label><span class="pa-ajutor" id="pa-l-forma-ajutor">{{ t('admin.legal.forma_ajutor') }}{% if forma_dedusa %} {{ t('admin.legal.forma_dedusa') }}{% endif %}</span><select id="pa-l-forma" name="forma" aria-describedby="pa-l-forma-ajutor"><option value="">{{ t('admin.legal.alegeti') }}</option>{% for f in forme %}<option value="{{ f }}"{% if forma == f %} selected{% endif %}>{{ t('admin.legal.forma.' ~ f) }}</option>{% endfor %}</select></p>{% endif %}
+{% for x in campuri %}
+{% if x.camp == 'sediu_tip' %}<p><label for="pa-l-{{ x.camp }}">{{ x.eticheta }}</label><select id="pa-l-{{ x.camp }}" name="camp_{{ x.camp }}"><option value="">{{ t('admin.legal.alegeti') }}</option><option value="social"{% if x.valoare == 'social' %} selected{% endif %}>{{ t('admin.legal.sediu_social') }}</option><option value="profesional"{% if x.valoare == 'profesional' %} selected{% endif %}>{{ t('admin.legal.sediu_profesional') }}</option></select></p>
+{% else %}<p><label for="pa-l-{{ x.camp }}">{{ x.eticheta }}</label>{% if x.ajutor %}<span class="pa-ajutor" id="pa-l-{{ x.camp }}-ajutor">{{ x.ajutor }}</span>{% endif %}<input id="pa-l-{{ x.camp }}" name="camp_{{ x.camp }}" type="text"{% if x.latime %} class="{{ x.latime }}"{% endif %} value="{{ x.valoare }}"{% if x.required %} required{% endif %}{% if x.ajutor or x.eroare %} aria-describedby="{% if x.ajutor %}pa-l-{{ x.camp }}-ajutor{% endif %}{% if x.eroare %} pa-l-{{ x.camp }}-eroare{% endif %}"{% endif %}{% if x.eroare %} aria-invalid="true"{% endif %}>
+{% if x.eroare %}<span class="pa-eroare-camp" id="pa-l-{{ x.camp }}-eroare">{{ x.eroare }}</span>{% endif %}</p>{% endif %}
+{% endfor %}
+<button type="submit" class="pa-buton">{{ t('admin.legal.salveaza') }}</button></form>
+{% endif %}
+{% endblock %}

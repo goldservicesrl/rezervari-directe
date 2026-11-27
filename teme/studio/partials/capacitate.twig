@@ -1,0 +1,2 @@
+{#- „2 unități · până la 3 oaspeți”: doar părțile care au date (EC /camere › unitati, oaspeti_max). -#}
+{% if c.unitati > 1 or c.oaspeti_max %}<p class="at-obiect-unitati">{% if c.unitati > 1 %}{% include "partials/numar.twig" with {n: c.unitati, cheie: 'camere.unitati'} %}{% endif %}{% if c.unitati > 1 and c.oaspeti_max %} · {% endif %}{% if c.oaspeti_max %}{% include "partials/numar.twig" with {n: c.oaspeti_max, cheie: 'camere.oaspeti'} %}{% endif %}</p>{% endif -%}

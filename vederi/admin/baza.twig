@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{ limba }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{{ t('admin.titlu') }}{% if site %} | {{ site }}{% endif %}</title>
+{% if css %}<link rel="stylesheet" href="{{ css }}">{% endif %}
+{% if js_ramane is defined and js_ramane %}<script src="{{ js_ramane }}" defer></script>{% endif %}
+</head>
+<body class="pa-corp">
+<a class="pa-salt" href="#continut">{{ t('admin.salt') }}</a>
+<header class="pa-antet"><p class="pa-titlu">{% if site %}<span class="pa-titlu-panou">{{ t('admin.titlu') }}: </span>{{ site }}{% else %}{{ t('admin.titlu') }}{% endif %}</p>
+{% if antet is defined and antet %}<div class="pa-antet-dreapta">
+<a href="{{ antet.url_cont }}"{% if antet.cont_activ %} aria-current="page"{% endif %}>{{ t('admin.nav.cont') }}</a>
+<form method="post" action="{{ antet.url_iesire }}" class="pa-iesire"><input type="hidden" name="_csrf" value="{{ csrf }}"><span class="pa-utilizator">{{ utilizator.email }}</span> <button type="submit" class="pa-buton-secundar">{{ t('admin.iesire') }}</button></form>
+</div>{% endif %}{% block antet %}{% endblock %}</header>
+{% if meniu is defined and meniu and meniu.grupuri %}<nav class="pa-meniu" aria-label="{{ t('admin.meniu') }}"><ul>{% for x in meniu.grupuri %}<li><a href="{{ x.url }}"{% if x.activ %} aria-current="{{ meniu.pagini ? 'true' : 'page' }}"{% endif %}>{{ t('admin.grup.' ~ x.cheie) }}{% if x.cheie == 'acasa' and antet is defined and antet and antet.alerte %} <span class="pa-contor{% if antet.grave %} pa-contor-grav{% endif %}">{{ antet.alerte }}</span><span class="pa-ascuns"> {{ t('admin.antet.alerte_acum') }}</span>{% endif %}</a></li>{% endfor %}</ul></nav>
+{% if meniu.pagini %}<nav class="pa-submeniu" aria-label="{{ t('admin.submeniu', {grup: t('admin.grup.' ~ meniu.grup)}) }}"><ul>{% for x in meniu.pagini %}<li><a href="{{ x.url }}"{% if x.activ %} aria-current="page"{% endif %}>{{ t('admin.nav.' ~ x.cheie) }}</a></li>{% endfor %}</ul></nav>{% endif %}{% endif %}
+<main id="continut" class="pa-principal" tabindex="-1">
+{# Codurile de rezervă stau deasupra titlului paginii, deci titlul lor e un paragraf, nu un <h2> înaintea lui <h1>. #}
+{% if coduri_noi is defined and coduri_noi %}<section class="pa-coduri" aria-labelledby="pa-coduri-titlu"><p class="pa-coduri-titlu" id="pa-coduri-titlu">{{ t('admin.coduri.titlu') }}</p><p>{{ t('admin.coduri.explicatie') }}</p><ul class="pa-lista-coduri">{% for x in coduri_noi %}<li><code>{{ x }}</code></li>{% endfor %}</ul></section>{% endif %}
+{% block continut %}{% endblock %}
+</main>
+{% if antet is defined and antet %}<footer class="pa-subsol"><p><span class="pa-subsol-obligatoriu">{{ t('admin.subsol.obligatoriu') }} </span><a href="{{ antet.url_site }}">{{ t('admin.subsol.site') }}</a></p></footer>{% endif %}
+</body>
+</html>

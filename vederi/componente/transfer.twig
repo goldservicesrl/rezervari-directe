@@ -1,0 +1,12 @@
+{#- Instrucțiunile de plată prin transfer bancar, pe pagina comenzii și în „Rezervarea mea”, cât plata e așteptată:
+    un card cu fiecare valoare pe rândul ei: titularul, IBAN-ul, banca, SWIFT-ul, suma exactă, termenul în ora
+    României și textul de pus la detaliile plății (codul rezervării). IBAN-ul, SWIFT-ul, suma și codul se selectează
+    întregi la un clic, fără JavaScript; cu JavaScript, modulul nucleului (front/js/comanda.js) pune lângă ele butonul
+    „Copiați”, care copiază valoarea din `data-pg-copiaza`. -#}
+<section class="pg-transfer" aria-labelledby="pg-transfer-titlu" data-copiaza="{{ t('transfer.copiaza') }}" data-copiat="{{ t('transfer.copiat') }}">
+<h2 id="pg-transfer-titlu">{{ t('transfer.titlu') }}</h2>
+<dl class="pg-transfer-date">
+{% for r in x.randuri %}<div class="pg-transfer-rand"><dt>{{ r.eticheta }}</dt><dd>{% if r.copie ?? '' %}<span class="pg-transfer-copiaza" data-pg-copiaza="{{ r.copie }}">{{ r.valoare }}</span>{% else %}{{ r.valoare }}{% endif %}</dd></div>
+{% endfor %}</dl>
+{% for p in x.paragrafe %}<p class="pg-transfer-nota">{{ p }}</p>
+{% endfor %}</section>

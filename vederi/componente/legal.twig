@@ -1,0 +1,26 @@
+{#- Blocul legal: legăturile legale, pictograma SAL și, sub o linie subțire, datele operatorului pe un
+    singur rând de text mic, despărțite prin „·”, apoi „©”. Protejat de nucleu. Gazda îl poate
+    schimba din panou: `editat` are atunci rândurile, legăturile, SAL și rândul cu „©”, text simplu, cu adresele
+    verificate de nucleu, așezate la fel. Sub „©”, linkul „Software Regim Hotelier - Cazo.ro”, cerut de licență:
+    fără comutator, la toate temele. -#}
+{%- set mec = mentiune_ec ?? null -%}
+{%- set ec -%}{% if mec %}<p class="pg-legal-ec"><a href="{{ mec.url }}" rel="sponsored noopener" target="_blank">{{ mec.text }}</a></p>{% endif %}{%- endset -%}
+<div class="pg-legal" data-pg="legal">
+{% if editat %}
+{% if editat.legaturi %}<nav class="pg-legal-linkuri" aria-label="{{ t('legal.navigatie') }}"><ul>{% for l in editat.legaturi %}<li>{% if l.url %}<a href="{{ l.url }}">{{ l.text }}</a>{% else %}{{ l.text }}{% endif %}</li>{% endfor %}</ul></nav>{% endif %}
+{% if editat.sal %}<p class="pg-legal-sal"><a href="{{ editat.sal.url }}" rel="noopener"><img src="{{ sal_img }}" alt="{{ editat.sal.text }}" width="201" height="50" loading="lazy" decoding="async"></a></p>{% endif %}
+{% if editat.linii or editat.an or mec %}<div class="pg-legal-jos">
+{% if editat.linii %}<ul class="pg-legal-date pg-legal-date--linii">{% for r in editat.linii %}<li class="pg-legal-rand">{% if r.url %}<a href="{{ r.url }}">{{ r.text }}</a>{% else %}{{ r.text }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+{% if editat.an %}<p class="pg-legal-an">{{ editat.an }}</p>{% endif %}
+{{ ec }}
+</div>{% endif %}
+{% else %}
+<nav class="pg-legal-linkuri" aria-label="{{ t('legal.navigatie') }}"><ul>{% for l in linkuri %}<li><a href="{{ l.url }}">{{ l.titlu }}</a></li>{% endfor %}</ul></nav>
+<p class="pg-legal-sal"><a href="{{ sal_url }}" rel="noopener"><img src="{{ sal_img }}" alt="{{ t('legal.sal_alt') }}" width="201" height="50" loading="lazy" decoding="async"></a></p>
+<div class="pg-legal-jos">
+{% if firma %}<ul class="pg-legal-date">{% for r in firma %}<li class="pg-legal-rand">{{ r }}</li>{% endfor %}</ul>{% endif %}
+<p class="pg-legal-an">{{ t('legal.an', {an: an, nume: nume}) }}</p>
+{{ ec }}
+</div>
+{% endif %}
+</div>

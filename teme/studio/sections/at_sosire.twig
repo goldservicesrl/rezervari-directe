@@ -1,0 +1,18 @@
+{#- Sosirea: orele din EC și regulile casei din EC (reguli_casa), cu textele aprobate ale bibliotecii. -#}
+{% set o = proprietate.ore %}{% set rc = proprietate.reguli_casa %}
+{% set chei_reguli = ['copii', 'bebelusi', 'animale', 'evenimente', 'fumat'] %}
+{% set cu_reguli = false %}
+{% for r in chei_reguli %}{% if rc[r] is defined and rc[r] is not null %}{% set cu_reguli = true %}{% endif %}{% endfor %}
+{% if o.checkin_de_la or o.plecare_pana_la or cu_reguli %}
+<section class="at-sosire at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t('sosire.titlu') }}</h2></header>
+<div class="at-sosire-grila">
+{% if o.checkin_de_la or o.plecare_pana_la %}<p class="at-ore">{% if o.checkin_de_la %}{{ t('sosire.checkin', {ora: o.checkin_de_la}) }}{% endif %}{% if o.checkin_de_la and o.plecare_pana_la %} · {% endif %}{% if o.plecare_pana_la %}{{ t('sosire.checkout', {ora: o.plecare_pana_la}) }}{% endif %}</p>{% endif %}
+{#- „Copiii și bebelușii sunt bineveniți.” pe un singur rând, când amândouă regulile sunt „da”. -#}
+{% set impreuna = rc.copii is defined and rc.copii is same as(true) and rc.bebelusi is defined and rc.bebelusi is same as(true) %}
+{% if cu_reguli %}<ul class="at-reguli">{% if impreuna %}<li>{{ t('reguli.copii_bebelusi.da') }}</li>{% endif %}{% for r in (impreuna ? ['animale', 'evenimente', 'fumat'] : chei_reguli) %}{% if rc[r] is defined and rc[r] is not null %}<li>{{ t('reguli.' ~ r ~ (rc[r] ? '.da' : '.nu')) }}</li>{% endif %}{% endfor %}</ul>{% endif %}
+</div>
+</div>
+</section>
+{% endif %}

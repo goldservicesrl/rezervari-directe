@@ -1,0 +1,56 @@
+{#- Prețurile: harta termică (componenta-semnătură `harta_termica_preturi`, din preturi_sezon, calculat de nucleu
+    din oglinda EasyCheck): prețul median pe noapte în următoarele 12 luni, lunile fără preț „Închis”, legenda
+    treptelor, o lună pe zile (prețul, ocupat, închis, sărbătorile legale) și planurile camerei de referință, cu
+    „de la”, masa inclusă (când planul o are; „Doar cazare” pe celelalte, când măcar un plan are masa) și anularea scrisă de nucleu. Fără prețuri (cheia respinsă, fără planuri), secțiunea lipsește. Textele
+    machetei despre avans („Avans 30%, restul la sosire”) lipsesc: plata o arată comanda, după metodele gazdei. -#}
+{% set ps = preturi_sezon ?? null %}
+{% if ps %}
+{% set luna = ps.luna %}
+{% set camera_ref = ps.camera.titlu %}
+{% set are_sarbatori = false %}
+{% if luna %}{% for z in luna.zile %}{% if z.sarbatoare %}{% set are_sarbatori = true %}{% endif %}{% endfor %}{% endif %}
+<section class="fz-preturi" aria-labelledby="{{ sectiune.id }}-t">
+<div class="fz-latime">
+<div class="fz-banda-cap">
+<h2 id="{{ sectiune.id }}-t" class="fz-titlu">{{ t('preturi.titlu') }}</h2>
+<p class="fz-banda-nota">{{ t('preturi.nota', {plan: ps.plan.titlu, camera: camera_ref, oaspeti: ps.oaspeti_text}) }}</p>
+</div>
+<ol class="fz-an" aria-label="{{ t('preturi.an_eticheta') }}">
+{% for m in ps.luni %}<li class="fz-luna{% if m.treapta %} fz-t{{ m.treapta }}{% else %} fz-luna-inchisa{% endif %}{% if m.afisata %} fz-luna-afisata{% endif %}">
+<span class="fz-luna-nume" aria-hidden="true">{{ m.nume|slice(0, 3) }}{% if loop.first or m.luna == 1 %} {{ m.an }}{% endif %}</span>
+<b aria-hidden="true">{{ m.treapta ? m.mediana_lei : t('preturi.inchis') }}</b>
+<span class="fz-ascuns">{{ m.treapta ? t('preturi.luna_pret', {luna: m.nume ~ ' ' ~ m.an, pret: m.mediana_text}) : t('preturi.luna_inchisa', {luna: m.nume ~ ' ' ~ m.an}) }}{% if m.afisata %}{{ t('preturi.luna_afisata') }}{% endif %}</span>
+</li>{% endfor %}
+</ol>
+<ul class="fz-legenda-trepte" aria-label="{{ t('preturi.legenda') }}">
+{% for x in ps.trepte %}<li><i class="fz-t{{ x.treapta }}" aria-hidden="true"></i>{{ x.de_lei == x.pana_lei ? t('preturi.lei', {n: x.de_lei}) : t('preturi.interval', {de: x.de_lei, pana: x.pana_lei}) }}</li>{% endfor %}
+<li><i class="fz-leg-inchis" aria-hidden="true"></i>{{ t('preturi.leg_inchis') }}</li>
+{% if are_sarbatori %}<li><i class="fz-leg-sarb" aria-hidden="true"></i>{{ t('preturi.leg_sarbatoare') }}</li>{% endif %}
+</ul>
+<div class="fz-preturi-jos">
+{% if luna %}<div class="fz-luna-zile">
+<div class="fz-luna-cap">
+<h3 class="fz-luna-titlu">{{ luna.nume|capitalize }} {{ luna.an }}</h3>
+<p>{{ t('preturi.luna_nota', {camera: camera_ref, plan: ps.plan.titlu}) }}</p>
+</div>
+<div class="fz-zile-sapt" aria-hidden="true">{% for z in ps.zile_saptamana %}<span>{{ z }}</span>{% endfor %}</div>
+<ol class="fz-zile" aria-label="{{ t('preturi.zile_eticheta', {luna: luna.nume ~ ' ' ~ luna.an}) }}">
+{% for z in luna.zile %}<li class="fz-zi fz-zi-{{ z.stare }}{% if loop.first and luna.gol > 0 %} fz-col-{{ luna.gol + 1 }}{% endif %}{% if z.treapta %} fz-t{{ z.treapta }}{% endif %}{% if z.sarbatoare %} fz-zi-sarb{% endif %}"><span class="fz-zi-nr" aria-hidden="true">{{ z.numar }}</span>{% if z.pret_lei is not null %}<span class="fz-zi-pret" aria-hidden="true">{{ z.pret_lei }}</span>{% elseif z.stare in ['ocupata', 'inchisa'] %}<span class="fz-zi-pret" aria-hidden="true">{{ t('preturi.zi_' ~ z.stare) }}</span>{% endif %}<span class="fz-ascuns">{{ z.eticheta }}{% if z.sarbatoare %}{{ t('preturi.sarbatoare_sr') }}{% endif %}</span></li>{% endfor %}
+</ol>
+</div>{% endif %}
+{% if ps.planuri|length > 0 %}<aside class="fz-planuri" aria-labelledby="{{ sectiune.id }}-p">
+<h3 id="{{ sectiune.id }}-p">{{ t('preturi.planuri') }}</h3>
+<ul>
+{% for p in ps.planuri %}<li class="fz-plan">
+<p class="fz-plan-sus"><b>{{ p.titlu }}</b>{% if p.de_la_text %}<span>{{ t('pret.de_la') }} <strong>{{ p.de_la_text }}</strong></span>{% endif %}</p>
+{% if p.masa ?? '' %}<p class="fz-plan-masa">{{ p.masa }}</p>{% endif %}
+<p>{% if p.prag_nopti %}{{ t('preturi.prag', {nopti: p.prag_nopti|nopti}) }} {% endif %}{{ p.anulare }}</p>
+</li>{% endfor %}
+</ul>
+<p class="fz-planuri-nota">{{ t('preturi.planuri_nota', {camera: camera_ref, oaspeti: ps.oaspeti_text}) }}</p>
+<a class="fz-buton fz-buton-alb" href="{{ ps.camera.url }}">{{ t('preturi.calendar') }}</a>
+</aside>{% endif %}
+</div>
+</div>
+</section>
+{% endif %}

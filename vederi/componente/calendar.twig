@@ -1,0 +1,25 @@
+{#- Calendarul camerei (cazo.calendar(camera)): prima vizualizare pe server (două luni), îmbunătățită de calendar.js,
+    importat la primul focus sau clic de calendar-start.js (data-modul: adresa modulului, 18).
+    Numele zilei vine din textul ascuns vizual (nu din aria-label): cifrele afișate rămân aria-hidden, iar eticheta
+    completă e singurul nume, deci textul vizibil și numele accesibil nu se contrazic (WCAG 2.5.3).
+    două stări pentru oaspete, „liberă” și „indisponibilă” (clasa din `vizibil`); `data-stare` rămâne starea reală. -#}
+<cazo-calendar class="pg-calendar" data-pg="calendar" data-camera="{{ camera }}" data-api="{{ api }}" data-luna="{{ luna }}" data-oaspeti="{{ oaspeti }}" data-limba="{{ limba }}"{% if modul %} data-modul="{{ modul }}"{% endif %}{% if ocupate %} data-ocupate="{{ ocupate }}"{% endif %}>
+<h2 class="pg-calendar-titlu">{{ t('calendar.titlu') }}</h2>
+{% if mesaj %}<p class="pg-calendar-mesaj" role="alert">{{ mesaj }}</p>
+{% endif %}<p class="pg-calendar-ajutor" id="pg-cal-ajutor-{{ camera }}">{{ t('calendar.ajutor') }}</p>
+<div class="pg-calendar-nav"><button type="button" class="pg-buton-secundar" data-pg-nav="-1" hidden>{{ t('calendar.luna_anterioara') }}</button><button type="button" class="pg-buton-secundar" data-pg-nav="1" hidden>{{ t('calendar.luna_urmatoare') }}</button></div>
+<div class="pg-calendar-luni">
+{% for l in luni %}
+<table class="pg-calendar-luna" role="grid" aria-labelledby="pg-cal-{{ camera }}-{{ l.id }}" aria-describedby="pg-cal-ajutor-{{ camera }}" data-luna="{{ l.id }}">
+<caption id="pg-cal-{{ camera }}-{{ l.id }}">{{ l.titlu }}</caption>
+<thead><tr>{% for z in zile %}<th scope="col" abbr="{{ z.lung }}">{{ z.scurt }}</th>{% endfor %}</tr></thead>
+<tbody>{% for s in l.saptamani %}<tr>{% for z in s %}{% if z %}<td class="pg-zi pg-zi--{{ z.vizibil ?? z.stare }}{% if z.acum %} pg-zi--acum{% endif %}" data-zi="{{ z.zi }}" data-stare="{{ z.stare }}" data-min="{{ z.sejur_minim }}"{% if z.sosire_inchisa %} data-sosire-inchisa{% endif %}{% if z.plecare_inchisa %} data-plecare-inchisa{% endif %}><span class="pg-zi-numar" aria-hidden="true">{{ z.numar }}</span>{% if z.pret_scurt %}<span class="pg-zi-pret" aria-hidden="true">{{ z.pret_scurt }}</span>{% endif %}<span class="pg-ascuns pg-zi-eticheta">{{ z.eticheta }}</span></td>{% else %}<td class="pg-zi pg-zi--gol"></td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
+</table>
+{% endfor %}
+</div>
+<ul class="pg-calendar-legenda">
+<li><span class="pg-legenda pg-zi--libera" aria-hidden="true"></span>{{ t('calendar.stare.libera') }}</li>
+<li><span class="pg-legenda pg-zi--indisponibila" aria-hidden="true"></span>{{ t('calendar.stare.indisponibila') }}</li>
+</ul>
+<p class="pg-calendar-stare" aria-live="polite"></p>
+</cazo-calendar>

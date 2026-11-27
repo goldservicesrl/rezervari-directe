@@ -1,0 +1,27 @@
+{#- Capitolul casei: poza principală, numele, descrierea din EasyCheck (titlul, primul paragraf, restul la „Citiți toată descrierea”); dedesubt, căutarea și prețul de pornire. -#}
+{%- set minim = null -%}
+{%- for c in camere -%}{%- if c.pret_de_la and (minim is null or c.pret_de_la.suma < minim) -%}{%- set minim = c.pret_de_la.suma -%}{%- endif -%}{%- endfor -%}
+{%- set poza = proprietate.poze|first -%}
+<section class="br-cap br-hero{% if poza %} br-hero--poza{% endif %}" aria-labelledby="{{ sectiune.id }}-t">
+{% if poza %}<figure class="br-hero-poza">{{ img(poza, [960, 1440, 2048], true, '100vw') }}{% if poza.legenda is defined and poza.legenda %}<figcaption class="br-legenda br-legenda--pe">{{ poza.legenda }}</figcaption>{% endif %}</figure>{% endif %}
+<div class="br-hero-text">
+<div class="br-latime">
+{% include "partials/capitol.twig" with {eticheta: 'capitol.casa'} %}
+<h1 id="{{ sectiune.id }}-t" class="br-titlu">{{ proprietate.nume }}</h1>
+{% set paragrafe = proprietate.descriere ? (proprietate.descriere_paragrafe ?? [proprietate.descriere]) : [] %}
+{% if paragrafe|length > 0 %}<div class="br-descriere br-hero-prezentare"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="br-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+<p>{{ paragrafe|first }}</p>
+{% if paragrafe|length > 1 %}<details class="br-descriere-rest"><summary><span class="br-descriere-toata">{{ t('descriere.toata') }}</span><span class="br-descriere-putin">{{ t('descriere.mai_putin') }}</span></summary>
+{% for x in paragrafe|slice(1) %}<p>{{ x }}</p>{% endfor %}
+</details>{% endif %}
+</div>{% endif %}
+</div>
+</div>
+</section>
+<div class="br-latime br-rezerva">
+<div class="br-rezerva-cutie">
+{{ cazo.bara_rezervare() }}
+{% if minim is not null %}<p class="br-rezerva-pret">{{ t('pret.de_la') }} <strong>{{ minim|lei }}</strong> {{ t('pret.pe_noapte') }}</p>{% endif %}
+</div>
+</div>

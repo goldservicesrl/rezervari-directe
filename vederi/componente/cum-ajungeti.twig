@@ -1,0 +1,8 @@
+{#- „Cum ajungeți”: adresa întreagă, indicațiile gazdei și harta, pe confirmare și pe „Rezervarea mea”; ultima în blocul ei. -#}
+{% if cum_ajungeti is defined %}
+<section class="pg-cum-ajungeti" aria-labelledby="pg-cum-ajungeti-titlu">
+<h2 id="pg-cum-ajungeti-titlu">{{ t('stare.cum_ajungeti') }}</h2>
+{% for p in cum_ajungeti.indicatii %}<p>{{ p }}</p>{% endfor %}
+{% include 'componente/harta.twig' with cum_ajungeti.harta only %}
+</section>
+{% endif %}

@@ -1,0 +1,13 @@
+{#- Subsolul temei (nuc ars): numele, adresa și meniul principal. Contactul, blocul legal și legăturile legale sunt ale
+    nucleului și stau dedesubt. -#}
+{%- set a = proprietate.adresa -%}
+<div class="ru-subsol">
+{% include "partials/brau.twig" %}
+<div class="ru-latime ru-subsol-interior">
+<div>
+<p class="ru-subsol-nume">{{ site.nume }}</p>
+{% if a.strada or a.localitate %}<p>{{ a.strada }}{% if a.strada and a.localitate %}, {% endif %}{{ a.localitate }}{% if a.judet and a.judet != a.localitate %}, {{ t('locatie.judet', {judet: a.judet}) }}{% endif %}</p>{% endif %}
+</div>
+{% if meniu.principal|length > 1 %}<nav aria-label="{{ t('subsol.meniu') }}"><ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}">{{ m.titlu }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+</div>

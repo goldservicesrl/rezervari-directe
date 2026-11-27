@@ -1,0 +1,6 @@
+{#- Raportul plăților pe lună, al proprietarului, pe pagina Rezervări. -#}
+{% if raport %}<section class="pa-card" aria-labelledby="pa-p-raport"><h2 id="pa-p-raport">{{ t('admin.rez.rapoarte_titlu') }}</h2>
+<p>{{ t('admin.platile.raport_text') }}</p>
+<form method="get" action="{{ raport.url }}"><p><label for="pa-luna">{{ t('admin.rez.export_luna') }}</label><input id="pa-luna" name="luna" type="month" value="{{ raport.luna }}" required></p>
+<button type="submit" class="pa-buton-secundar">{{ t('admin.rez.export') }}</button></form>
+</section>{% endif %}

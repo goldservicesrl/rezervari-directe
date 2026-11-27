@@ -1,0 +1,12 @@
+{#- Descrierea pe pagina camerei: la o proprietate cu o singură unitate, descrierea proprietății (cea de
+    pe Acasă), pe paragrafe, când unitatea nu are una a ei; descrierea proprie a camerei rămâne în „Spațiile”. -#}
+{% if camera is not null and not camera.descriere and camere|length == 1 and proprietate.descriere %}
+{% set paragrafe = proprietate.descriere_paragrafe ?? [proprietate.descriere] %}
+<section class="bv-card bv-despre" aria-labelledby="{{ sectiune.id }}-t"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+<div class="bv-sectiune-cap">
+<h2 id="{{ sectiune.id }}-t">{{ t('descriere.titlu') }}</h2>
+</div>
+{% if proprietate.descriere_titlu ?? '' %}<p class="bv-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+{% for p in paragrafe %}<p>{{ p }}</p>{% endfor %}
+</section>
+{% endif %}

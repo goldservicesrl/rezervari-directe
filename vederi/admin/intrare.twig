@@ -1,0 +1,19 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<div class="pa-intrare">
+<h1>{{ t('admin.intrare.titlu') }}</h1>
+{% if mesaj is defined and mesaj %}<p class="pa-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if eroare %}<p class="pa-eroare" role="alert">{{ eroare }}</p>{% endif %}
+<form method="post" action="{{ actiune }}">
+<input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-email">{{ t('admin.intrare.email') }}</label><input id="pa-email" name="email" type="email" autocomplete="username" required{% if email is defined and email %} value="{{ email }}"{% endif %}></p>
+<p><label for="pa-parola">{{ t('admin.intrare.parola') }}</label><input id="pa-parola" name="parola" type="password" autocomplete="current-password" required></p>
+<details{% if cod_deschis is defined and cod_deschis %} open{% endif %}><summary>{{ t('admin.intrare.cod_deschide') }}</summary>
+<p><label for="pa-cod">{{ t('admin.intrare.cod') }}</label><span class="pa-ajutor" id="pa-cod-ajutor">{{ t('admin.intrare.cod_ajutor') }} {{ t('admin.intrare.cod_rezerva_ajutor') }}</span><input id="pa-cod" name="cod" type="text" autocomplete="one-time-code" maxlength="12" aria-describedby="pa-cod-ajutor"></p></details>
+<p><button type="submit" class="pa-buton">{{ t('admin.intrare.buton') }}</button></p>
+</form>
+<ul class="pa-legaturi">{% if url_uitata is defined %}<li><a href="{{ url_uitata }}">{{ t('admin.intrare.uitata') }}</a></li>{% endif %}
+{% if url_site is defined %}<li><a href="{{ url_site }}">{{ t('admin.intrare.inapoi_site') }}</a></li>{% endif %}
+{% if alta_limba is defined %}<li><a href="{{ alta_limba.url }}" lang="{{ alta_limba.limba }}" hreflang="{{ alta_limba.limba }}">{{ alta_limba.limba == 'en' ? 'English' : 'Română' }}</a></li>{% endif %}</ul>
+</div>
+{% endblock %}

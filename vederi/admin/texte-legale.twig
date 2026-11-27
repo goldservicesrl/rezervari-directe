@@ -1,0 +1,47 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.texte_legale.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.texte_legale.explicatie') }}</p>
+<p class="pa-info">{{ t('admin.texte_legale.raspundere') }}</p>
+<form method="get" action="{{ url.deschide }}" class="pa-filtre"><input type="hidden" name="bloc" value="texte">
+<p><label for="pa-tl-f">{{ t('admin.texte_legale.pagina') }}</label><select id="pa-tl-f" name="fel">{% for x in felurile %}<option value="{{ x.cheie }}"{% if x.cheie == fel %} selected{% endif %}>{{ x.text }}</option>{% endfor %}</select></p>
+<p><label for="pa-tl-l">{{ t('admin.texte_legale.limba') }}</label><select id="pa-tl-l" name="limba"><option value="ro"{% if limba_text == 'ro' %} selected{% endif %}>Română</option><option value="en"{% if limba_text == 'en' %} selected{% endif %}>English</option></select></p>
+<p><button type="submit" class="pa-buton-secundar">{{ t('admin.texte_legale.deschide') }}</button></p></form>
+<h2>{{ nume_fel }}</h2>
+<p>{% if integral %}{{ t('admin.texte_legale.stare_integral') }}{% else %}{{ t('admin.texte_legale.stare_model') }}{% endif %}{% if ultima_schimbare %} {{ t('admin.texte_legale.ultima_schimbare', {la: ultima_schimbare}) }}{% endif %} <a href="{{ url.site }}">{{ t('admin.texte_legale.vezi') }}</a></p>
+{% if model_schimbat %}<div class="pa-avertizare" role="status"><p>{{ t('admin.texte_legale.model_schimbat_titlu') }}</p><p>{{ t('admin.texte_legale.model_schimbat_ajutor') }}</p>
+{% include 'admin/_diferente.twig' with {linii: model_schimbat} %}</div>{% endif %}
+<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="fel" value="{{ fel }}"><input type="hidden" name="limba" value="{{ limba_text }}">
+{% if fel == 'subsol' %}
+{% if gresite %}<p class="pa-eroare-camp" id="pa-tl-s-e" role="alert">{{ t('admin.texte_legale.eroare_adresa', {randuri: gresite|join('; ')}) }}</p>{% endif %}
+<p class="pa-ajutor" id="pa-tl-s-a">{{ t('admin.texte_legale.subsol_ajutor') }}</p>
+{% for g in grupuri %}<p><label for="pa-tl-g-{{ g.cheie }}">{{ g.eticheta }}</label><textarea id="pa-tl-g-{{ g.cheie }}" name="grup_{{ g.cheie }}" rows="{{ g.randuri }}" maxlength="3000" {% if limba_text == 'en' %}lang="en" {% endif %}aria-describedby="pa-tl-s-a{% if gresite %} pa-tl-s-e{% endif %}">{{ g.text }}</textarea></p>{% endfor %}
+{% else %}
+<p><label for="pa-tl-c">{{ t('admin.texte_legale.paragrafe') }}</label><span class="pa-ajutor" id="pa-tl-c-a">{{ t('admin.texte_legale.paragrafe_ajutor') }}</span><textarea id="pa-tl-c" name="corp" rows="24" maxlength="30000" {% if limba_text == 'en' %}lang="en" {% endif %}aria-describedby="pa-tl-c-a">{{ corp }}</textarea></p>
+{% endif %}
+<p class="pa-ajutor">{{ t('admin.texte_legale.campuri', {campuri: campuri}) }}</p>
+{% if fara_parola %}<p class="pa-eroare-camp" role="alert">{{ t('admin.reauth.eroare') }}</p>{% endif %}
+{% include 'admin/_reauth.twig' with {id: 'texte'} %}
+<button type="submit" class="pa-buton">{{ t('admin.texte_legale.salveaza') }}</button></form>
+<h2>{{ t('admin.texte_legale.previzualizare') }}</h2>
+{% if previzualizare %}
+<p class="pa-ajutor">{{ t(nesalvat ? 'admin.texte_legale.previzualizare_salvat' : 'admin.texte_legale.previzualizare_ajutor') }}</p>
+<details class="pa-avansat"><summary>{{ t('admin.texte_legale.previzualizare_arata', {pagina: previzualizare.titlu}) }}</summary>
+<div {% if limba_text == 'en' %}lang="en"{% endif %}>
+{% for x in previzualizare.intro %}<p>{{ x }}</p>{% endfor %}
+{% for s in previzualizare.sectiuni %}<h3>{{ s.titlu }}</h3>
+{% for x in s.paragrafe %}<p>{{ x }}</p>{% endfor %}
+{% endfor %}</div></details>
+{% else %}<p>{{ t('admin.texte_legale.previzualizare_subsol') }} <a href="{{ url.site }}">{{ t('admin.texte_legale.vezi') }}</a></p>{% endif %}
+<h2>{{ t('admin.texte_legale.diferente') }}</h2>
+{% if diferente %}{% include 'admin/_diferente.twig' with {linii: diferente} %}{% else %}<p class="pa-gol">{{ t('admin.texte_legale.identic') }}</p>{% endif %}
+{% if integral %}
+<form method="post" action="{{ url.baza }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="fel" value="{{ fel }}"><input type="hidden" name="limba" value="{{ limba_text }}"><input type="hidden" name="actiune" value="model">
+<p class="pa-ajutor">{{ t('admin.texte_legale.model_ajutor') }}</p>
+{% include 'admin/_reauth.twig' with {id: 'model'} %}
+<button type="submit" class="pa-buton-secundar">{{ t('admin.texte_legale.model') }}</button></form>
+{% endif %}
+<h2>{{ t('admin.texte_legale.istoric') }}</h2>
+{% if istoric %}<ul class="pa-intamplari">{% for x in istoric %}<li>{{ t('admin.texte_legale.versiunea', {v: x.versiune, la: x.la}) }}, {{ x.fel }}{% if x.activ %} <span class="pa-stare pa-stare-confirmata">{{ t('admin.texte_legale.activa') }}</span>{% endif %}{% if x.corp %}<details><summary>{{ t('admin.texte_legale.versiune_text') }}<span class="pa-ascuns"> {{ x.versiune }}</span></summary><pre class="pa-previzualizare">{{ x.corp }}</pre></details>{% endif %}</li>{% endfor %}</ul>{% else %}<p class="pa-gol">{{ t('admin.texte_legale.istoric_gol') }}</p>{% endif %}
+{% endblock %}

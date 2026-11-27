@@ -1,0 +1,2 @@
+{#- Numărul cu forma de plural românească: 1; 2-19; 20 și peste cu „de” când ultimele două cifre sunt 00 sau 20-99. -#}
+{% set rest = n % 100 %}{{ t(cheie ~ (n == 1 ? '.unu' : ((n >= 20 and (rest == 0 or rest >= 20)) ? '.de' : '.cateva')), {n: n}) -}}

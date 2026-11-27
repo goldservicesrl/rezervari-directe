@@ -1,0 +1,1 @@
+{% set s = "x" %}{% for a in 1..40 %}{% set s = s|replace({"x": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}) %}{% endfor %}{{ s|length }}

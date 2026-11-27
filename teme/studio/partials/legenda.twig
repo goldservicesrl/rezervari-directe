@@ -1,0 +1,2 @@
+{#- Legenda generică a pozei: eticheta categoriei, din locale; o poză fără categorie cunoscută rămâne fără legendă. -#}
+{% set cheie_legenda = 'categorie.' ~ p.rol %}{% if p.rol and t(cheie_legenda) != cheie_legenda %}<figcaption class="at-legenda">{{ t(cheie_legenda) }}</figcaption>{% endif -%}

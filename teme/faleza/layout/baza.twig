@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="{{ site.limba }}">
+<head>
+{{ cazo.head() }}
+</head>
+<body class="fz-corp">
+<a class="fz-salt" href="#continut">{{ t('salt_continut') }}</a>
+{% include "partials/antet.twig" %}
+<main id="continut" class="fz-principal">
+{% block continut %}{% endblock %}
+</main>
+<div class="fz-subsol">
+<div class="fz-latime">
+<p class="fz-subsol-nume">{{ site.nume }}</p>
+</div>
+</div>
+{{ cazo.foot() }}
+</body>
+</html>

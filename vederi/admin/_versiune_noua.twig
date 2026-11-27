@@ -1,0 +1,9 @@
+{#- Anunțul versiunii noi, pe Acasă și în blocul Actualizări: versiunea, data, notele, descărcarea. -#}
+<section class="pa-info" role="status" aria-labelledby="pa-versiune-noua" data-versiune-noua="{{ v.versiune }}">
+<h2 id="pa-versiune-noua">{{ t('actualizari.noua', {versiune: v.versiune}) }}</h2>
+{% if v.data %}<p>{{ t('actualizari.noua_data', {data: v.data}) }}</p>{% endif %}
+{% if v.securitate %}<p class="pa-avertizare">{{ t('actualizari.noua_securitate') }}</p>{% endif %}
+{% if v.note %}<h3>{{ t('actualizari.note') }}</h3><p>{{ v.note }}</p>{% endif %}
+<p><a class="pa-buton" href="{{ v.url }}" rel="noopener" target="_blank">{{ t('actualizari.descarca') }}</a>{% if v.pasi %} <a href="{{ v.pasi }}">{{ t('actualizari.pasii') }}</a>{% endif %}</p>
+<p class="pa-ajutor">{{ t('actualizari.cum') }}</p>
+</section>

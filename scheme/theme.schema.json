@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cazo.ro/scheme/theme.schema.json",
+  "title": "Manifestul temei (theme.json)",
+  "description": "Cheile pe care le citește nucleul. O cheie necunoscută trece, cu un avertisment al validatorului.",
+  "type": "object",
+  "required": ["slug", "nume", "versiune", "autor", "licenta", "necesita", "limbi"],
+  "properties": {
+    "slug": {"type": "string", "pattern": "^_?[a-z0-9][a-z0-9\\-]{0,63}$", "description": "Numele tehnic propus de autor. La încărcare, serverul generează propriul slug."},
+    "nume": {"$ref": "#/$defs/text_ro_en"},
+    "versiune": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})\\.(0|[1-9][0-9]{0,5})(-[0-9A-Za-z.\\-]{1,40})?$", "description": "Semver: MAJOR.MINOR.PATCH."},
+    "autor": {
+      "type": "object",
+      "required": ["nume"],
+      "properties": {
+        "nume": {"type": "string", "minLength": 1, "maxLength": 100},
+        "url": {"type": "string", "maxLength": 200, "pattern": "^https://"},
+        "email": {"type": "string", "maxLength": 200, "pattern": "^[^@\\s]+@[^@\\s]+$"}
+      },
+      "additionalProperties": false
+    },
+    "licenta": {"type": "string", "minLength": 1, "maxLength": 200, "description": "Un identificator SPDX sau textul licenței alese de autor. Temele oficiale: LicenseRef-Cazo (Licența Cazo)."},
+    "necesita": {
+      "type": "object",
+      "properties": {
+        "cazo": {"type": "string", "maxLength": 40, "pattern": "^(\\s*(>=|<=|>|<|=|\\^|~)?\\s*[0-9]+(\\.[0-9]+){0,2}\\s*)+$"},
+        "pragul": {"type": "string", "maxLength": 40, "pattern": "^(\\s*(>=|<=|>|<|=|\\^|~)?\\s*[0-9]+(\\.[0-9]+){0,2}\\s*)+$", "description": "Numele vechi al cheii cazo, primit la fel."},
+        "model_vedere": {"enum": ["1"]}
+      },
+      "additionalProperties": false
+    },
+    "limbi": {
+      "type": "array",
+      "items": {"enum": ["ro", "en"]},
+      "uniqueItems": true,
+      "allOf": [{"contains": {"const": "ro"}}, {"contains": {"const": "en"}}]
+    },
+    "pentru": {"type": "string", "maxLength": 200},
+    "latime_rem": {"type": "number", "minimum": 40, "maximum": 90, "description": "Lățimea coloanei de conținut a temei, în rem (fără marginile laterale). Paginile nucleului (căutarea, rezervarea, paginile legale) și subsolul iau aceeași lățime, ca antetul temei și conținutul lor să stea pe aceeași coloană. Fără ea, 72."},
+    "captura": {"type": "string", "pattern": "^captura\\.(webp|png|jpg|jpeg)$", "description": "Captura primei pagini, din rădăcina temei: imaginea mică din lista temelor (panou, instalator). WebP, PNG sau JPEG, de cel mult 200 KB și 1600 px pe o latură; recomandat 640 x 480. Fără ea, lista arată numele temei."},
+    "componente": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"}},
+    "continut": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"}},
+    "fonturi": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["familie", "fisier", "licenta"],
+        "properties": {
+          "familie": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9 \\-]+$"},
+          "fisier": {"type": "string", "pattern": "^assets/fonts/[A-Za-z0-9_\\-.]+\\.woff2$"},
+          "licenta": {"type": "string", "minLength": 1, "maxLength": 64},
+          "preincarcat": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "css": {"type": "array", "maxItems": 20, "items": {"type": "string", "pattern": "^assets/css/[a-z0-9_\\-]+\\.css$"}},
+    "js": {"type": "array", "maxItems": 10, "items": {"type": "string", "pattern": "^assets/js/[a-z0-9_\\-]+\\.js$"}, "description": "Doar temele oficiale. O temă încărcată din panou nu are JavaScript."},
+    "stiluri": {"type": "array", "maxItems": 10, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_\\-]{0,31}$"}},
+    "buget": {
+      "type": "object",
+      "properties": {
+        "css_kb_gz": {"type": "integer", "minimum": 0, "maximum": 60},
+        "js_kb_gz": {"type": "integer", "minimum": 0, "maximum": 30}
+      },
+      "additionalProperties": false
+    },
+    "privata": {
+      "type": "boolean",
+      "description": "Temă privată: lipsește din catalog și se activează doar pe instalarea care îi trece slugul în config.php (teme_private)."
+    }
+  },
+  "$defs": {
+    "text_ro_en": {
+      "type": "object",
+      "required": ["ro", "en"],
+      "properties": {
+        "ro": {"type": "string", "minLength": 1, "maxLength": 80},
+        "en": {"type": "string", "minLength": 1, "maxLength": 80}
+      },
+      "additionalProperties": false
+    }
+  }
+}

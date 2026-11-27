@@ -1,0 +1,39 @@
+{#- Deschiderea: fotografia principală a gazdei (galerie.principala, altfel prima poză a proprietății) pe toată
+    lățimea, decupată cu object-fit, și panoul plin, bleumarin, cu tipul și localitatea, titlul (prezentare.titlu,
+    altfel numele), zona, textul scurt (prezentare.text, altfel descrierea din EasyCheck: titlul, primul paragraf întreg
+    și restul la „Citiți toată descrierea”), insignele (dotările
+    unității la formele A și B) și reperul principal. Textul nu stă niciodată direct pe poză: contrastul rămâne același
+    pe o poză luminoasă sau întunecată. Fără poză, panoul rămâne singur. -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = forma != 'C' and camere|length > 0 ? camere|first : null %}
+{% set poza = galerie.principala ?? (proprietate.poze|length > 0 ? proprietate.poze|first : null) %}
+{% set titlu = prezentare.titlu ?? proprietate.nume %}
+{% set text = prezentare.text ?? '' %}
+{% set paragrafe = (prezentare.text ?? null) is null and proprietate.descriere ? (proprietate.descriere_paragrafe ?? [proprietate.descriere]) : [] %}
+{% set insigne = prezentare.insigne ?? (g ? g.dotari|slice(0, 4) : []) %}
+{% set tip = proprietate.tip in ['hotel', 'pensiune', 'vila', 'cabana', 'casa', 'apartament', 'camere', 'hostel', 'motel'] ? t('tip.' ~ proprietate.tip) : '' %}
+{% set loc = proprietate.adresa.localitate %}
+{% set reper = null %}
+{% for r in repere ?? [] %}{% if (r.minute ?? null) or (r.km ?? null) %}{% if r.principal ?? false %}{% set reper = r %}{% elseif reper is null or (not (reper.principal ?? false) and (r.minute ?? (r.km * 12)) < (reper.minute ?? (reper.km * 12))) %}{% set reper = r %}{% endif %}{% endif %}{% endfor %}
+<section class="et-erou{% if not poza %} et-erou-fara-poza{% endif %}" aria-labelledby="{{ sectiune.id }}-t">
+{% if poza %}<figure class="et-erou-foto">{{ img(poza, [960, 1440, 2048], true, '100vw') }}</figure>{% endif %}
+<div class="et-erou-loc">
+<div class="et-latime">
+<div class="et-erou-panou">
+{% if tip or loc %}<p class="et-erou-tip">{{ [tip, loc]|join(' · ')|trim(' · ') }}</p>{% endif %}
+<h1 id="{{ sectiune.id }}-t" class="et-erou-titlu">{{ titlu }}</h1>
+{% if proprietate.zona ?? '' %}<p class="et-erou-zona">{{ proprietate.zona }}</p>{% endif %}
+{% if text %}<p class="et-erou-text">{{ text }}</p>
+{% else %}{% if paragrafe|length > 0 %}<div class="et-descriere et-erou-text"{% if proprietate.descriere_limba != site.limba %} lang="{{ proprietate.descriere_limba }}"{% endif %}>
+{% if proprietate.descriere_titlu ?? '' %}<p class="et-descriere-titlu">{{ proprietate.descriere_titlu }}</p>{% endif %}
+<p>{{ paragrafe|first }}</p>
+{% if paragrafe|length > 1 %}<details class="et-descriere-rest"><summary><span class="et-descriere-toata">{{ t('descriere.toata') }}</span><span class="et-descriere-putin">{{ t('descriere.mai_putin') }}</span></summary>
+{% for x in paragrafe|slice(1) %}<p>{{ x }}</p>{% endfor %}
+</details>{% endif %}
+</div>{% endif %}{% endif %}
+{% if insigne|length > 0 %}<ul class="et-insigne" aria-label="{{ t('dotari.eticheta') }}">{% for d in insigne %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+{% if reper %}<p class="et-erou-reper">{% include "partials/reper.twig" with {r: reper, limba: site.limba} only %}</p>{% endif %}
+</div>
+</div>
+</div>
+</section>

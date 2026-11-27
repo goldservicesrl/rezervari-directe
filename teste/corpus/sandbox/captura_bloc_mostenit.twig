@@ -1,0 +1,1 @@
+{% extends "partials/captura-baza.twig" %}{% block y %}{% set s = "abcdefghij" %}{% for i in 1..14 %}{% set s = s ~ s %}{% endfor %}{% set m %}{{ s }}{% endset %}{% for i in 1..30 %}{% for j in 1..30 %}{{ m }}{% endfor %}{% endfor %}{% endblock %}

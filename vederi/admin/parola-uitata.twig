@@ -1,0 +1,15 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<div class="pa-intrare">
+<h1>{{ t('admin.uitata.titlu') }}</h1>
+{% if trimis %}<p class="pa-mesaj" role="status">{{ t('admin.uitata.trimis') }}</p>
+{% else %}
+<p>{{ t('admin.uitata.explicatie') }}</p>
+<form method="post" action="{{ actiune }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-email">{{ t('admin.intrare.email') }}</label><input id="pa-email" name="email" type="email" autocomplete="username" required></p>
+<p><button type="submit" class="pa-buton">{{ t('admin.uitata.buton') }}</button></p></form>
+{% endif %}
+<ul class="pa-legaturi"><li><a href="{{ url_intrare }}">{{ t('admin.uitata.inapoi') }}</a></li>
+{% if alta_limba is defined and not trimis %}<li><a href="{{ alta_limba.url }}" lang="{{ alta_limba.limba }}" hreflang="{{ alta_limba.limba }}">{{ alta_limba.limba == 'en' ? 'English' : 'Română' }}</a></li>{% endif %}</ul>
+</div>
+{% endblock %}

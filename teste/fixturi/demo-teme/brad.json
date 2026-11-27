@@ -1,0 +1,74 @@
+{
+  "fraza": "O cabană din lemn la munte, cu camere duble și o suită la mansardă.",
+  "ilustratie": "casa",
+  "proprietate": {
+    "nume": "Cabana dintre Brazi",
+    "tip": "cabana",
+    "descriere": {
+      "ro": "Cabană din lemn la marginea pădurii, cu șemineu în salon, saună și trasee de drumeție care pornesc chiar din curte.",
+      "en": "A wooden chalet at the edge of the forest, with a fireplace in the lounge, a sauna and hiking trails that start right from the yard."
+    },
+    "adresa": {
+      "strada": "Drumul Plaiului 40",
+      "localitate": "Moieciu de Sus",
+      "judet": "Brașov"
+    },
+    "coordonate": {
+      "lat": 45.493,
+      "lng": 25.332
+    },
+    "contact": {
+      "email": "rezervari@cabana-dintre-brazi.test",
+      "telefon": "+40 700 000 000"
+    },
+    "operator": {
+      "denumire": "Plaiul Brazilor SRL",
+      "sediu": "Moieciu de Sus, Drumul Plaiului 40",
+      "forma": "srl",
+      "capital_social": "200 lei",
+      "cui": "RO12345678",
+      "registrul_comertului": "J08/123/2020",
+      "clasificari": [
+        {
+          "fel": "certificat",
+          "numar": "1234/2026",
+          "tip_structura": "Cabană turistică",
+          "tip_structura_en": "Mountain chalet",
+          "categorie": 3,
+          "camere": []
+        }
+      ]
+    }
+  },
+  "camere": [
+    {
+      "id": "dubla",
+      "titlu": "Cameră dublă cu balcon",
+      "unitati": 4,
+      "oaspeti_max": 3,
+      "pret": 28000,
+      "weekend": 5000,
+      "sejur_minim": 1,
+      "spatii": "dubla"
+    },
+    {
+      "id": "apartament",
+      "titlu": "Suită la mansardă",
+      "unitati": 1,
+      "oaspeti_max": 5,
+      "pret": 46000,
+      "weekend": 6000,
+      "sejur_minim": 2,
+      "spatii": "apartament"
+    }
+  ],
+  "poze": [
+    {"fisier": "brad-exterior.jpg", "categorie": "exterior"},
+    {"fisier": "brad-camera.jpg", "categorie": "camera"},
+    {"fisier": "brad-mansarda.jpg", "categorie": "camera"},
+    {"fisier": "brad-salon.jpg", "categorie": "living"},
+    {"fisier": "brad-sauna.jpg", "categorie": "spatii_comune"},
+    {"fisier": "brad-baie.jpg", "categorie": "baie"},
+    {"fisier": "brad-traseu.jpg", "categorie": "imprejurimi"}
+  ]
+}

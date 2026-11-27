@@ -1,0 +1,27 @@
+{#- Camerele ca obiecte: un articol pe grup EC (numărul de articole = numărul de grupuri), aranjamentul alternează singur. -#}
+{% if camere|length > 0 %}
+{% set titlu = sectiune.setari.titlu == 'toate' ? 'camere.toate' : 'camere.titlu' %}
+<section class="at-camere at-pagina" aria-labelledby="{{ sectiune.id }}-t">
+<div class="at-latime">
+<header class="at-cap"><p class="at-folio" aria-hidden="true"></p><h2 id="{{ sectiune.id }}-t">{{ t(titlu) }}</h2></header>
+<ol class="at-obiecte">
+{% for c in camere %}
+<li class="at-obiect">
+<article class="at-obiect-interior" aria-labelledby="{{ sectiune.id }}-c{{ loop.index }}">
+{% if c.poza_principala %}<figure class="at-obiect-placa">{{ img(c.poza_principala, [480, 960], false, '(min-width: 48rem) 28rem, 88vw') }}{% include "partials/legenda.twig" with {p: c.poza_principala} %}</figure>{% endif %}
+<div class="at-obiect-text">
+<p class="at-obiect-numar" aria-hidden="true"></p>
+<h3 id="{{ sectiune.id }}-c{{ loop.index }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</h3>
+{% include "partials/capacitate.twig" with {c: c} %}
+{% include "partials/fisa.twig" with {c: c} %}
+{% if c.dotari %}<ul class="at-dotari" aria-label="{{ t('spec.dotari') }}">{% for d in c.dotari|slice(0, 3) %}<li>{{ d }}</li>{% endfor %}</ul>{% endif %}
+{% if c.pret_de_la %}<p class="at-obiect-pret">{{ c.pret_de_la.text }}</p>{% endif %}
+<a class="at-alege" href="{{ c.url }}">{{ t('camere.alegeti') }}<span class="at-ascuns"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>: {{ c.titlu }}</span></a>
+</div>
+</article>
+</li>
+{% endfor %}
+</ol>
+</div>
+</section>
+{% endif %}

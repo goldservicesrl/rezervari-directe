@@ -1,0 +1,12 @@
+{#- Setări › Întreținere, „Avansat: sarcinile automate”: fiecare sarcină cu ultima rulare, sursa și
+    rezultatul pe înțeles. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.sistem.sarcini') }}</h1>
+{% if sarcini %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.sistem.sarcina') }}</th><th scope="col">{{ t('admin.sistem.ultima') }}</th><th scope="col">{{ t('admin.sistem.sursa') }}</th><th scope="col">{{ t('admin.sistem.rezultat') }}</th></tr></thead>
+<tbody>{% for x in sarcini %}<tr><th scope="row" data-eticheta="{{ t('admin.sistem.sarcina') }}">{{ x.nume }}{% if x.cod != x.nume %} <code>{{ x.cod }}</code>{% endif %}</th><td data-eticheta="{{ t('admin.sistem.ultima') }}">{{ x.ultima }}</td><td data-eticheta="{{ t('admin.sistem.sursa') }}">{{ x.sursa }}</td><td data-eticheta="{{ t('admin.sistem.rezultat') }}">{{ x.rezultat }}{% if x.detaliu %}: <code>{{ x.detaliu }}</code>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<p class="pa-gol">{{ t('admin.sistem.sarcini_gol') }}</p>{% endif %}
+{% endblock %}

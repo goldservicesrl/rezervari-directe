@@ -1,0 +1,8 @@
+{% if proprietate.poze|length > 1 %}
+<section class="sc-sectiune sc-galerie" aria-labelledby="{{ sectiune.id }}-t">
+<div class="sc-latime">
+<h2 id="{{ sectiune.id }}-t" class="sc-titlu-sectiune">{{ t(sectiune.setari.titlu) }}</h2>
+<ul class="sc-galerie-grila">{% for p in proprietate.poze|slice(0, sectiune.setari.numar) %}<li>{{ img(p, [480, 960, 1440], false, '(min-width: 40rem) 33vw, 50vw', true) }}</li>{% endfor %}</ul>
+</div>
+</section>
+{% endif %}

@@ -1,0 +1,54 @@
+{#- Proprietatea, în modul fără cheie EasyCheck. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.local.prop.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.local.prop.explicatie') }}</p>
+<form method="post" action="{{ url.salveaza }}" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<fieldset><legend>{{ t('admin.local.prop.despre') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pl-nume', nume: 'nume', eticheta: 'admin.local.prop.nume', valoare: v.nume, eroare: erori.nume ?? '', max: 191, cerut: true} only %}
+<p><label for="pl-tip">{{ t('admin.local.prop.tip') }}</label><select id="pl-tip" name="tip">{% for x in tipuri %}<option value="{{ x }}"{% if v.tip == x %} selected{% endif %}>{{ t('admin.local.tip.' ~ x) }}</option>{% endfor %}</select></p>
+{% include 'admin/_camp_local.twig' with {id: 'pl-dro', nume: 'descriere_ro', eticheta: 'admin.local.prop.descriere_ro', valoare: v.descriere_ro, eroare: '', tip: 'textarea', max: 4000, lang: 'ro', ajutor: 'admin.local.prop.descriere_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-den', nume: 'descriere_en', eticheta: 'admin.local.prop.descriere_en', valoare: v.descriere_en, eroare: '', tip: 'textarea', max: 4000, lang: 'en'} only %}
+</fieldset>
+<fieldset><legend>{{ t('admin.local.prop.adresa') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pl-str', nume: 'strada', eticheta: 'admin.local.prop.strada', valoare: v.strada, eroare: '', max: 191, autocomplete: 'address-line1'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-loc', nume: 'localitate', eticheta: 'admin.local.prop.localitate', valoare: v.localitate, eroare: erori.localitate ?? '', max: 191, cerut: true, autocomplete: 'address-level2'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-jud', nume: 'judet', eticheta: 'admin.local.prop.judet', valoare: v.judet, eroare: '', max: 191, autocomplete: 'address-level1'} only %}
+{#- harta care se trage, doar cu JavaScript (front/js/admin/harta.js); fără el, locul rămâne ascuns
+   și se vede îndrumarea de sub el (.pa-harta-fara), pe care harta afișată o ascunde din CSS. -#}
+<div class="pa-harta" hidden data-harta-dale="{{ harta_panou.dale }}" data-harta-centru="{{ harta_panou.centru }}" data-harta-lat="pl-lat" data-harta-lng="pl-lng" data-harta-eticheta="{{ t('admin.local.prop.harta_eticheta') }}" data-harta-indrumare="{{ t(harta_panou.indrumare) }}" data-harta-apropie="{{ t('admin.local.prop.harta_apropie') }}" data-harta-departeaza="{{ t('admin.local.prop.harta_departeaza') }}" data-harta-aviz="{{ t('admin.local.prop.harta_aviz') }}"></div>
+<p class="pa-ajutor pa-harta-fara">{{ t('admin.local.prop.harta_ajutor') }}</p>
+{% include 'admin/_camp_local.twig' with {id: 'pl-lat', nume: 'lat', eticheta: 'admin.local.prop.lat', valoare: v.lat, eroare: erori.lat ?? '', clasa: 'pa-scurt', mod: 'decimal'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-lng', nume: 'lng', eticheta: 'admin.local.prop.lng', valoare: v.lng, eroare: '', clasa: 'pa-scurt', mod: 'decimal'} only %}
+<div class="pa-actiuni"><button type="submit" name="actiune" value="harta" class="pa-buton-secundar">{{ t('admin.local.prop.cauta_harta') }}</button>
+{% if harta %}<a href="{{ harta }}" rel="noopener">{{ t('admin.local.prop.vezi_harta') }}</a>{% endif %}</div>
+</fieldset>
+<fieldset><legend>{{ t('admin.local.prop.ore') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pl-ci', nume: 'checkin_de_la', eticheta: 'admin.local.prop.checkin_de_la', valoare: v.checkin_de_la, eroare: erori.checkin_de_la ?? '', tip: 'time', clasa: 'pa-scurt', cerut: true} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-cip', nume: 'checkin_pana_la', eticheta: 'admin.local.prop.checkin_pana_la', valoare: v.checkin_pana_la, eroare: erori.checkin_pana_la ?? '', tip: 'time', clasa: 'pa-scurt', ajutor: 'admin.local.prop.optional'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-co', nume: 'plecare_pana_la', eticheta: 'admin.local.prop.plecare_pana_la', valoare: v.plecare_pana_la, eroare: erori.plecare_pana_la ?? '', tip: 'time', clasa: 'pa-scurt', cerut: true} only %}
+</fieldset>
+<fieldset><legend>{{ t('admin.local.prop.reguli') }}</legend>
+{% for x in reguli_casa %}<p><label for="pl-r-{{ x }}">{{ t('admin.local.regula.' ~ x) }}</label><select id="pl-r-{{ x }}" name="regula_{{ x }}">
+<option value=""{% if v['regula_' ~ x] == '' %} selected{% endif %}>{{ t('admin.local.regula.gol') }}</option>
+<option value="da"{% if v['regula_' ~ x] == 'da' %} selected{% endif %}>{{ t('admin.local.regula.permis') }}</option>
+<option value="nu"{% if v['regula_' ~ x] == 'nu' %} selected{% endif %}>{{ t('admin.local.regula.interzis') }}</option></select></p>
+{% endfor %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-am', nume: 'animale_max', eticheta: 'admin.local.prop.animale_max', valoare: v.animale_max, eroare: erori.animale_max ?? '', clasa: 'pa-scurt', mod: 'numeric', ajutor: 'admin.local.prop.optional'} only %}
+</fieldset>
+<fieldset><legend>{{ t('admin.local.prop.contact') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pl-em', nume: 'email', eticheta: 'admin.local.prop.email', valoare: v.email, eroare: erori.email ?? '', tip: 'email', cerut: true, autocomplete: 'email', ajutor: 'admin.local.prop.email_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-tel', nume: 'telefon', eticheta: 'admin.local.prop.telefon', valoare: v.telefon, eroare: '', tip: 'tel', max: 40, autocomplete: 'tel', ajutor: 'admin.local.prop.telefon_ajutor'} only %}
+</fieldset>
+<fieldset id="regula"><legend>{{ t('admin.local.reg.titlu') }}</legend>
+<p class="pa-ajutor">{{ t('admin.local.reg.explicatie') }}</p>
+{% include 'admin/_camp_local.twig' with {id: 'pl-min', nume: 'sejur_minim', eticheta: 'admin.local.reg.sejur_minim', valoare: v.sejur_minim, eroare: erori.sejur_minim ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-av', nume: 'avans_procent', eticheta: 'admin.local.reg.avans', valoare: v.avans_procent, eroare: erori.avans_procent ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.reg.avans_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-an', nume: 'anulare_zile', eticheta: 'admin.local.reg.anulare', valoare: v.anulare_zile, eroare: erori.anulare_zile ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.reg.anulare_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pl-tc', nume: 'termen_cerere_ore', eticheta: 'admin.local.reg.termen', valoare: v.termen_cerere_ore, eroare: erori.termen_cerere_ore ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.reg.termen_ajutor'} only %}
+</fieldset>
+<p>{{ t('admin.local.prop.firma') }} <a href="{{ url.legal }}">{{ t('admin.nav.legal') }}</a></p>
+<button type="submit" class="pa-buton">{{ t('admin.local.prop.salveaza') }}</button></form>
+{% if harta_panou.js %}<script src="{{ harta_panou.js }}" defer></script>{% endif %}
+{% endblock %}

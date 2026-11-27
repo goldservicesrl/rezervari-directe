@@ -1,0 +1,33 @@
+{%- if r.oferte ?? null -%}
+{#- Tarifele pentru datele alese: câte unul pe politică de anulare și masă, fiecare cu totalul și butonul lui. -#}
+<ul class="pg-oferte">
+{% for o in r.oferte %}<li class="pg-oferta">
+<h3 class="pg-oferta-titlu">{{ o.tarif }}</h3>
+{% if o.tarif_nota %}<p class="pg-oferta-nota">{{ o.tarif_nota }}</p>{% endif %}
+{% if o.masa ?? '' %}<p class="pg-masa">{{ o.masa }}</p>{% endif %}
+<p class="pg-oferta-politica">{{ o.politica }}</p>
+{% if o.stare == 'ok' %}
+<p class="pg-total"><strong>{{ o.titlu }}</strong></p>
+{% if o.euro ?? null %}<p class="pg-total-euro">{{ o.euro }}</p>{% endif %}
+{% for x in o.separat ?? [] %}<p class="pg-total-separat">{{ x }}</p>{% endfor %}
+<details class="pg-total-componente"><summary>{{ t('rezumat.componente') }}</summary><dl>{% for c in o.componente %}<div class="pg-total-rand"><dt>{{ c.eticheta }}</dt><dd>{{ c.text }}</dd></div>{% endfor %}</dl></details>
+{% if o.rezerva_url ?? null %}<p class="pg-total-rezerva"><a class="pg-buton" href="{{ o.rezerva_url }}">{{ o.rezerva_text }}<span class="pg-ascuns">, {{ o.tarif }}</span></a></p>{% endif %}
+{% else %}
+<p class="pg-total-mesaj pg-total-mesaj--{{ o.stare }}">{{ o.mesaj }}</p>
+{% endif %}
+</li>{% endfor %}
+</ul>
+{%- elseif r.stare == 'ok' -%}
+<p class="pg-total"><strong>{{ r.titlu }}</strong></p>
+{% if r.euro ?? null %}<p class="pg-total-euro">{{ r.euro }}</p>{% endif %}
+{% for x in r.separat ?? [] %}<p class="pg-total-separat">{{ x }}</p>{% endfor %}
+<details class="pg-total-componente"><summary>{{ t('rezumat.componente') }}</summary><dl>{% for c in r.componente %}<div class="pg-total-rand"><dt>{{ c.eticheta }}</dt><dd>{{ c.text }}</dd></div>{% endfor %}</dl></details>
+{% if r.rezerva_url ?? null %}<p class="pg-total-rezerva"><a class="pg-buton" href="{{ r.rezerva_url }}">{{ r.rezerva_text }}</a></p>{% endif %}
+{%- else -%}
+{#- nopțile ocupate sau o restricție, într-o casetă de avertisment, cu cele mai apropiate date libere la un clic. -#}
+<div class="pg-total-avertisment pg-total-avertisment--{{ r.stare }}">
+<p class="pg-total-mesaj pg-total-mesaj--{{ r.stare }}">{{ r.mesaj }}</p>
+{% if r.alternative ?? null %}<p class="pg-alternative-titlu">{{ r.alternative_titlu }}</p>
+<ul class="pg-alternative">{% for a in r.alternative %}<li><a class="pg-buton-secundar pg-alternativa" href="{{ a.url }}" data-sosire="{{ a.sosire }}" data-plecare="{{ a.plecare }}">{{ a.text }}</a></li>{% endfor %}</ul>{% endif %}
+</div>
+{%- endif -%}

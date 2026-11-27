@@ -1,0 +1,15 @@
+{#- Rezervarea directă, pe banda de nuc: bara nucleului pe un card deschis (cu JavaScript, listele „Adulți” și „Copii”
+    primesc butoanele − și +, assets/js/pasi.js) și orele de check-in și check-out din EasyCheck. Pe telefon, cât
+    formularul e în afara ecranului, nucleul arată butonul fix de jos (.pg-bara-lipicios). -#}
+{% set cu_titlu = sectiune.setari.cu_titlu ?? true %}
+{% set ore = proprietate.ore %}
+<section class="ru-rezervare" id="ru-rezervare"{% if cu_titlu %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t('rezervare.titlu') }}"{% endif %}>
+<div class="ru-latime ru-rezervare-grila">
+{% if cu_titlu %}<div class="ru-rezervare-cap">
+<h2 id="{{ sectiune.id }}-t">{{ t('rezervare.titlu') }}</h2>
+<p>{{ t('rezervare.text') }}</p>
+</div>{% endif %}
+<div class="ru-bara" data-pasi data-adulti-minus="{{ t('pas.adulti_minus') }}" data-adulti-plus="{{ t('pas.adulti_plus') }}" data-copii-minus="{{ t('pas.copii_minus') }}" data-copii-plus="{{ t('pas.copii_plus') }}">{{ cazo.bara_rezervare() }}</div>
+{% if ore.checkin_de_la or ore.plecare_pana_la %}<p class="ru-rezervare-note">{% if ore.checkin_de_la %}<span>{{ t('rezervare.checkin', {ora: ore.checkin_de_la}) }}</span>{% endif %}{% if ore.plecare_pana_la %}<span>{{ t('rezervare.checkout', {ora: ore.plecare_pana_la}) }}</span>{% endif %}</p>{% endif %}
+</div>
+</section>

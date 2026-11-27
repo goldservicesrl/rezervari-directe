@@ -1,0 +1,16 @@
+{
+  "slug": "_schelet",
+  "nume": {"ro": "Schelet", "en": "Skeleton"},
+  "versiune": "1.0.0",
+  "autor": {"nume": "Cazo"},
+  "licenta": "LicenseRef-Cazo",
+  "necesita": {"cazo": ">=1.0 <2.0", "model_vedere": "1"},
+  "limbi": ["ro", "en"],
+  "latime_rem": 70,
+  "pentru": "biblioteca de secțiuni și tema de rezervă a nucleului",
+  "componente": [],
+  "continut": [],
+  "fonturi": [],
+  "css": ["assets/css/schelet.css"],
+  "buget": {"css_kb_gz": 20, "js_kb_gz": 0}
+}

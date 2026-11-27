@@ -1,0 +1,36 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.site.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% if publicat %}
+<p data-stare-site="publicat">{{ t('admin.site.publicat') }}{% if publicat_la %} {{ t('admin.site.publicat_la', {cand: publicat_la}) }}{% endif %}</p>
+{% else %}
+<p class="pa-info" data-stare-site="pregatire">{{ t('admin.site.nepublicat') }}</p>
+{% endif %}
+<p><a class="pa-buton-secundar" href="{{ url.site }}">{{ t('admin.site.deschide') }}</a></p>
+{% if lipsa %}
+<section class="pa-avertizare" aria-labelledby="pa-lipsa-titlu"{% if publicat %} data-alerta-lipsa{% endif %}><h2 id="pa-lipsa-titlu">{{ t('admin.site.lipsa_titlu') }}</h2>
+{% if publicat %}<p>{{ t('admin.site.alerta_lipsa') }}</p>{% endif %}
+<ul>{% for x in lipsa %}<li data-lipsa="{{ x.cheie }}">{% if x.url %}<a href="{{ x.url }}">{{ x.link }}</a>{% else %}<strong>{{ x.link }}</strong>{% endif %}: {{ x.text }}</li>{% endfor %}</ul>
+{% if fara_rezervari %}<p>{{ t('admin.alerta.legal_vanzare', {campuri: fara_rezervari}) }}{% if not publicat %} {{ t('admin.site.asum_prezentare') }}{% endif %}</p>{% endif %}
+{% if temeiuri %}
+<p>{{ t('admin.site.risc') }}</p>
+<details><summary>{{ t('admin.site.temeiuri') }}</summary><ul>{% for x in temeiuri %}<li data-temei="{{ x.camp }}"><strong>{{ x.eticheta }}</strong>: {{ x.text }}</li>{% endfor %}</ul></details>
+{% endif %}
+</section>
+{% endif %}
+{% if not proprietar %}
+<p class="pa-info">{{ t('admin.site.doar_proprietar') }}</p>
+{% elseif not publicat %}
+<form method="post" action="{{ url.baza }}/publica"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% if lipsa %}<p><input type="checkbox" id="pa-asum" name="asum" value="1" required{% if eroare_asum %} aria-invalid="true" aria-describedby="pa-asum-eroare"{% endif %}><label for="pa-asum">{{ t('admin.site.asum') }}</label>
+{% if eroare_asum %}<span class="pa-eroare-camp" id="pa-asum-eroare">{{ t('admin.site.eroare_confirmare') }}</span>{% endif %}</p>{% endif %}
+<p class="pa-ajutor" id="pa-publica-ajutor">{{ t('admin.site.publica_ajutor') }}</p>
+<button type="submit" class="pa-buton" aria-describedby="pa-publica-ajutor">{{ t('admin.site.publica') }}</button></form>
+{% else %}
+<details class="pa-confirma"><summary>{{ t('admin.site.retrage') }}</summary>
+<form method="post" action="{{ url.baza }}/retrage"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p>{{ t('admin.site.retrage_ajutor') }}</p>
+<button type="submit" class="pa-buton-pericol">{{ t('admin.site.retrage_da') }}</button></form></details>
+{% endif %}
+{% endblock %}

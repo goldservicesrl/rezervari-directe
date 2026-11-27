@@ -1,0 +1,8 @@
+{#- Un câmp al formularelor site-ului fără cheie EasyCheck: eticheta, ajutorul, valoarea, eroarea lângă câmp.
+    Parametri: id, nume, eticheta (cheia textului), valoare, eroare (textul), ajutor (cheia, opțional), tip (text, email,
+    tel, time, number, textarea), clasa (pa-lat, pa-scurt), max, cerut, lang, mod (inputmode), autocomplete. -#}
+{%- set descris = (ajutor|default('') ? id ~ '-ajutor' : '') ~ (eroare|default('') ? ' ' ~ id ~ '-eroare' : '') -%}
+<p><label for="{{ id }}">{{ t(eticheta) }}</label>{% if ajutor|default('') %}<span class="pa-ajutor" id="{{ id }}-ajutor">{{ t(ajutor) }}</span>{% endif %}
+{%- if tip|default('text') == 'textarea' %}<textarea id="{{ id }}" name="{{ nume }}" rows="{{ randuri|default(4) }}"{% if max|default(0) %} maxlength="{{ max }}"{% endif %}{% if lang|default('') %} lang="{{ lang }}"{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}{% if eroare|default('') %} aria-invalid="true"{% endif %}>{{ valoare }}</textarea>
+{%- else %}<input id="{{ id }}" class="{{ clasa|default('pa-lat') }}" name="{{ nume }}" type="{{ tip|default('text') }}" value="{{ valoare }}"{% if max|default(0) %} maxlength="{{ max }}"{% endif %}{% if mod|default('') %} inputmode="{{ mod }}"{% endif %}{% if autocomplete|default('') %} autocomplete="{{ autocomplete }}"{% endif %}{% if lang|default('') %} lang="{{ lang }}"{% endif %}{% if cerut|default(false) %} required{% endif %}{% if descris|trim %} aria-describedby="{{ descris|trim }}"{% endif %}{% if eroare|default('') %} aria-invalid="true"{% endif %}>{% endif %}
+{%- if eroare|default('') %}<span class="pa-eroare-camp" id="{{ id }}-eroare">{{ eroare }}</span>{% endif %}</p>

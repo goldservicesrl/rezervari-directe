@@ -1,0 +1,22 @@
+{#- Rezervarea directă: bara nucleului (datele și oaspeții; cu JavaScript, listele „Adulți” și „Copii” primesc butoanele
+    − și +, assets/js/pasi.js), orele de check-in și check-out din EasyCheck, apoi tarifele vizibile pe site (`planuri`:
+    numele, masa inclusă sau „Doar cazare”, și anularea scrisă de nucleu). Pe telefon, cât formularul e în afara ecranului, nucleul
+    arată butonul fix de jos (.pg-bara-lipicios); tema pune lângă el banda cu „de la” cel mai mic dintre camere. -#}
+{% set cu_titlu = sectiune.setari.cu_titlu ?? true %}
+{% set ore = proprietate.ore %}
+{% set de_la = null %}
+{% for c in camere %}{% if c.pret_de_la and (de_la is null or c.pret_de_la.suma < de_la.suma) %}{% set de_la = c.pret_de_la %}{% endif %}{% endfor %}
+<section class="et-rezervare{% if not cu_titlu %} et-rezervare-simpla{% endif %}"{% if cu_titlu %} aria-labelledby="{{ sectiune.id }}-t"{% else %} aria-label="{{ t('rezervare.titlu') }}"{% endif %}>
+<div class="et-latime">
+<div class="et-bara pg-pe-suprafata" data-pasi data-adulti-minus="{{ t('pas.adulti_minus') }}" data-adulti-plus="{{ t('pas.adulti_plus') }}" data-copii-minus="{{ t('pas.copii_minus') }}" data-copii-plus="{{ t('pas.copii_plus') }}">
+{% if cu_titlu %}<h2 id="{{ sectiune.id }}-t" class="et-bara-titlu">{{ t('rezervare.titlu') }}</h2>{% endif %}
+<div class="et-bara-formular">{{ cazo.bara_rezervare() }}</div>
+{% if ore.checkin_de_la or ore.plecare_pana_la %}<p class="et-bara-jos">{% if ore.checkin_de_la %}<span>{{ t('rezervare.checkin', {ora: ore.checkin_de_la}) }}</span>{% endif %}{% if ore.plecare_pana_la %}<span>{{ t('rezervare.checkout', {ora: ore.plecare_pana_la}) }}</span>{% endif %}</p>{% endif %}
+</div>
+{% if planuri|length > 0 %}<div class="et-tarife">
+{% if cu_titlu %}<h3 class="et-tarife-titlu">{{ t('tarife.titlu') }}</h3>{% else %}<h2 class="et-tarife-titlu">{{ t('tarife.titlu') }}</h2>{% endif %}
+<ul>{% for p in planuri %}<li class="et-tarif"><span class="et-tarif-nume">{{ p.titlu }}</span>{% if p.masa_eticheta ?? '' %}<span class="et-tarif-masa">{{ p.masa_eticheta }}</span>{% endif %}<span class="et-tarif-anulare">{{ p.politica }}</span></li>{% endfor %}</ul>
+</div>{% endif %}
+</div>
+{% if de_la %}<div class="et-bara-fixa"><div class="et-latime"><p>{{ t('rezervare.titlu') }}<b>{{ t('fixa.de_la', {pret: de_la.suma|lei}) }}</b></p></div></div>{% endif %}
+</section>

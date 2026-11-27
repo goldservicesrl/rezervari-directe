@@ -1,0 +1,17 @@
+{
+  "setari": [
+    {"id": "culoare_fundal", "tip": "color", "implicit": "#f6f4ef"},
+    {"id": "culoare_text", "tip": "color", "implicit": "#1f2621"},
+    {"id": "culoare_accent", "tip": "color", "implicit": "#a84b24"},
+    {"id": "culoare_accent_contrast", "tip": "color", "implicit": "#ffffff"},
+    {"id": "culoare_linie", "tip": "color", "implicit": "#6a6155"},
+    {"id": "culoare_suprafata", "tip": "color", "implicit": "#efebe3"},
+    {"id": "font_titlu", "tip": "font", "implicit": "Fraunces"},
+    {"id": "font_text", "tip": "font", "implicit": "Source Sans 3"},
+    {"id": "raza", "tip": "range", "min": 0, "max": 32, "implicit": 8},
+    {"id": "spatiu", "tip": "range", "min": 12, "max": 24, "implicit": 16}
+  ],
+  "contrast": [
+    {"culori": ["#2f4a3a", "#2e5135", "#535d57", "#251912", "#2a2117"], "pe": ["culoare_fundal", "culoare_suprafata"], "prag": 4.5}
+  ]
+}

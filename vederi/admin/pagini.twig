@@ -1,0 +1,19 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.pagini.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.pagini.explicatie') }}</p>
+<p><a class="pa-buton-secundar" href="{{ url.baza }}/noua">{{ t('admin.pagini.adauga') }}</a></p>
+{% if pagini %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.pagini.col.titlu') }}</th><th scope="col">{{ t('admin.pagini.col.tip') }}</th><th scope="col">{{ t('admin.pagini.col.stare') }}</th><th scope="col">{{ t('admin.pagini.col.adresa') }}</th><th scope="col">{{ t('admin.pagini.col.ordine') }}</th></tr></thead>
+<tbody>{% for x in pagini %}<tr><th scope="row"><a href="{{ url.baza }}/{{ x.id }}">{{ x.titlu }}</a>{% if not x.titlu_en %} ({{ t('admin.continut.de_tradus') }}){% endif %}</th>
+<td data-eticheta="{{ t('admin.pagini.col.tip') }}">{{ t('admin.pagini.tip.' ~ x.tip) }}</td>
+<td data-eticheta="{{ t('admin.pagini.col.stare') }}"><span class="pa-stare {{ x.publicata ? 'pa-stare-confirmata' : 'pa-stare-asteapta' }}">{{ x.publicata ? t('admin.pagini.in_meniu') : t('admin.pagini.ciorna') }}</span></td>
+<td data-eticheta="{{ t('admin.pagini.col.adresa') }}">{% if x.url %}<a href="{{ x.url }}">{{ x.adresa }}</a>{% else %}{{ x.adresa }}{% endif %}</td>
+<td data-eticheta="{{ t('admin.pagini.col.ordine') }}">{{ x.ordine }}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="pa-gol">{{ t('admin.pagini.gol') }}</p>
+{% endif %}
+{% endblock %}

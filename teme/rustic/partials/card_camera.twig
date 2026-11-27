@@ -1,0 +1,26 @@
+{#- Cardul unei camere. -#}
+{% set v = c.vedere ?? c.fisa.vedere ?? '' %}
+{% set mp = c.suprafata_mp ?? c.fisa.suprafata_mp ?? null %}
+{% set paturi = c.paturi ?? [] %}
+{% set baie = (c.baie_tip ?? '') in ['proprie', 'comuna'] ? t('baie.' ~ c.baie_tip) : (c.fisa.baie ?? '') %}
+{% set pat = c.fisa.pat ?? '' %}
+<li class="ru-camera">
+<div class="ru-camera-poza">{% if c.poza_principala %}{{ img(c.poza_principala, [480, 960], false, '(min-width: 62rem) 22rem, 100vw') }}{% else %}<span class="ru-fara-poza" aria-hidden="true"></span>{% endif %}</div>
+<div class="ru-camera-corp">
+{% if nivel == 2 %}<h2 class="ru-camera-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h2>{% else %}<h3 class="ru-camera-titlu"><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h3>{% endif %}
+{% if c.unitati > 1 %}<p class="ru-camera-unitati">{{ t('camera.la_fel', {n: c.unitati}) }}</p>{% endif %}
+{% if c.oaspeti_max or paturi|length > 0 or pat or baie or mp or v %}<ul class="ru-fisa">
+{% if c.oaspeti_max %}<li>{% include "partials/oaspeti.twig" with {n: c.oaspeti_max} only %}</li>{% endif %}
+{% if paturi|length > 0 %}{% for p in paturi %}<li>{% include "partials/eticheta.twig" with {d: p} only %}</li>{% endfor %}{% elseif pat %}<li>{{ pat }}</li>{% endif %}
+{% if baie %}<li>{{ baie }}</li>{% endif %}
+{% if mp %}<li>{{ t('camera.mp', {n: mp}) }}</li>{% endif %}
+{% if v %}<li>{{ v in ['oras', 'mare', 'munte', 'lac', 'curte', 'gradina'] ? t('vedere.' ~ v) : v }}</li>{% endif %}
+</ul>{% endif %}
+{% if c.descriere %}<p class="ru-camera-descriere">{{ c.descriere|scurtat(160) }}</p>{% endif %}
+{% if c.dotari|length > 0 %}<ul class="ru-dotari" aria-label="{{ t('dotari.eticheta') }}">{% for d in c.dotari|slice(0, 3) %}<li>{% include "partials/eticheta.twig" with {d: d} only %}</li>{% endfor %}</ul>{% endif %}
+<div class="ru-camera-subsol">
+{% if c.pret_de_la %}<p class="ru-pret">{{ t('pret.de_la') }} <strong>{{ c.pret_de_la.suma|lei }}</strong> {{ t('pret.pe_noapte') }}{% if c.pret_de_la.mentiune ?? '' %}<small>{{ c.pret_de_la.mentiune }}</small>{% endif %}</p>{% endif %}
+<a class="ru-buton ru-buton-contur" href="{{ c.url }}">{{ t('card.detalii') }}<span class="ru-ascuns">: {{ c.titlu }}</span></a>
+</div>
+</div>
+</li>

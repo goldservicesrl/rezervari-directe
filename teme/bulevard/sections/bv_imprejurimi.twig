@@ -1,0 +1,27 @@
+{#- Împrejurimi: ghidul cartierului din reperele gazdei (repere[]: nume, categorie, minute, mod, km, sursa),
+    cel mult 5, cu modul scris la fiecare (pe jos sau cu mașina); cu filtrele pe categorii (doar categoriile care au repere; casete cu :has(), fără JavaScript; fără
+    :has() rămân toate vizibile), și lista, lângă harta adevărată (schița pe cercuri a ieșit: punea reperele după ordinea lor, nu după direcție). Atribuirea licenței pentru
+    reperele luate din OSM (L15) e a nucleului, ca orice text care numește un furnizor. Harta nucleului
+    rămâne mereu (obligatorie pe Acasă); fără repere, doar harta. -#}
+{% set lista = (repere ?? [])|slice(0, 5) %}
+{% set ordine = ['transport', 'restaurant', 'parc', 'atractie', 'magazin', 'servicii', 'natura'] %}
+{% set cats = '' %}
+{% for r in lista %}{% if (r.categorie ?? '') in ordine and ('|' ~ r.categorie ~ '|') not in cats %}{% set cats = cats ~ '|' ~ r.categorie ~ '|' %}{% endif %}{% endfor %}
+<section class="bv-imprejurimi"{% if lista|length > 0 %} aria-labelledby="{{ sectiune.id }}-t"{% endif %}>
+{% if lista|length > 0 %}
+<div class="bv-ghid">
+<div class="bv-ghid-cap">
+<h2 id="{{ sectiune.id }}-t">{{ t('imprejurimi.titlu') }}</h2>
+<p>{{ t('imprejurimi.nota') }}</p>
+{% if cats != '' %}<div class="bv-cipuri" role="group" aria-label="{{ t('imprejurimi.categorii') }}">{% for k in ordine %}{% if ('|' ~ k ~ '|') in cats %}<label class="bv-cip bv-cip-{{ k }}"><input class="bv-ascuns" type="checkbox" checked>{{ t('categorie.' ~ k) }}</label>{% endif %}{% endfor %}</div>{% endif %}
+</div>
+<div class="bv-locuri">
+<ul>
+{% for r in lista %}{% set m = r.minute ?? null %}{% set masina = (r.mod ?? '') == 'masina' %}<li class="bv-cat-{{ (r.categorie ?? '') in ordine ? r.categorie : 'alta' }}{% if m is null or m > 15 or masina %} bv-departe{% endif %}"><span class="bv-eticheta" aria-hidden="true">{{ loop.index }}</span><span>{{ r.nume }}{% if (r.categorie ?? '') in ordine %}<small>{{ t('categorie.' ~ r.categorie) }}</small>{% endif %}</span>
+{% if m is not null %}<b>{{ t('reper.min', {n: m}) }}<span>{{ t(masina ? 'reper.cu_masina' : 'reper.pe_jos') }}</span></b>{% elseif r.km ?? null %}<b>{{ t('reper.km', {n: r.km}) }}<span>{{ t('reper.distanta') }}</span></b>{% endif %}</li>{% endfor %}
+</ul>
+</div>
+</div>
+{% endif %}
+<div class="bv-harta" id="{{ sectiune.id }}-harta">{{ cazo.harta() }}</div>
+</section>

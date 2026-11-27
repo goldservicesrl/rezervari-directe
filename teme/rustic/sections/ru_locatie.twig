@@ -1,0 +1,24 @@
+{#- Locația: harta nucleului (obligatorie pe Acasă, titlul ei la nivelul 3, cu adresa clădirii) și împrejurimile
+    (repere[]: nume, minute pe jos sau cu mașina, km; cel mult 5), cu atribuirea nucleului când lista are repere din
+    OpenStreetMap. Fără repere, rămân harta și adresa. -#}
+{% set a = proprietate.adresa %}
+{% set lista = (repere ?? [])|slice(0, 5) %}
+{% include "partials/brau.twig" %}
+<section class="ru-banda ru-locatie-sectiune" aria-labelledby="{{ sectiune.id }}-t">
+<div class="ru-latime">
+<div class="ru-cap">
+{% if a.localitate %}<p class="ru-semn">{{ a.localitate }}</p>{% endif %}
+<h2 id="{{ sectiune.id }}-t">{{ t('locatie.titlu') }}</h2>
+</div>
+<div class="ru-locatie">
+<div class="ru-harta">{{ cazo.harta(3) }}</div>
+{% if lista|length > 0 %}<div>
+<h3 class="ru-repere-titlu">{{ t('locatie.imprejurimi') }}</h3>
+<ul class="ru-repere">
+{% for r in lista %}{% set km = (r.km ?? null) ? (site.limba == 'ro' ? (r.km ~ '')|replace({'.': ','}) : r.km) : null %}<li><span>{{ r.nume }}{% set cc = 'reper_categorie.' ~ (r.categorie ?? '') %}{% if t(cc) != cc %}<small class="ru-reper-cat">{{ t(cc) }}</small>{% endif %}</span>{% if r.minute ?? null %}<span class="ru-repere-min">{{ t((r.mod ?? '') == 'masina' ? 'reper.min_masina' : 'reper.min_pe_jos', {n: r.minute}) }}</span>{% elseif km %}<span class="ru-repere-min">{{ t('reper.km', {n: km}) }}</span>{% endif %}</li>{% endfor %}
+</ul>
+<p class="ru-nota">{{ t('locatie.nota') }}{% if repere_atribuire ?? '' %} {{ repere_atribuire }}{% endif %}</p>
+</div>{% endif %}
+</div>
+</div>
+</section>

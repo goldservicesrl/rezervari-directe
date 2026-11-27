@@ -1,0 +1,47 @@
+{#- Spațiile (formele A și B, și pagina camerei) sau camerele (forma C), din modelul de vizualizare.
+    Spațiile vin generate de nucleu (camere[].spatii[]: tip, eticheta, paturi[], poze[]), cu baia proprie din baie_tip;
+    fără ele, fișa de azi a camerei (patul, baia, vederea). Cardurile formei C: poza, titlul, oaspeții, patul,
+    suprafața, cel mult 3 dotări, „de la X lei”. Dotările sunt etichete din lista închisă (șir sau {cheie, eticheta}). -#}
+{% set forma = proprietate.forma ?? (camere|length > 1 ? 'C' : 'A') %}
+{% set g = (sectiune.setari.carduri ?? false) ? null : camera ?? (forma != 'C' and camere|length > 0 ? camere|first : null) %}
+{% if g %}
+{% set spatii = g.spatii ?? [] %}
+{#- Secțiunea apare doar când are ce arăta: spații, fișa camerei (patul, baia, vederea), descrierea camerei sau dotări.
+    Singură, capacitatea stă deja între cifrele din grila de sus. -#}
+{% if spatii|length > 0 or (g.fisa.pat ?? '') or (g.fisa.baie ?? '') or (g.fisa.vedere ?? '') or (camera is not null and g.descriere) or g.dotari|length > 0 %}
+<section class="bv-card bv-spatii" aria-labelledby="{{ sectiune.id }}-t">
+<div class="bv-sectiune-cap">
+<h2 id="{{ sectiune.id }}-t">{{ t('spatii.titlu') }}</h2>
+{% if camera is null and camere|length > 0 %}<a class="bv-sectiune-link" href="{{ g.url }}">{{ t('spatii.calendar') }}</a>{% endif %}
+</div>
+<ul class="bv-spatii-lista">
+{% if spatii|length > 0 %}
+{% for s in spatii %}{% set sp = (s.poze ?? [])|first %}<li class="bv-spatiu{% if sp %} bv-spatiu--poza{% endif %}">{% if sp %}<div class="bv-spatiu-poza">{{ img(sp, [480, 960], false, '(min-width: 45rem) 14rem, 50vw') }}</div>{% endif %}<h3>{{ s.eticheta }}</h3>
+{% for p in s.paturi ?? [] %}<p>{{ p is iterable ? p.eticheta : p }}</p>{% endfor %}
+{% if s.tip == 'baie' and (g.baie_tip ?? '') == 'proprie' %}<p>{{ t('spatii.baie_proprie') }}</p>{% endif %}</li>{% endfor %}
+{% else %}
+{% set i = 0 %}
+{% for k in ['pat', 'baie', 'vedere'] %}{% if g.fisa[k] ?? '' %}{% set i = i + 1 %}<li class="bv-spatiu"><span class="bv-spatiu-nr" aria-hidden="true">0{{ i }}</span><h3>{{ t('fisa.' ~ k) }}</h3><p>{{ g.fisa[k] }}</p></li>{% endif %}{% endfor %}
+{% if g.oaspeti_max %}<li class="bv-spatiu"><span class="bv-spatiu-nr" aria-hidden="true">0{{ i + 1 }}</span><h3>{{ t('fisa.oaspeti') }}</h3><p>{{ g.oaspeti_max }}</p></li>{% endif %}
+{% endif %}
+</ul>
+{% if camera is not null and g.descriere %}<p class="bv-spatii-descriere">{{ g.descriere }}</p>{% endif %}
+{% if g.dotari|length > 0 %}<ul class="bv-dotari" aria-label="{{ t('dotari.eticheta') }}">{% for d in g.dotari|slice(0, 12) %}<li>{{ d is iterable ? d.eticheta : d }}</li>{% endfor %}</ul>{% endif %}
+</section>
+{% endif %}
+{% elseif camere|length > 0 %}
+<section class="bv-card bv-camere" aria-labelledby="{{ sectiune.id }}-t">
+<div class="bv-sectiune-cap">
+<h2 id="{{ sectiune.id }}-t">{{ t(sectiune.setari.titlu ?? 'camere.lista') }}</h2>
+</div>
+<ul class="bv-camere-lista">
+{% for c in camere %}<li class="bv-camera">
+{% if c.poza_principala %}<div class="bv-camera-poza">{{ img(c.poza_principala, [480, 960], false, '(min-width: 45rem) 26rem, 100vw') }}</div>{% endif %}
+<h3><a href="{{ c.url }}"{% if c.titlu_limba != site.limba %} lang="{{ c.titlu_limba }}"{% endif %}>{{ c.titlu }}</a></h3>
+<p class="bv-camera-date">{% if c.oaspeti_max %}<span>{{ t('camera.oaspeti', {n: c.oaspeti_max}) }}</span>{% endif %}{% if c.fisa.pat ?? '' %}<span>{{ c.fisa.pat }}</span>{% endif %}{% set mp = c.suprafata_mp ?? c.fisa.suprafata_mp ?? null %}{% if mp %}<span>{{ t('cifre.mp', {n: mp}) }}</span>{% endif %}</p>
+{% if c.dotari|length > 0 %}<ul class="bv-dotari bv-dotari-mici">{% for d in c.dotari|slice(0, 3) %}<li>{{ d is iterable ? d.eticheta : d }}</li>{% endfor %}</ul>{% endif %}
+{% if c.pret_de_la %}<p class="bv-camera-pret">{{ c.pret_de_la.text }}</p>{% endif %}
+</li>{% endfor %}
+</ul>
+</section>
+{% endif %}

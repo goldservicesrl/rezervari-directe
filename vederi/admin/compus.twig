@@ -1,0 +1,7 @@
+{#- O pagină compusă a panoului: titlul ei, apoi blocurile, fiecare randat cu șablonul paginii de dinainte
+    (AdminCompus::randeaza), în secțiunea cu ancora lui sau în zona „Avansat: …”. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ titlu }}</h1>
+{% for b in blocuri %}{{ b|raw }}{% endfor %}
+{% endblock %}

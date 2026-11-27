@@ -1,0 +1,55 @@
+{#- Camerele și prețurile, în modul fără cheie EasyCheck. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.local.cam.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{#- în asistentul trecerii, site-ul arată încă datele din EasyCheck; camerele de aici intră pe site la trecere. -#}
+{% if asistent %}<p class="pa-info">{{ t('admin.local.as.camere_info') }} <a href="{{ url.asistent }}">{{ t('admin.local.as.inapoi_asistent') }}</a></p>{% endif %}
+<p>{{ t('admin.local.cam.explicatie') }} <a href="{{ url.poze }}">{{ t('admin.local.cam.poze') }}</a></p>
+{% if de_verificat %}<p class="pa-avertizare" role="status">{{ t('admin.local.cam.de_verificat') }}</p>{% endif %}
+{% for x in camere %}
+{% set i = loop.index %}
+<section class="pa-card" aria-labelledby="pc-{{ i }}" data-camera="{{ x.id }}"><h2 id="pc-{{ i }}">{{ x.titlu }}{% if x.de_verificat %} <span class="pa-stare pa-stare-asteapta">{{ t('admin.local.cam.stare_de_verificat') }}</span>{% endif %}</h2>
+<form method="post" action="{{ url.baza }}{{ x.id }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-t', nume: 'titlu', eticheta: 'admin.local.cam.nume', valoare: x.titlu, eroare: x.erori.titlu ?? '', max: 120, cerut: true, lang: 'ro'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-ten', nume: 'titlu_en', eticheta: 'admin.local.cam.nume_en', valoare: x.titlu_en, eroare: '', max: 120, lang: 'en'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-u', nume: 'unitati', eticheta: 'admin.local.cam.unitati', valoare: x.unitati, eroare: x.erori.unitati ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.cam.unitati_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-o', nume: 'oaspeti_max', eticheta: 'admin.local.cam.oaspeti', valoare: x.oaspeti_max, eroare: x.erori.oaspeti_max ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-pn', nume: 'pret_noapte', eticheta: 'admin.local.cam.pret_noapte', valoare: x.pret_noapte, eroare: x.erori.pret_noapte ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.cam.pret_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-pw', nume: 'pret_weekend', eticheta: 'admin.local.cam.pret_weekend', valoare: x.pret_weekend, eroare: x.erori.pret_weekend ?? '', clasa: 'pa-scurt', mod: 'numeric', ajutor: 'admin.local.cam.pret_weekend_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-dro', nume: 'descriere_ro', eticheta: 'admin.local.cam.descriere_ro', valoare: x.descriere_ro, eroare: '', tip: 'textarea', max: 2000, lang: 'ro'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pc' ~ i ~ '-den', nume: 'descriere_en', eticheta: 'admin.local.cam.descriere_en', valoare: x.descriere_en, eroare: '', tip: 'textarea', max: 2000, lang: 'en'} only %}
+<button type="submit" class="pa-buton">{{ t('admin.local.cam.salveaza', {camera: x.titlu}) }}</button></form>
+<details class="pa-confirma"><summary>{{ t('admin.local.cam.retrage') }}<span class="pa-ascuns"> {{ x.titlu }}</span></summary>
+<form method="post" action="{{ url.baza }}{{ x.id }}/retrage"><input type="hidden" name="_csrf" value="{{ csrf }}"><p>{{ t('admin.local.cam.retrage_confirmare') }}</p><button type="submit" class="pa-buton-pericol">{{ t('admin.local.cam.retrage_da') }}<span class="pa-ascuns"> {{ x.titlu }}</span></button></form></details>
+</section>
+{% else %}
+<p class="pa-gol">{{ t('admin.local.cam.gol') }}</p>
+{% endfor %}
+{% if poate_adauga %}
+<section class="pa-card" aria-labelledby="pc-noua"><h2 id="pc-noua">{{ t('admin.local.cam.noua') }}</h2>
+<form method="post" action="{{ url.baza }}noua"><input type="hidden" name="_csrf" value="{{ csrf }}">
+{% include 'admin/_camp_local.twig' with {id: 'pcn-t', nume: 'titlu', eticheta: 'admin.local.cam.nume', valoare: noua.titlu, eroare: noua.erori.titlu ?? '', max: 120, cerut: true, lang: 'ro'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-ten', nume: 'titlu_en', eticheta: 'admin.local.cam.nume_en', valoare: noua.titlu_en, eroare: '', max: 120, lang: 'en'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-u', nume: 'unitati', eticheta: 'admin.local.cam.unitati', valoare: noua.unitati, eroare: noua.erori.unitati ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.cam.unitati_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-o', nume: 'oaspeti_max', eticheta: 'admin.local.cam.oaspeti', valoare: noua.oaspeti_max, eroare: noua.erori.oaspeti_max ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-pn', nume: 'pret_noapte', eticheta: 'admin.local.cam.pret_noapte', valoare: noua.pret_noapte, eroare: noua.erori.pret_noapte ?? '', clasa: 'pa-scurt', mod: 'numeric', cerut: true, ajutor: 'admin.local.cam.pret_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-pw', nume: 'pret_weekend', eticheta: 'admin.local.cam.pret_weekend', valoare: noua.pret_weekend, eroare: noua.erori.pret_weekend ?? '', clasa: 'pa-scurt', mod: 'numeric', ajutor: 'admin.local.cam.pret_weekend_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-dro', nume: 'descriere_ro', eticheta: 'admin.local.cam.descriere_ro', valoare: noua.descriere_ro, eroare: '', tip: 'textarea', max: 2000, lang: 'ro'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pcn-den', nume: 'descriere_en', eticheta: 'admin.local.cam.descriere_en', valoare: noua.descriere_en, eroare: '', tip: 'textarea', max: 2000, lang: 'en'} only %}
+<button type="submit" class="pa-buton">{{ t('admin.local.cam.adauga') }}</button></form></section>
+{% endif %}
+<section class="pa-card" id="reduceri" aria-labelledby="pc-reduceri"><h2 id="pc-reduceri">{{ t('admin.local.red.titlu') }}</h2>
+<p class="pa-ajutor">{{ t('admin.local.red.explicatie') }}</p>
+<form method="post" action="{{ reduceri.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<fieldset><legend>{{ t('admin.local.red.lung') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pr-lp', nume: 'lung_procent', eticheta: 'admin.local.red.procent', valoare: reduceri.v.lung_procent, eroare: reduceri.erori.lung_procent ?? '', clasa: 'pa-scurt', mod: 'numeric', ajutor: 'admin.local.red.procent_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pr-ln', nume: 'lung_nopti', eticheta: 'admin.local.red.nopti', valoare: reduceri.v.lung_nopti, eroare: reduceri.erori.lung_nopti ?? '', clasa: 'pa-scurt', mod: 'numeric'} only %}
+</fieldset>
+<fieldset><legend>{{ t('admin.local.red.timp') }}</legend>
+{% include 'admin/_camp_local.twig' with {id: 'pr-tp', nume: 'timp_procent', eticheta: 'admin.local.red.procent', valoare: reduceri.v.timp_procent, eroare: reduceri.erori.timp_procent ?? '', clasa: 'pa-scurt', mod: 'numeric', ajutor: 'admin.local.red.procent_ajutor'} only %}
+{% include 'admin/_camp_local.twig' with {id: 'pr-tz', nume: 'timp_zile', eticheta: 'admin.local.red.zile', valoare: reduceri.v.timp_zile, eroare: reduceri.erori.timp_zile ?? '', clasa: 'pa-scurt', mod: 'numeric'} only %}
+</fieldset>
+<button type="submit" class="pa-buton">{{ t('admin.local.red.salveaza') }}</button></form></section>
+<p><a href="{{ url.proprietate }}#regula">{{ t('admin.local.cam.la_regula') }}</a></p>
+{% endblock %}

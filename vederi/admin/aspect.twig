@@ -1,0 +1,60 @@
+{% extends 'admin/baza.twig' %}
+{% block antet %}{% include 'admin/_antet.twig' %}{% endblock %}
+{% block continut %}
+<h1>{{ t('admin.teme.titlu') }}</h1>
+{% if mesaj %}<p class="pa-mesaj" role="status">{{ mesaj }}</p>{% endif %}
+{% if eroare %}<p class="pa-eroare" role="alert">{% if eroare_camp %}<a href="#{{ eroare_camp }}">{{ eroare }}</a>{% else %}{{ eroare }}{% endif %}</p>{% endif %}
+<p>{{ t('admin.teme.activa', {tema: activa}) }} <a href="{% if incorporat|default(false) %}#setari-tema{% else %}{{ url.baza }}{{ activa_slug }}/setari{% endif %}">{{ t('admin.teme.personalizati') }}</a></p>
+{% if anterioara %}<form method="post" action="{{ url.revino }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.teme.revino', {tema: anterioara}) }}</button></form>{% endif %}
+
+<h2>{{ t('admin.teme.oficiale') }}</h2>
+<p>{{ t('admin.teme.oficiale_explicatie') }}</p>
+<ul class="pa-teme">
+{% for x in oficiale %}{% include 'admin/_tema_card.twig' with {x: x, tert: false} %}{% endfor %}
+</ul>
+
+{% if vreme is defined and vreme %}
+<section class="pa-card" aria-labelledby="pa-vreme-titlu" id="pa-vreme"><h2 id="pa-vreme-titlu">{{ t('admin.pret.vreme_titlu') }}</h2>
+{% if vreme.tema %}
+<p>{{ t('admin.pret.vreme_tema') }}</p>
+{% if not vreme.coordonate %}<p class="pa-info">{{ t('admin.pret.vreme_coordonate') }}</p>{% endif %}
+{% if vreme.eroare %}<p class="pa-avertizare">{{ t('admin.pret.vreme_eroare') }}</p>{% elseif vreme.citita %}<p class="pa-ajutor">{{ t('admin.pret.vreme_citita', {la: vreme.citita}) }}</p>{% endif %}
+<form method="post" action="{{ vreme.url }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><input type="hidden" name="actiune" value="vreme">
+<p><input type="checkbox" id="pa-v-afisata" name="afisata" value="1"{% if vreme.afisata %} checked{% endif %}><label for="pa-v-afisata">{{ t('admin.pret.vreme_afisata') }}</label></p>
+<button type="submit" class="pa-buton">{{ t('admin.pret.vreme_salvati') }}</button></form>
+<p class="pa-ajutor">{{ t('admin.pret.vreme_licenta') }}</p>
+{% else %}
+<p>{{ t('admin.pret.vreme_tema_alta') }}</p>
+{% endif %}
+</section>
+{% endif %}
+
+<details class="pa-teme-avansat" id="pa-teme-avansat"{% if avansat_deschis %} open{% endif %}>
+<summary>{{ t('admin.teme.avansat') }}</summary>
+<p>{{ t('admin.teme.avansat_explicatie') }}</p>
+{% if eroare_cod in ['reauth', 'confirmare', 'activa'] %}<p class="pa-eroare">{{ eroare }}</p>{% endif %}
+<h2>{{ t('admin.teme.terte') }}</h2>
+{% if terte %}
+<ul class="pa-teme">
+{% for x in terte %}{% include 'admin/_tema_card.twig' with {x: x, tert: true} %}{% endfor %}
+</ul>
+{% else %}
+<p>{{ t('admin.teme.terte_gol') }}</p>
+{% endif %}
+
+<h2>{{ t('admin.teme.incarca_titlu') }}</h2>
+<p>{{ t('admin.teme.incarca_explicatie', {mb: limite.mb}) }}</p>
+{% set err_zip = eroare_cod in ['fisier', 'marime'] %}
+<form method="post" action="{{ url.incarca }}" enctype="multipart/form-data" class="pa-formular"><input type="hidden" name="_csrf" value="{{ csrf }}">
+<p><label for="pa-tema-zip">{{ t('admin.teme.incarca_fisier') }}</label><input id="pa-tema-zip" name="tema" type="file" accept=".zip,application/zip" required{% if err_zip %} aria-invalid="true" aria-describedby="pa-tema-zip-e"{% endif %}>
+{% if err_zip %}<span class="pa-eroare" id="pa-tema-zip-e">{{ eroare }}</span>{% endif %}</p>
+{% include 'admin/_reauth.twig' with {id: 'incarca'} %}
+<button type="submit" class="pa-buton">{{ t('admin.teme.incarca') }}</button></form>
+{% if ultima %}
+<div id="pa-tema-raport">
+<h3>{{ t('admin.teme.ultima_respinsa', {tema: ultima.nume}) }}</h3>
+{% include 'admin/_raport_tema.twig' with {raport: ultima.raport} %}
+</div>
+{% endif %}
+</details>
+{% endblock %}

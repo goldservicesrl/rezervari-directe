@@ -1,0 +1,18 @@
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.avansuri.titlu') }}</h1>
+{% include 'admin/_stare.twig' %}
+{% include 'admin/_rezervari_vederi.twig' with {activa: 'avansuri'} %}
+<p>{{ t('admin.avansuri.explicatie') }}</p>
+{% if randuri %}
+<div class="pa-tabel"><table>
+<thead><tr><th scope="col">{{ t('admin.rezervari.cod') }}</th><th scope="col">{{ t('admin.plati.col.sejur') }}</th><th scope="col">{{ t('admin.rez.oaspete') }}</th><th scope="col">{{ t('admin.rez.incasat') }}</th><th scope="col">{{ t('admin.rez.rambursat') }}</th><th scope="col">{{ t('admin.avansuri.net') }}</th></tr></thead>
+<tbody>{% for x in randuri %}<tr data-ref="{{ x.ref }}"><th scope="row" class="pa-fix" data-eticheta="{{ t('admin.rezervari.cod') }}"><a href="{{ x.url }}">{{ x.ref }}</a></th><td data-eticheta="{{ t('admin.plati.col.sejur') }}">{{ x.sejur }}</td><td data-eticheta="{{ t('admin.rez.oaspete') }}">{{ x.oaspete }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rez.incasat') }}">{{ x.incasat }}</td><td class="pa-fix" data-eticheta="{{ t('admin.rez.rambursat') }}">{{ x.rambursat }}</td><td class="pa-fix" data-eticheta="{{ t('admin.avansuri.net') }}">{{ x.net }}</td></tr>{% endfor %}</tbody>
+</table></div>
+<p><strong>{{ t('admin.avansuri.total', {total: total}) }}</strong></p>
+<p><a class="pa-buton-secundar" href="{{ url.csv }}">{{ t('admin.avansuri.csv') }}</a></p>
+{% else %}
+<p class="pa-gol">{{ t('admin.avansuri.gol') }}</p>
+{% endif %}
+{% include 'admin/_raport.twig' %}
+{% endblock %}

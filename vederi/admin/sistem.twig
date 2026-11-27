@@ -1,0 +1,23 @@
+{#- Setări › Întreținere, „Avansat: diagnosticul pentru firma de găzduire”: fișierul descărcabil, versiunile,
+    extensiile, HTTPS, baza, limitele PHP, cronul, e-mailurile, bugetul API și ultimele erori. -#}
+{% extends 'admin/baza.twig' %}
+{% block continut %}
+<h1>{{ t('admin.sistem.diagnostic') }}</h1>
+{% include 'admin/_stare.twig' %}
+<p>{{ t('admin.sistem.detalii_explicatie') }}</p>
+<form method="post" action="{{ url.pachet }}"><input type="hidden" name="_csrf" value="{{ csrf }}"><button type="submit" class="pa-buton-secundar">{{ t('admin.sistem.pachet') }}</button></form>
+<p class="pa-ajutor">{{ t('admin.sistem.pachet_ajutor') }}</p>
+<dl class="pa-detalii">
+<dt>{{ t('admin.sistem.versiune') }}</dt><dd>{{ diag.versiune }}</dd>
+<dt>PHP</dt><dd>{{ diag.php }}{% if not diag.php_ok %} ({{ t('admin.sistem.php_vechi') }}){% endif %}</dd>
+<dt>{{ t('admin.sistem.extensii') }}</dt><dd>{% for k, v in extensii %}{{ k }}: {{ v ? t('admin.sistem.da') : t(k == 'sodium' ? 'admin.sistem.lipsa_inclusa' : 'admin.sistem.lipsa') }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+<dt>HTTPS</dt><dd>{{ diag.https ? t('admin.sistem.da') : t('admin.sistem.https_lipsa') }}</dd>
+<dt>{{ t('admin.sistem.baza') }}</dt><dd>{{ diag.baza }}, {{ t('admin.sistem.migrari', {v: diag.migrari}) }}</dd>
+<dt>{{ t('admin.sistem.limite_php') }}</dt><dd>memory_limit {{ diag.memorie }}, max_execution_time {{ diag.timp }}</dd>
+<dt>{{ t('admin.sistem.cron') }}</dt><dd>{{ cron_cpanel ? t('admin.sistem.cron_ok', {cand: cron_cpanel}) : t('admin.sistem.cron_vizitatori') }}</dd>
+<dt>{{ t('admin.sistem.emailuri') }}</dt><dd>{{ t('admin.sistem.emailuri_stare', {coada: diag.emailuri.in_coada, reincercate: diag.emailuri.reincercate, esuate: diag.emailuri.esuate}) }}{% if diag.emailuri.ultima_eroare %}<br><code>{{ diag.emailuri.ultima_eroare }}</code>{% endif %}</dd>
+<dt>{{ t('admin.sistem.buget') }}</dt><dd>{{ t('admin.sistem.buget_pauza', {s: diag.buget.pauza_secunde}) }}</dd>
+</dl>
+<h2>{{ t('admin.sistem.erori') }}</h2>
+{% if diag.erori %}<ul class="pa-jurnal">{% for x in diag.erori %}<li><code>{{ x }}</code></li>{% endfor %}</ul>{% else %}<p class="pa-gol">{{ t('admin.sistem.erori_gol') }}</p>{% endif %}
+{% endblock %}

@@ -1,0 +1,3 @@
+{"nume": {"ro": "Bun venit", "en": "Welcome"}, "setari": [
+  {"id": "cu_poza", "tip": "checkbox", "implicit": true, "eticheta": {"ro": "Prima fotografie a proprietății", "en": "First property photo"}}
+]}

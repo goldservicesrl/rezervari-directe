@@ -1,0 +1,17 @@
+{#- Bara de rezervare (cazo.bara_rezervare()): căutarea pe date, pe toate camerele; merge și fără JavaScript. -#}
+<cazo-bara class="pg-bara" data-pg="bara">
+{% if activa %}
+<form class="pg-bara-formular" method="get" action="{{ formular.actiune }}" role="search" aria-label="{{ t('bara.titlu') }}">
+{% for a in formular.ascunse %}<input type="hidden" name="{{ a.nume }}" value="{{ a.valoare }}">{% endfor %}
+<div class="pg-camp"><label for="pg-bara-sosire">{{ t('bara.sosire') }}</label><input id="pg-bara-sosire" name="sosire" type="date" value="{{ sosire }}" required autocomplete="off"></div>
+<div class="pg-camp"><label for="pg-bara-plecare">{{ t('bara.plecare') }}</label><input id="pg-bara-plecare" name="plecare" type="date" value="{{ plecare }}" required autocomplete="off"></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-bara-adulti">{{ t('bara.adulti') }}</label><select id="pg-bara-adulti" name="adulti">{% for n in adulti_optiuni %}<option value="{{ n }}"{% if n == adulti %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<div class="pg-camp pg-camp-mic"><label for="pg-bara-copii">{{ t('bara.copii') }}</label><select id="pg-bara-copii" name="copii">{% for n in copii_optiuni %}<option value="{{ n }}"{% if n == copii %} selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<button class="pg-buton" type="submit">{{ t('bara.cauta') }}</button>
+</form>
+<a class="pg-buton pg-bara-lipicios" href="#pg-bara-sosire">{{ t('bara.cauta') }}</a>
+{% else %}
+{% if oprite ?? false %}<p class="pg-oprite" role="status" data-pg="oprite">{{ t('rezervari.oprite') }}</p>{% endif %}
+<p class="pg-bara-contact">{% if contact.telefon or contact.email %}{{ t('bara.contact') }}{% if contact.telefon %} <a href="tel:{{ contact.telefon|replace({' ': ''}) }}">{{ contact.telefon }}</a>{% endif %}{% if contact.email %} <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}{% else %}{{ t('bara.contact_fara_contact') }}{% endif %}</p>
+{% endif %}
+</cazo-bara>

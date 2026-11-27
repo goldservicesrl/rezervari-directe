@@ -1,0 +1,13 @@
+{#- Antetul (bleumarin): sigla gazdei sau semnul lucarnei cu numele proprietății, meniul nucleului (pe telefon, pe un rând
+    care se derulează), limbile și „Rezervați”, spre camere. -#}
+{%- set sg = site.sigla ?? null -%}
+<header class="et-antet">
+<div class="et-latime et-antet-interior">
+<a class="et-marca" href="{{ site.url_baza }}">{% if sg %}<img class="pg-sigla-img" src="{{ sg.url }}" alt="{{ sg.cu_nume ? '' : site.nume }}" width="{{ sg.latime }}" height="{{ sg.inaltime }}">{% else %}<span class="et-lucarna" aria-hidden="true"></span>{% endif %}{% if not sg or sg.cu_nume %}<span class="et-marca-nume">{{ site.nume }}</span>{% endif %}</a>
+<div class="et-antet-dreapta">
+{% if site.limbi|length > 1 %}<nav class="et-limbi" aria-label="{{ t('meniu.limba') }}"><ul>{% for l in site.limbi %}<li><a href="{{ l.url }}" hreflang="{{ l.cod }}" lang="{{ l.cod }}" title="{{ l.nume }}"{% if l.activa %} aria-current="true"{% endif %}>{{ l.cod|upper }}</a></li>{% endfor %}</ul></nav>{% endif %}
+<a class="et-buton et-buton-alama" href="{{ url('camere') }}">{{ t('antet.rezervati') }}</a>
+</div>
+{% if meniu.principal|length > 0 %}<nav class="et-meniu" aria-label="{{ t('meniu.principal') }}"><ul>{% for m in meniu.principal %}<li><a href="{{ m.url }}"{% if m.activ %} aria-current="page"{% endif %}>{{ m.titlu }}</a></li>{% endfor %}</ul></nav>{% endif %}
+</div>
+</header>

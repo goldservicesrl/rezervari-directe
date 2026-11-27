@@ -1,0 +1,2 @@
+{#- Eticheta capitolului: numărul îl pune CSS-ul (contor pe capitolele afișate), deci o secțiune fără date nu lasă gol în numerotare. -#}
+{% if sectiune.setari.capitol %}<p class="br-capitol"><span class="br-capitol-nr">{{ t('capitol') }}</span> · {{ t(eticheta) }}</p>{% endif %}

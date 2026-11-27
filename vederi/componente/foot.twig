@@ -1,0 +1,3 @@
+{#- Scripturile nucleului (module, cu src), doar pentru componentele folosite pe pagină. -#}
+{% for m in module %}<script type="module" src="{{ m }}"></script>
+{% endfor %}
